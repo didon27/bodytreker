@@ -1,9 +1,11 @@
 const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
+const PasswordResets = db.password_resets;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 var nodemailer = require("nodemailer");
 
 var smtpTransport = nodemailer.createTransport({
@@ -144,10 +146,10 @@ exports.forgotPassword = (req, res) => {
   let { email } = req.body;
 
   let activation_token = (Math.floor(Math.random() * 10000) + 10000)
-  .toString()
-  .substring(1);
+    .toString()
+    .substring(1);
 
-  User.findOne({ email })
+  User.findOne({ where: { email } })
     .then((user) => {
       user.activation_token = activation_token;
       user.save();
@@ -176,7 +178,55 @@ exports.verificationForgotPassword = (req, res) => {
 
   User.findOne({ where: { email, activation_token } })
     .then((user) => {
-      res.status(200).send({ success: true});
+      let reset_token = crypto.randomBytes(32).toString("hex");
+      user.activation_token = null;
+      user.save();
+
+      PasswordResets.create({
+        email,
+        token: bcrypt.hashSync(reset_token, 8),
+      })
+        .then(() => {
+          res.status(200).send({ reset_token });
+        })
+        .catch((err) => {
+          res.status(500).send({ message: err.message });
+        });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
+};
+
+exports.resetPassword = (req, res) => {
+  let { email, reset_token, password } = req.body;
+
+  PasswordResets.findOne({ where: { email } })
+    .then((response) => {
+      var tokenIsValid = bcrypt.compareSync(reset_token, response.token);
+
+      if (!tokenIsValid) {
+        return res.status(401).send({
+          message: "Invalid Token!",
+        });
+      }
+
+      User.findOne({ where: { email } })
+        .then((user) => {
+          user.password = bcrypt.hashSync(password, 8);
+          user.save();
+
+          var token = jwt.sign({ id: user.id }, config.secret, {
+            expiresIn: 86400, // 24 hours
+          });
+
+          res.status(200).send({
+            accessToken: token,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({ message: err.message });
+        });
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
