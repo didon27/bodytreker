@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-import {colors} from '_colors';
+import {colors} from 'colors';
 
 const KeyboardAvoidWrapper = props => {
   return (

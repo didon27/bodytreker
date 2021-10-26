@@ -6,8 +6,8 @@ import {
   getFocusedRouteNameFromRoute,
   StackActions,
 } from '@react-navigation/native';
-import {images} from '_images';
-import {colors} from '_colors';
+import {images} from 'images';
+import {colors} from 'colors';
 import {Text, View} from '../components/';
 import Home from '../screens/Home';
 const windowHeight = Dimensions.get('window').height;

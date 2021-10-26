@@ -1,15 +1,15 @@
 import React, {useEffect, createRef} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 
-import {storage} from '_services/storage';
+import {storage} from 'services/storage';
 
 import {useSelector, useDispatch} from 'react-redux';
 
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
 
-import {authActions} from '_store/auth';
-import {userActions} from '_store/user';
+import {authActions} from 'store/auth';
+import {userActions} from 'store/user';
 
 export const navigationRef = createRef();
 

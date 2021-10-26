@@ -2,7 +2,7 @@ import React from 'react';
 import {View, TouchableOpacity, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {colors} from '_colors';
+import {colors} from 'colors';
 import styles from './styles';
 import PropTypes from 'prop-types';
 

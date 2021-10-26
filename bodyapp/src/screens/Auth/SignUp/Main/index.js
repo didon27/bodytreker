@@ -2,12 +2,12 @@ import React, {useState} from 'react';
 import {Keyboard, ScrollView, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {Text, TextInput, Button, KeyboardAvoidWrapper} from '_components';
-import {routeNames} from '_enums';
-import {fieldValidator} from '_services/validator';
-import {userActions} from '_store/user';
-import {colors} from '_colors';
-import {replaceText} from '_helpers';
+import {Text, TextInput, Button, KeyboardAvoidWrapper} from 'components';
+import {routeNames} from 'enums';
+import {fieldValidator} from 'services/validator';
+import {userActions} from 'store/user';
+import {colors} from 'colors';
+import {replaceText} from 'helpers';
 
 import styles from './styles';
 import {SafeAreaView} from 'react-native-safe-area-context';

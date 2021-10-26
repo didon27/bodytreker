@@ -3,8 +3,8 @@ import {TextInput, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
 
-import {Text} from '_components';
-import {colors} from '_colors';
+import {Text} from 'components';
+import {colors} from 'colors';
 
 import {styles} from './styles';
 

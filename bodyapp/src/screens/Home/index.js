@@ -1,13 +1,13 @@
 import React from 'react';
 import {View, StatusBar, Text, TouchableOpacity} from 'react-native';
 
-import {colors} from '_colors';
-import {authActions} from '_store/auth';
-import {images} from '_images';
+import {colors} from 'colors';
+import {authActions} from 'store/auth';
+import {images} from 'images';
 import {useSelector, useDispatch} from 'react-redux';
 
 import styles from './styles';
-import {storage} from '_services/storage';
+import {storage} from 'services/storage';
 
 const Home = props => {
   const {user} = useSelector(state => state.user);

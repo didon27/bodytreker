@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, ActivityIndicator, StyleSheet, Image} from 'react-native';
-import {colors} from '_colors';
+import {colors} from 'colors';
 import {images} from '_images';
 
 const SplashScreen = () => {

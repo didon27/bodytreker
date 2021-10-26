@@ -19,12 +19,13 @@ const Text = ({style, ...props}) => {
     <RNText
       {...props}
       style={[
-        {fontFamily: getFont('normal'), fontWeight: '400'},
+        // {fontFamily: getFont('normal'), fontWeight: '400'},
         props.center && styles.center,
         props.left && styles.left,
+        props.color && {color: props.color},
         props.right && styles.right,
-        props.medium && {fontFamily: getFont('medium'), fontWeight: '500'},
-        props.bold && {fontFamily: getFont('bold'), fontWeight: 'bold'},
+        // props.medium && {fontFamily: getFont('medium'), fontWeight: '500'},
+        // props.bold && {fontFamily: getFont('bold'), fontWeight: 'bold'},
         props.uppercase && styles.uppercase,
         props.capitalize && styles.capitalize,
         props.underline && styles.underline,

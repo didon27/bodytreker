@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {Pressable, Animated} from 'react-native';
 
-import {DEVICE_HEIGHT} from '_constants';
+import {DEVICE_HEIGHT} from 'constants';
 
 import {styles} from './styles';
 
