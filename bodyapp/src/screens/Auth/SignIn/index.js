@@ -8,6 +8,7 @@ import {images} from 'images';
 import {authActions} from 'store/auth';
 
 import styles from './styles';
+import {colors} from 'colors';
 
 const SignIn = props => {
   const [emailOrLogin, setEmailOrLogin] = useState('');
@@ -35,29 +36,15 @@ const SignIn = props => {
       <Image
         resizeMode="cover"
         blurRadius={20}
-        style={{width: '100%', height: '100%', zIndex: 0}}
+        style={styles.background}
         source={images.startBackground}
       />
       <View style={styles.dimmer} />
-      <View
-        style={{
-          position: 'absolute',
-          zIndex: 9999,
-          width: '100%',
-          height: '100%',
-          paddingHorizontal: 20,
-          justifyContent: 'center',
-        }}>
-        <Text style={{color: 'white', fontSize: 32, fontWeight: '600'}}>
+      <View style={styles.centerContainer}>
+        <Text color={colors.white} size={32}>
           Вход
         </Text>
-        <View
-          style={{
-            padding: 20,
-            backgroundColor: '#202124cc',
-            borderRadius: 20,
-            marginTop: 20,
-          }}>
+        <View style={styles.centerBlock}>
           <TextInput
             style={{
               backgroundColor: 'white',
@@ -93,7 +80,7 @@ const SignIn = props => {
           <TouchableOpacity
             style={{marginTop: 20}}
             onPress={() => console.log('fsdfs')}>
-            <Text size={14} color={'white'} style={{textAlign: 'right'}}>
+            <Text size={14} color={'white'} right>
               Забыли пароль?
             </Text>
           </TouchableOpacity>

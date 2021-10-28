@@ -11,4 +11,19 @@ export default StyleSheet.create({
     backgroundColor: 'black',
     position: 'absolute',
   },
+  centerContainer: {
+    position: 'absolute',
+    zIndex: 9999,
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+  },
+  centerBlock: {
+    padding: 20,
+    backgroundColor: '#202124cc',
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  background: {width: '100%', height: '100%', zIndex: 0}
 });
