@@ -6,7 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import SignIn from '../screens/Auth/SignIn';
 import SignUp from '../screens/Auth/SignUp/Main';
 
-import {colors} from '_colors';
+import {colors} from 'colors';
+import Start from '../screens/Auth/Start';
 
 const AuthStack = createStackNavigator();
 
@@ -21,6 +22,13 @@ export default props => {
           shadowColor: 'transparent',
         },
       })}>
+      <AuthStack.Screen
+        name="Start"
+        component={Start}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <AuthStack.Screen
         name="SignIn"
         component={SignIn}

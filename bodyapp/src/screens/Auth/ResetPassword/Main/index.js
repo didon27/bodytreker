@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, ScrollView, Keyboard, Text} from 'react-native';
 import {useSelector} from 'react-redux';
 
-import {colors} from '_colors';
+import {colors} from 'colors';
 import {Button, TextInput, KeyboardAvoidWrapper} from '_components';
 import {fieldValidator} from '_services/validator';
 import {api, mamaAxios} from '_services/api';
