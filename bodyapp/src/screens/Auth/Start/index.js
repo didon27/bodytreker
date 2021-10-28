@@ -4,6 +4,7 @@ import {View, Image, TouchableOpacity, StatusBar} from 'react-native';
 import {Text} from 'components';
 import {colors} from 'colors';
 import {routeNames} from 'enums';
+import {images} from 'images';
 
 import styles from './styles';
 
@@ -16,7 +17,7 @@ const Start = props => {
       <Image
         resizeMode="cover"
         style={styles.backgroundImage}
-        source={require('../../../images/start-background.jpeg')}
+        source={images.startBackground}
       />
       <View style={styles.textBlock}>
         <Text style={styles.title}>Archery Tracker</Text>
