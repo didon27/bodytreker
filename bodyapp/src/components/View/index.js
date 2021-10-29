@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import {styles} from './styles';
 
-const View = (props) => {
+const View = props => {
   return (
     <RNView
       {...props}
@@ -14,12 +14,12 @@ const View = (props) => {
         props.sBetween && styles.sBetween,
         props.sAround && styles.sAround,
         props.fEnd && styles.fEnd,
+        props.mLeft && {marginLeft: props.mLeft},
         props.mTop && {marginTop: props.mTop},
         props.mBottom && {marginBottom: props.mBottom},
         props.centered && styles.centered,
-        props.style && props.style
-      ]}
-    >
+        props.style && props.style,
+      ]}>
       {props.children}
     </RNView>
   );
@@ -35,7 +35,7 @@ View.propTypes = {
   mBottom: PropTypes.number,
   centered: PropTypes.bool,
   fEnd: PropTypes.bool,
-  style: PropTypes.any
+  style: PropTypes.any,
 };
 
 View.defaultProps = {
@@ -46,7 +46,7 @@ View.defaultProps = {
   mBottom: null,
   centered: false,
   fEnd: false,
-  style: null
+  style: null,
 };
 
 export default View;
