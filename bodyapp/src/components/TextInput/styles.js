@@ -4,12 +4,13 @@ import {colors} from 'colors';
 
 export const styles = StyleSheet.create({
   container: {
-    marginBottom: 15,
-    justifyContent: 'center',
-    width: '100%',
-    paddingHorizontal: 5,
-    height: 56,
-    backgroundColor: colors.inputBackground
+    backgroundColor: 'white',
+    height: 48,
+    fontSize: 16,
+    borderRadius: 10,
+    marginTop: 16,
+    paddingLeft: 10,
+    justifyContent: 'center'
   },
   textBoxBtnHolder: {
     position: 'relative',
@@ -23,9 +24,9 @@ export const styles = StyleSheet.create({
     paddingRight: 45,
     color: colors.black,
     paddingLeft: 8,
-    borderBottomWidth: 2,
+    // borderBottomWidth: 2,
     paddingVertical: 0,
-    borderBottomColor: colors.turquoise
+    // borderBottomColor: colors.turquoise
   },
   errorMsg: {
     color: colors.errorColor
@@ -37,10 +38,9 @@ export const styles = StyleSheet.create({
   },
   visibilityBtn: {
     position: 'absolute',
-    right: 3,
-    height: 40,
+    right: 0,
+    height: 23,
     width: 35,
-    padding: 5
   },
   btnImage: {
     height: '100%',

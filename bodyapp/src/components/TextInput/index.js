@@ -30,9 +30,9 @@ const CustomTextInput = (props) => {
             style={styles.visibilityBtn}
             onPress={() => setHidePassword(!hidePassword)}>
             <Icon
-              name={hidePassword ? 'visibility' : 'visibility-off'}
+              name={!hidePassword ? 'visibility' : 'visibility-off'}
               style={styles.btnImage}
-              color={props.isPasswordIconRed ? colors.errorColor : colors.turquoise}
+              color={props.isPasswordIconRed ? colors.errorColor : colors.grey}
               size={23}
             />
           </TouchableOpacity>

@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {View, TouchableOpacity, Image, TextInput} from 'react-native';
+import {TouchableOpacity, Image} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Button, Text} from 'components';
+import {Button, Text, View, TextInput} from 'components';
 import {images} from 'images';
 import {authActions} from 'store/auth';
 
@@ -13,6 +13,7 @@ import {colors} from 'colors';
 const SignIn = props => {
   const [emailOrLogin, setEmailOrLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [saveMe, setSaveMe] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -46,26 +47,11 @@ const SignIn = props => {
         </Text>
         <View style={styles.centerBlock}>
           <TextInput
-            style={{
-              backgroundColor: 'white',
-              height: 48,
-              borderRadius: 10,
-              paddingHorizontal: 20,
-              fontSize: 16,
-            }}
             placeholderTextColor={'#adadad'}
             placeholder="Email"
             onChangeText={setEmailOrLogin}
           />
           <TextInput
-            style={{
-              backgroundColor: 'white',
-              height: 48,
-              fontSize: 16,
-              borderRadius: 10,
-              paddingHorizontal: 20,
-              marginTop: 16,
-            }}
             placeholderTextColor={'#adadad'}
             placeholder="Пароль"
             onChangeText={setPassword}
@@ -76,6 +62,16 @@ const SignIn = props => {
               {error}
             </Text>
           )}
+          <View row centered mTop={16} mBottom={10}>
+            <TouchableOpacity
+              onPress={() => setSaveMe(!saveMe)}
+              style={styles.saveMeContainer}>
+              {saveMe && <View style={styles.saveMeBlock} />}
+            </TouchableOpacity>
+            <Text color={'white'} mLeft={10}>
+              Запомнить меня
+            </Text>
+          </View>
           <Button text={'Войти'} onPress={signIn} loading={loading} />
           <TouchableOpacity
             style={{marginTop: 20}}

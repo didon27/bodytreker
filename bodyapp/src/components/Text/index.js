@@ -30,6 +30,8 @@ const Text = ({style, ...props}) => {
         props.capitalize && styles.capitalize,
         props.underline && styles.underline,
         props.size && {fontSize: props.size},
+        props.mLeft && {marginLeft: props.mLeft},
+        props.mRight && {marginRight: props.mRight},
         props.h1 && styles.h1,
         props.h2 && styles.h2,
         props.h3 && styles.h3,
