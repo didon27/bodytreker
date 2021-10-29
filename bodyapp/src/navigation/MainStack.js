@@ -10,6 +10,9 @@ import {images} from 'images';
 import {colors} from 'colors';
 import {Text, View} from '../components/';
 import Home from '../screens/Home';
+import Profile from 'screens/Profile/Main';
+import Icon from 'react-native-vector-icons/Ionicons';
+
 const windowHeight = Dimensions.get('window').height;
 
 const Tab = createBottomTabNavigator();
@@ -71,35 +74,35 @@ function AppNavigation() {
     <Tab.Navigator
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, color, size}) => {
-          let source;
+          let source = 'home';
 
-          if (route.name === 'Calendar') {
-            source = focused ? images.calendarSelected : images.calendar;
+          if (route.name === 'Home') {
+            source = 'home';
           }
 
-          if (route.name === 'Forum') {
-            source = focused ? images.forumSelected : images.forum;
+          if (route.name === 'Profile') {
+            source = 'person';
           }
 
           if (route.name === 'Messenger') {
-            source = focused ? images.messengerSelected : images.messenger;
+            source = 'home';
           }
 
           if (route.name === 'Menu') {
-            source = focused ? images.menuSelected : images.menu;
+            source = 'home';
           }
 
           // You can return any component that you like here!
           return (
             <View style={{alignItems: 'center'}}>
-              <Image
-                source={source}
-                style={{width: 28, height: 28, borderRadius: 16}}
-                resizeMode="cover"
+              <Icon
+                name={source}
+                size={24}
+                color={focused ? '#4285f4' : '#c9c9c9'}
               />
               <Text
                 style={{
-                  color: focused ? '#222966' : 'rgba(34, 41, 102, 0.3)',
+                  color: focused ? '#4285f4' : '#c9c9c9',
                   marginTop: 8,
                   fontSize: 12,
                   fontWeight: '400',
@@ -114,9 +117,8 @@ function AppNavigation() {
         showLabel: false,
         keyboardHidesTabBar: true,
         style: {
-          marginTop: -40,
           backgroundColor: colors.white,
-          height: windowHeight * 0.12,
+          paddingTop: 20,
           alignItems: 'center',
           justifyContent: 'center',
           borderTopWidth: 0.5,
@@ -133,6 +135,22 @@ function AppNavigation() {
       <Tab.Screen
         name="Home"
         component={MenuStackScreen}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisibility(route),
+        })}
+        listeners={props => tabPressListener({...props})}
+      />
+      <Tab.Screen
+        name="Message"
+        component={Profile}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisibility(route),
+        })}
+        listeners={props => tabPressListener({...props})}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
         options={({route}) => ({
           tabBarVisible: getTabBarVisibility(route),
         })}

@@ -112,7 +112,6 @@ exports.signIn = (req, res) => {
     data = { username };
   }
 
-  console.log('FSDFSDFSF', req.body)
   User.findOne({
     where: data,
   })

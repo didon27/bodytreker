@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   StatusBar,
   TouchableOpacity,
   FlatList,
   SafeAreaView,
   Image,
+  TextInput,
+  Animated,
 } from 'react-native';
 import StarRating from 'react-native-star-rating';
 
@@ -16,26 +18,31 @@ import {useSelector, useDispatch} from 'react-redux';
 
 import styles from './styles';
 import {storage} from 'services/storage';
+import {ActivityIndicator} from 'react-native';
 
 const Home = props => {
   const {user} = useSelector(state => state.user);
   const dispatch = useDispatch();
-  const containerStyle = {
-    // flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#21212f',
-  };
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [hideShadowHeader, setHideShadowHeader] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-  const logout = async () => {
-    await storage.delete('UserToken');
-    dispatch(authActions.removeTokenSuccess());
-  };
+  useEffect(() => {
+    scrollY.addListener(({value}) => {
+      if (value >= 0 && value <= 40) {
+        setHideShadowHeader(value / 200);
+      }
+    });
+    return () => {
+      scrollY.removeAllListeners();
+    };
+  }, []);
 
   const data = [
     {
       username: 'Admin',
       avatar: images.startBackground,
+      image: null,
       user_rating: 2.5,
       text: 'Прогулка на велосипедах',
       category: 'Спорт',
@@ -44,6 +51,7 @@ const Home = props => {
     {
       username: 'Admin2',
       avatar: images.startBackground,
+      image: images.startBackground,
       user_rating: 2,
       text: 'Выпить кофе',
       category: 'Спорт',
@@ -52,6 +60,7 @@ const Home = props => {
     {
       username: 'Admin3',
       avatar: images.startBackground,
+      images: null,
       user_rating: 5,
       text: 'Прогулка',
       category: 'Спорт',
@@ -60,6 +69,7 @@ const Home = props => {
     {
       username: 'Admin3',
       avatar: images.startBackground,
+      image: null,
       user_rating: 5,
       text: 'Прогулка',
       category: 'Спорт',
@@ -68,12 +78,19 @@ const Home = props => {
     {
       username: 'Admin3',
       avatar: images.startBackground,
+      image: null,
       user_rating: 5,
       text: 'Прогулка',
       category: 'Спорт',
       createdAt: '2021-09-10',
     },
   ];
+
+  const handleRefreshList = () => {
+    setTimeout(() => {
+      setRefresh(false);
+    }, 800);
+  };
 
   const renderItem = ({item, index}) => {
     return (
@@ -118,35 +135,89 @@ const Home = props => {
         <Text size={18} mTop={8} style={{fontWeight: '500'}}>
           {item.text}
         </Text>
-        <View row sBetween>
-          <Text mTop={6}>{item.category}</Text>
+        {item.image && (
+          <Image
+            source={item.image}
+            style={{
+              height: 160,
+              width: '100%',
+              borderRadius: 14,
+              marginTop: 10,
+            }}
+            resizeMode="cover"
+          />
+        )}
+        <View row sBetween centered mTop={6}>
+          <Text>{item.category}</Text>
           <Text color={'grey'}>{item.createdAt}</Text>
         </View>
-        <Button text={'Подписаться'} style={{height: 36, marginTop: 16}} />
+        <Button
+          text={'Присойденится'}
+          style={{height: 36, flex: 1, marginTop: 16}}
+        />
       </TouchableOpacity>
     );
   };
+
   return (
     <View flex style={{backgroundColor: 'white'}}>
       <StatusBar animated barStyle={'dark-content'} />
-      <SafeAreaView>
-        <View style={containerStyle}>
-          <Text>{`Hi, ${user.username}`}</Text>
-          <TouchableOpacity onPress={logout}>
-            <Text color={'white'}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{paddingHorizontal: 20}} row centered sBetween>
+      <SafeAreaView
+        style={
+          // hideShadowHeader &&
+          {
+            zIndex: 9999,
+            backgroundColor: 'white',
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: hideShadowHeader,
+            shadowRadius: 4,
+
+            elevation: 4,
+          }
+        }>
+        <View
+          style={{paddingHorizontal: 20, paddingBottom: 10}}
+          row
+          centered
+          sBetween>
           <Text size={24}>Logo</Text>
           <TouchableOpacity>
             <Text>Filter</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-      <FlatList
+      <Animated.FlatList
+        scrollEventThrottle={1}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {contentOffset: {y: scrollY}},
+            },
+          ],
+          {useNativeDriver: true},
+        )}
+        refreshing={refresh}
+        onRefresh={handleRefreshList}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{padding: 20, paddingBottom: 40}}
+        ListHeaderComponent={() => (
+          <TextInput
+            placeholder={'Поиск'}
+            style={{
+              backgroundColor: '#f4f4f4',
+              height: 46,
+              marginBottom: 20,
+              borderRadius: 14,
+              paddingHorizontal: 16,
+              fontSize: 16,
+            }}
+          />
+        )}
+        contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 40}}
         data={data}
         keyExtractor={(_, index) => index.toString()}
       />
