@@ -57,6 +57,22 @@ const Home = props => {
       category: 'Спорт',
       createdAt: '2021-09-10',
     },
+    {
+      username: 'Admin3',
+      avatar: images.startBackground,
+      user_rating: 5,
+      text: 'Прогулка',
+      category: 'Спорт',
+      createdAt: '2021-09-10',
+    },
+    {
+      username: 'Admin3',
+      avatar: images.startBackground,
+      user_rating: 5,
+      text: 'Прогулка',
+      category: 'Спорт',
+      createdAt: '2021-09-10',
+    },
   ];
 
   const renderItem = ({item, index}) => {
@@ -64,41 +80,49 @@ const Home = props => {
       <TouchableOpacity
         key={index}
         style={{
+          marginBottom: 16,
           backgroundColor: 'white',
-          marginBottom: 10,
           borderRadius: 14,
           paddingRight: 20,
-          paddingTop: 10, 
-          paddingBottom: 10,
+          padding: 16,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.2,
+          shadowRadius: 4,
+
+          elevation: 4,
         }}>
         <View row centered>
           <Image
             source={images.startBackground}
-            style={{width: 40, height: 40, borderRadius: 20}}
+            style={{width: 34, height: 34, borderRadius: 17}}
           />
           <View mLeft={10}>
-            <Text size={16} style={{fontWeight: '500'}}>
+            <Text size={15} style={{fontWeight: '500'}}>
               {item.username}
             </Text>
             <StarRating
               starStyle={{marginHorizontal: 1, marginTop: 2}}
               disabled={false}
               maxStars={5}
-              starSize={12}
+              starSize={10}
               rating={item.user_rating}
               emptyStarColor="#A2A3A5"
               fullStarColor={'#F5B942'}
             />
           </View>
         </View>
-        <Text size={18} mTop={8}>
+        <Text size={18} mTop={8} style={{fontWeight: '500'}}>
           {item.text}
         </Text>
         <View row sBetween>
           <Text mTop={6}>{item.category}</Text>
-          <Text>{item.createdAt}</Text>
+          <Text color={'grey'}>{item.createdAt}</Text>
         </View>
-        <Button text={'Подписаться'} style={{height: 36}} />
+        <Button text={'Подписаться'} style={{height: 36, marginTop: 16}} />
       </TouchableOpacity>
     );
   };
@@ -121,11 +145,8 @@ const Home = props => {
       </SafeAreaView>
       <FlatList
         renderItem={renderItem}
-        ItemSeparatorComponent={() => (
-          <View style={{height: 1, backgroundColor: 'grey'}} />
-        )}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingLeft: 10, paddingTop: 20, paddingBottom: 40}}
+        contentContainerStyle={{padding: 20, paddingBottom: 40}}
         data={data}
         keyExtractor={(_, index) => index.toString()}
       />

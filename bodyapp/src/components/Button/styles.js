@@ -4,7 +4,7 @@ import {colors} from 'colors';
 
 export const styles = StyleSheet.create({
   btnBlock: {
-    backgroundColor: colors.turquoise,
+    backgroundColor: '#4285f4',
     width: '100%',
     alignItems: 'center',
     marginTop: 20,
