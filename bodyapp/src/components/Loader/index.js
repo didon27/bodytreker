@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {ActivityIndicator} from 'react-native';
 
-import {colors} from '_colors';
+import {colors} from 'colors';
 
 import {styles} from './styles';
 

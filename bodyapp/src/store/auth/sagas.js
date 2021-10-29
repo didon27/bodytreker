@@ -2,8 +2,8 @@ import {takeLatest, call, put} from 'redux-saga/effects';
 
 import {authConstants, authActions} from './';
 import {userActions} from '../user/';
-import {storage} from '_services/storage';
-import {api} from '_services/api';
+import {storage} from 'services/storage';
+import {api} from 'services/api';
 import {navigate} from '../../navigation';
 
 function* create(data) {

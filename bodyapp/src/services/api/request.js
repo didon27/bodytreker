@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {API_URL} from '_constants';
+import {API_URL} from 'constants';
 
 export const mamaAxios = axios.create({
   baseURL: API_URL

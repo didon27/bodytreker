@@ -2,7 +2,7 @@ import React from 'react';
 import {View, ScrollView} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {colors} from '_colors';
+import {colors} from 'colors';
 import {routeNames} from '_enums';
 import {Button, Text, TextInput, KeyboardAvoidWrapper} from '_components';
 import {authActions} from '_store/auth';

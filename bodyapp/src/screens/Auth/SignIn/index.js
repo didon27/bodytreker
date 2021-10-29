@@ -1,22 +1,19 @@
 import React, {useState} from 'react';
-import {View, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {TouchableOpacity, Image} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {routeNames} from '_enums';
-import {colors} from '_colors';
-import {Button, TextInput, Text, KeyboardAvoidWrapper} from '_components';
-import {images} from '_images';
-import {EMAIL_RE} from '_services/validator';
-import {authActions} from '_store/auth';
-import {replaceText} from '_helpers';
+import {Button, Text, View, TextInput} from 'components';
+import {images} from 'images';
+import {authActions} from 'store/auth';
 
 import styles from './styles';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {colors} from 'colors';
 
 const SignIn = props => {
   const [emailOrLogin, setEmailOrLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [saveMe, setSaveMe] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -36,50 +33,56 @@ const SignIn = props => {
   };
 
   return (
-    <ScrollView
-      bounces={false}
-      style={{
-        backgroundColor: 'white',
-      }}>
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 20,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <SafeAreaView>
-          <Text style={{fontSize: 20}}>Log in</Text>
-        </SafeAreaView>
-        <TextInput
-          placeholder="Enter email or login"
-          onChangeText={setEmailOrLogin}
-        />
-        <TextInput
-          placeholder="Password"
-          onChangeText={setPassword}
-          isPassword
-        />
-        <Button text="Log in" onPress={signIn} loading={loading} />
-        <View style={{height: 50}}>
+    <View flex>
+      <Image
+        resizeMode="cover"
+        blurRadius={20}
+        style={styles.background}
+        source={images.startBackground}
+      />
+      <View style={styles.dimmer} />
+      <View style={styles.centerContainer}>
+        <Text color={colors.white} size={32}>
+          Вход
+        </Text>
+        <View style={styles.centerBlock}>
+          <TextInput
+            placeholderTextColor={'#adadad'}
+            placeholder="Email"
+            onChangeText={setEmailOrLogin}
+          />
+          <TextInput
+            placeholderTextColor={'#adadad'}
+            placeholder="Пароль"
+            onChangeText={setPassword}
+            isPassword
+          />
           {error && (
             <Text style={{color: 'red', textAlign: 'center', marginTop: 20}}>
               {error}
             </Text>
           )}
-        </View>
-        <TouchableOpacity
-          style={{marginTop: 16}}
-          onPress={() => props.navigation.navigate(routeNames.signUp)}>
-          <Text style={{fontSize: 15, color: colors.grey}}>
-            Don`t have an account?{' '}
-            <Text style={{fontWeight: '600', color: colors.black}}>
-              Sign Up
+          <View row centered mTop={16} mBottom={10}>
+            <TouchableOpacity
+              onPress={() => setSaveMe(!saveMe)}
+              style={styles.saveMeContainer}>
+              {saveMe && <View style={styles.saveMeBlock} />}
+            </TouchableOpacity>
+            <Text color={'white'} mLeft={10}>
+              Запомнить меня
             </Text>
-          </Text>
-        </TouchableOpacity>
+          </View>
+          <Button text={'Войти'} onPress={signIn} loading={loading} />
+          <TouchableOpacity
+            style={{marginTop: 20}}
+            onPress={() => console.log('fsdfs')}>
+            <Text size={14} color={'white'} right>
+              Забыли пароль?
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

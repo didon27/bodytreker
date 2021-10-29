@@ -5,7 +5,7 @@ import {LogBox, StatusBar} from 'react-native';
 import {Provider} from 'react-redux';
 
 import Navigation, {navigationRef} from './navigation';
-import {store} from '_store/configureStore';
+import {store} from 'store/configureStore';
 
 function App() {
   LogBox.ignoreLogs([

@@ -1,10 +1,10 @@
 import {takeLatest, call, put} from 'redux-saga/effects';
 
-import {api, mamaAxios} from '_services/api';
+import {api, mamaAxios} from 'services/api';
 import {userConstants, userActions} from './';
 import {authActions} from '../auth';
 import {navigate} from '../../navigation';
-import {storage} from '_services/storage';
+import {storage} from 'services/storage';
 
 function* fetch(data) {
   try {

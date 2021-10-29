@@ -14,7 +14,7 @@ import {userActions} from '_store/user';
 import {api} from '_services/api';
 
 import {styles} from './styles';
-import {colors} from '_colors';
+import {colors} from 'colors';
 
 const CELL_COUNT = 4;
 
