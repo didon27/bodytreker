@@ -6,10 +6,13 @@ import {Provider} from 'react-redux';
 
 import Navigation, {navigationRef} from './navigation';
 import {store} from 'store/configureStore';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import setupInterceptors from './services/setupInterceptors';
+import {LocalizationProvider} from 'services';
 
 function App() {
   LogBox.ignoreLogs([
-    'Non-serializable values were found in the navigation state'
+    'Non-serializable values were found in the navigation state',
   ]);
 
   useEffect(() => {
@@ -18,12 +21,17 @@ function App() {
 
   return (
     <Provider store={store}>
-      <StatusBar translucent backgroundColor={'transparent'} />
-      <NavigationContainer ref={navigationRef}>
-        <Navigation />
-      </NavigationContainer>
+      <LocalizationProvider>
+        <StatusBar translucent backgroundColor={'transparent'} />
+        <NavigationContainer ref={navigationRef}>
+          <BottomSheetModalProvider>
+            <Navigation />
+          </BottomSheetModalProvider>
+        </NavigationContainer>
+      </LocalizationProvider>
     </Provider>
   );
 }
 
+setupInterceptors(store);
 export default App;

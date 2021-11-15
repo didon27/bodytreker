@@ -13,6 +13,9 @@ export const colors = {
   trackDisabled: '#767577',
   purple: '#E3A9FF',
 
+
+  lightGrey: '#dddcdc',
+
   pinkBorder: '#ECB3B6',
   pinkBlock: '#801938',
   blueBlock: '#016A7C',

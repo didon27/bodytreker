@@ -8,6 +8,11 @@ import SignUp from '../screens/Auth/SignUp/Main';
 
 import {colors} from 'colors';
 import Start from '../screens/Auth/Start';
+import {routeNames} from 'enums';
+import RegisterEmail from 'screens/Auth/SignUp/RegisterEmail';
+import ContinueRegister from 'screens/Auth/SignUp/ContinueRegister';
+import ForgotPassword from 'screens/Auth/ResetPassword/ForgotPassword';
+import VerificationPasswordCode from 'screens/Auth/ResetPassword/VerificationPasswordCode';
 
 const AuthStack = createStackNavigator();
 
@@ -18,30 +23,29 @@ export default props => {
     <AuthStack.Navigator
       screenOptions={() => ({
         title: null,
+        headerShown: false,
         headerStyle: {
           shadowColor: 'transparent',
         },
       })}>
+      <AuthStack.Screen name="Start" component={Start} />
+      <AuthStack.Screen name={routeNames.signIn} component={SignIn} />
+      <AuthStack.Screen name={routeNames.signUp} component={SignUp} />
       <AuthStack.Screen
-        name="Start"
-        component={Start}
-        options={() => ({
-          headerShown: false,
-        })}
+        name={routeNames.registerEmail}
+        component={RegisterEmail}
       />
       <AuthStack.Screen
-        name="SignIn"
-        component={SignIn}
-        options={() => ({
-          headerShown: false,
-        })}
+        name={routeNames.continueRegister}
+        component={ContinueRegister}
       />
       <AuthStack.Screen
-        name="SignUp"
-        component={SignUp}
-        options={({navigation}) => ({
-          headerShown: false,
-        })}
+        name={routeNames.forgotPassword}
+        component={ForgotPassword}
+      />
+      <AuthStack.Screen
+        name={routeNames.verificationPasswordCode}
+        component={VerificationPasswordCode}
       />
     </AuthStack.Navigator>
   );

@@ -5,5 +5,5 @@ const verifyResetPassword = require("./verifyResetPassword");
 module.exports = {
   authJwt,
   verifySignUp,
-  verifyResetPassword
+  verifyResetPassword,
 };

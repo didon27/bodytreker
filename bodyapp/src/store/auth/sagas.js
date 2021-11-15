@@ -5,12 +5,14 @@ import {userActions} from '../user/';
 import {storage} from 'services/storage';
 import {api} from 'services/api';
 import {navigate} from '../../navigation';
+import RNRestart from 'react-native-restart';
 
 function* create(data) {
   try {
     const response = yield call(api.auth.signIn, data.payload);
     const userToken = `Bearer ${response.data.accessToken}`;
     yield call(storage.save, 'UserToken', userToken);
+    yield call(storage.save, 'RefreshToken', response.data.refreshToken);
 
     yield put(authActions.loginSuccess());
     yield put(userActions.fetch(userToken));
@@ -22,28 +24,47 @@ function* create(data) {
         ),
       );
     } else {
-      yield put(authActions.loginFailure(e.response.data.message));
+      yield put(authActions.loginFailure(e.response.data));
     }
   }
 }
 
-function* reset(data) {
+function* refreshToken(data) {
+  const {payload} = data;
+
+  try {
+    const response = yield call(api.auth.refreshToken, payload);
+    const userToken = `Bearer ${response.data.accessToken}`;
+    yield call(storage.save, 'UserToken', userToken);
+    yield call(storage.save, 'RefreshToken', response.data.refreshToken);
+    yield put(authActions.setToken(userToken));
+    yield put(authActions.refreshTokenSuccess());
+  } catch (e) {
+    yield put(authActions.refreshTokenFailure(e.response.data.error));
+    yield call(storage.delete, 'UserToken');
+    yield call(storage.delete, 'RefreshToken');
+    RNRestart.Restart();
+  }
+}
+
+function* forgotPassword(data) {
   const {route, payload} = data;
 
   try {
-    const response = yield call(api.auth.reset, payload);
-    yield put(authActions.resetPasswordSuccess());
+    const response = yield call(api.auth.forgotPassword, payload);
+    yield put(authActions.forgotPasswordSuccess());
     if (route) {
       yield call(navigate, route.route, route.params);
     }
   } catch (e) {
     console.log('error', e);
-    yield put(authActions.resetPasswordFailure(e.response.data.error));
+    yield put(authActions.forgotPasswordFailure(e.response.data.message));
   }
 }
 
 function* signUp(data) {
   const {route, payload} = data;
+
   try {
     const response = yield call(api.auth.signUp, payload);
     yield put(authActions.signUpSuccess());
@@ -51,8 +72,22 @@ function* signUp(data) {
       yield call(navigate, route.route, route.params);
     }
   } catch (e) {
-    console.log('error', e);
-    yield put(authActions.signUpFailure(e.response.data.error));
+    yield put(authActions.signUpFailure(e.response.data.message));
+  }
+}
+
+function* verificationEmail(data) {
+  const {route, payload} = data;
+
+  try {
+    const response = yield call(api.auth.verificationEmail, payload);
+    yield put(authActions.verificationEmailSuccess());
+    if (route) {
+      yield call(navigate, route.route, route.params);
+    }
+  } catch (e) {
+    console.log('error', e.response.data);
+    yield put(authActions.verificationEmailFailure(e.response.data.message));
   }
 }
 
@@ -64,9 +99,39 @@ function* set(payload) {
   }
 }
 
+function* resendCode(data) {
+  const {payload} = data;
+
+  try {
+    const response = yield call(api.auth.resendCode, payload);
+    yield put(authActions.resendCodeSuccess());
+  } catch (e) {
+    yield put(authActions.resendCodeFailure(e.response.data.message));
+  }
+}
+
+function* continueRegister(data) {
+  const {payload} = data;
+
+  try {
+    const response = yield call(api.auth.continueRegister, payload);
+    const userToken = `Bearer ${response.data.accessToken}`;
+    yield call(storage.save, 'UserToken', userToken);
+    yield call(storage.save, 'RefreshToken', response.data.refreshToken);
+    yield put(authActions.setToken(userToken));
+    yield put(authActions.continueRegisterSuccess());
+  } catch (e) {
+    yield put(authActions.continueRegisterFailure(e.response.data));
+  }
+}
+
 export function* authSaga() {
-  yield takeLatest(authConstants.RESET_PASSWORD_REQUEST, reset);
+  yield takeLatest(authConstants.FORGOT_PASSWORD_REQUEST, forgotPassword);
   yield takeLatest(authConstants.CREATE_AUTH_REQUEST, create);
   yield takeLatest(authConstants.SET_TOKEN_REQUEST, set);
   yield takeLatest(authConstants.SIGN_UP_REQUEST, signUp);
+  yield takeLatest(authConstants.RESEND_CODE_REQUEST, resendCode);
+  yield takeLatest(authConstants.REFRESH_TOKEN_REQUEST, refreshToken);
+  yield takeLatest(authConstants.VERIFICATION_EMAIL_REQUEST, verificationEmail);
+  yield takeLatest(authConstants.CONTINUE_REGISTER_REQUEST, continueRegister);
 }

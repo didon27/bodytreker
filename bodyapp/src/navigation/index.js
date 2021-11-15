@@ -25,15 +25,17 @@ const Navigation = props => {
 
   useEffect(() => {
     // storage.delete('UserToken');
-    const handleToken = async () =>
+
+    const handleToken = async () => {
       dispatch(authActions.setToken(await storage.get('UserToken')));
+    };
     handleToken();
   }, []);
 
   useEffect(() => {
     !tokenLoading && SplashScreen.hide();
   }, [tokenLoading]);
-  
+
   if (!tokenLoading) {
     if (!token) {
       return <AuthStack />;

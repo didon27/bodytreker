@@ -3,6 +3,8 @@ import {Dimensions} from 'react-native';
 const dimensions = Dimensions.get('window');
 
 export const API_URL = 'http://127.0.0.1:8080/api';
+export const API = 'http://127.0.0.1:8080';
+export const APP_LANGUAGE_KEY = 'APP_LANGUAGE_KEY-Leafy';
 
 export const DEVICE_WIDTH = dimensions.width;
 export const DEVICE_HEIGHT = dimensions.height;

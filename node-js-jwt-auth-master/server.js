@@ -1,24 +1,30 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+var multer = require("multer");
+var upload = multer();
 
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:8081",
 };
 
 app.use(cors(corsOptions));
 
-// parse requests of content-type - application/json
-app.use(bodyParser.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // database
 const db = require("./app/models");
 const Role = db.role;
+
+// for parsing multipart/form-data
+// app.use(upload.array());
+app.use(express.static("public"));
+
+// for parsing application/json
+app.use(express.json());
+
+// for parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 
 db.sequelize.sync();
 // force: true will drop the table if it already exists
@@ -28,13 +34,15 @@ db.sequelize.sync();
 // });
 
 // simple route
+
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
 });
 
 // routes
-require('./app/routes/auth.routes')(app);
-require('./app/routes/user.routes')(app);
+require("./app/routes/auth.routes")(app);
+require("./app/routes/user.routes")(app);
+require("./app/routes/activities.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
@@ -45,16 +53,16 @@ app.listen(PORT, () => {
 function initial() {
   Role.create({
     id: 1,
-    name: "user"
+    name: "user",
   });
- 
+
   Role.create({
     id: 2,
-    name: "moderator"
+    name: "moderator",
   });
- 
+
   Role.create({
     id: 3,
-    name: "admin"
+    name: "admin",
   });
 }

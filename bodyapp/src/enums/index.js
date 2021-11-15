@@ -1,20 +1,26 @@
 export const routeNames = Object.freeze({
   signIn: 'SignIn',
   signUp: 'SignUp',
+  registerEmail: 'RegisterEmail',
+  home: 'Home',
+  continueRegister: 'ContinueRegister',
+  forgotPassword: 'ForgotPassword',
+  verificationPasswordCode: 'VerificationPasswordCode',
 });
 
 export const keys = Object.freeze({
   JWT_TOKEN: 'JWT_TOKEN',
+  REFRESH_TOKEN: 'REFRESH_TOKEN',
   EMAIL: 'EMAIL',
   PASSWORD: 'PASSWORD',
   THEME: 'dark',
-  LANGUAGE: 'en'
+  LANGUAGE: 'en',
 });
 
 export const mamaStages = Object.freeze({
   mama: 'Mama',
   aspiringMama: 'Aspiring Mama',
-  mamaToBe: 'Mama-to-be'
+  mamaToBe: 'Mama-to-be',
 });
 
 export const months = [
@@ -29,5 +35,5 @@ export const months = [
   'September',
   'October',
   'November',
-  'December'
+  'December',
 ];

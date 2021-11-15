@@ -1,38 +1,17 @@
 import React from 'react';
-import {View, TouchableOpacity, Text} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {colors} from 'colors';
-import styles from './styles';
-import PropTypes from 'prop-types';
+import {SafeAreaView, TouchableOpacity} from 'react-native';
+import Icon from 'react-native-vector-icons/Entypo';
 
-const Header = (props) => {
+const Header = props => {
   return (
-    <SafeAreaView style={{height: 100, backgroundColor: colors.white, paddingTop: 10}}>
-      <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity
-          onPress={() => props.navigation.goBack()}
-          style={styles.btnBack}
-        >
-          <Icon name="arrow-back" size={20} color={colors.white} />
-        </TouchableOpacity>
-        {props.title && (
-          <View style={styles.title}>
-            <Text style={styles.titleTxt}>{props.title}</Text>
-          </View>
-        )}
-      </View>
+    <SafeAreaView style={{position: 'absolute', zIndex: 9999}}>
+      <TouchableOpacity
+        style={{marginLeft: 20, width: 40, height: 40}}
+        onPress={() => props.navigation.goBack()}>
+        <Icon name={'chevron-thin-left'} size={24} color="white" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
-};
-
-Header.propTypes = {
-  title: PropTypes.string,
-  navigation: PropTypes.object.isRequired
-};
-
-Header.defaultProps = {
-  title: null
 };
 
 export default Header;

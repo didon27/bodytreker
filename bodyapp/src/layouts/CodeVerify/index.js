@@ -1,64 +1,47 @@
 import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, Keyboard} from 'react-native';
-import PropTypes from 'prop-types';
-import {useDispatch} from 'react-redux';
+import {
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  StatusBar,
+  Image,
+} from 'react-native';
 import {
   CodeField,
   Cursor,
   useBlurOnFulfill,
-  useClearByFocusCell
+  useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 
-import {KeyboardAvoidWrapper, Button, View, Text, Loader} from '_components';
-import {userActions} from '_store/user';
-import {api} from '_services/api';
+import {Button, View, Text, Loader} from 'components';
+import Header from '../../screens/Auth/components/Header';
+import {colors} from 'colors';
+import {images} from 'images';
 
 import {styles} from './styles';
-import {colors} from 'colors';
 
 const CELL_COUNT = 4;
 
-const CodeVerify = (props) => {
-  const {isCodeValid, codeError, codeLoading} = props;
-
+const CodeVerify = ({
+  codeError,
+  codeLoading,
+  setError,
+  sendCode,
+  resendCode,
+  navigation,
+  email,
+}) => {
   const [value, setValue] = useState('');
-  const [error, setError] = useState('');
   const [resendLoader, setResendLoader] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-  const dispatch = useDispatch();
 
   const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
   const [params, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
-    setValue
+    setValue,
   });
 
   useEffect(() => {
-    if (isCodeValid) {
-      props.navigation.navigate(props.route);
-    }
-  }, [isCodeValid]);
-
-  useEffect(() => {
-    if (codeError) {
-      setError(codeError);
-    }
-  }, [codeError]);
-
-  useEffect(() => {
-    if (value.length === 4) {
-      Keyboard.dismiss();
-      dispatch(
-        userActions.checkVerificationCode({
-          email: props.email.toLowerCase().trim(),
-          verification_code: value
-        })
-      );
-      if (error !== '') {
-        setValue(value.slice(0, -1));
-      }
-      setError('');
-    }
+    setError(null);
   }, [value]);
 
   useEffect(() => {
@@ -73,45 +56,45 @@ const CodeVerify = (props) => {
     return () => clearInterval(intervalId);
   }, [timeLeft]);
 
-  const handleChangeText = (text) => {
-    setValue(text);
-  };
-
-  const handleValidate = () => {
-    if (value === '' || value.length !== 4) {
-      setError('Please enter your verification code');
-    } else {
-      dispatch(
-        userActions.checkVerificationCode({
-          email: props.email,
-          verification_code: value
-        })
-      );
-    }
+  const _sendCode = () => {
+    sendCode({
+      email,
+      activation_token: value,
+    });
   };
 
   const handleResendCode = async () => {
     setResendLoader(true);
-    await api.user.resendVerificationCode();
+    resendCode({email});
     setResendLoader(false);
     setTimeLeft(60);
   };
 
   return (
-    <KeyboardAvoidWrapper showsVerticalScrollIndicator={false}>
-      <TouchableOpacity
-        activeOpacity={1}
-        style={styles.container}
-        onPress={() => Keyboard.dismiss()}
-      >
-        <View style={[styles.inner]}>
-          <Text style={styles.title}>{props.title}</Text>
-          <Text style={styles.subTitle}>{props.subtitle}</Text>
+    <KeyboardAvoidingView behavior="padding">
+      <StatusBar barStyle="light-content" />
+      <Header navigation={navigation} />
+      <Image
+        resizeMode="cover"
+        blurRadius={20}
+        style={styles.background}
+        source={images.startBackground}
+      />
+      <View style={styles.dimmer} />
+      <View style={styles.centerContainer}>
+        <View style={styles.centerBlock}>
+          <Text color={colors.white} size={28}>
+            Код подтверждения
+          </Text>
+          <Text color={colors.lightGrey} size={16} mTop={10} mBottom={20}>
+            Введите код который пришел к вам на почту{' '}
+            {email.toLowerCase().trim()}
+          </Text>
           <CodeField
             ref={ref}
             {...params}
             value={value}
-            onChangeText={handleChangeText}
+            onChangeText={setValue}
             cellCount={CELL_COUNT}
             autoFocus
             rootStyle={styles.codeFieldRoot}
@@ -124,31 +107,30 @@ const CodeVerify = (props) => {
                 style={[
                   styles.cellRoot,
                   isFocused && styles.focusCell,
-                  index === 3 && {borderRightWidth: 0},
-                  error !== '' && {borderRightColor: colors.errorColor}
-                ]}
-              >
+                  index === 3 && {marginRight: 0},
+                  codeError && {borderColor: 'red'},
+                ]}>
                 <Text style={styles.cellText}>
                   {symbol || (isFocused ? <Cursor /> : null)}
                 </Text>
               </View>
             )}
           />
-          <View
-            style={[
-              styles.bottomLine,
-              error !== '' && {borderBottomColor: colors.errorColor}
-            ]}
+          {codeError && <Text style={styles.errorText}>{codeError}</Text>}
+          <Button
+            text={'Продолжить'}
+            style={{marginTop: 30}}
+            disabled={value.length < 4}
+            onPress={_sendCode}
+            loading={codeLoading}
           />
           <TouchableOpacity
+            style={{marginTop: 16}}
             onPress={handleResendCode}
-            disabled={resendLoader || timeLeft !== 0}
-          >
-            {resendLoader && (
-              <Loader color={colors.turquoise} style={{marginTop: 24}} />
-            )}
+            disabled={resendLoader || timeLeft !== 0}>
+            {resendLoader && <Loader color={colors.turquoise} />}
             {timeLeft === 0 && !resendLoader && (
-              <Text style={styles.resendCodeTxt}>Resend code</Text>
+              <Text style={styles.resendCodeTxt}>Отправить еще раз</Text>
             )}
             {timeLeft !== 0 && (
               <Text style={styles.resetText}>
@@ -157,40 +139,9 @@ const CodeVerify = (props) => {
             )}
           </TouchableOpacity>
         </View>
-        <View>
-          {error !== '' && <Text style={styles.errorText}>{error}</Text>}
-          <Button
-            style={{marginBottom: 50}}
-            text={'Continue'}
-            onPress={handleValidate}
-            loading={codeLoading}
-          />
-        </View>
-      </TouchableOpacity>
-    </KeyboardAvoidWrapper>
+      </View>
+    </KeyboardAvoidingView>
   );
-};
-
-CodeVerify.propTypes = {
-  navigation: PropTypes.object.isRequired,
-  route: PropTypes.string,
-  title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string.isRequired,
-  email: PropTypes.string,
-  isCodeValid: PropTypes.bool,
-  codeError: PropTypes.string,
-  codeLoading: PropTypes.bool
-};
-
-CodeVerify.defaultProps = {
-  navigation: {},
-  route: null,
-  title: null,
-  subtitle: null,
-  email: null,
-  isCodeValid: false,
-  codeError: '',
-  codeLoading: false
 };
 
 export default CodeVerify;

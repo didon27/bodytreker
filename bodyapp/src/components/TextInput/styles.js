@@ -9,6 +9,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     borderRadius: 10,
     marginTop: 16,
+    marginBottom: 4,
     paddingLeft: 10,
     justifyContent: 'center'
   },

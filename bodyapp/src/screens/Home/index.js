@@ -1,196 +1,153 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
 import {
   StatusBar,
   TouchableOpacity,
-  FlatList,
   SafeAreaView,
-  Image,
   TextInput,
   Animated,
 } from 'react-native';
-import StarRating from 'react-native-star-rating';
-
-import {colors} from 'colors';
-import {authActions} from 'store/auth';
-import {View, Text, Button} from 'components';
-import {images} from 'images';
 import {useSelector, useDispatch} from 'react-redux';
 
-import styles from './styles';
+import {colors} from 'colors';
+import {activitiesActions} from 'store/activities';
+import {View, Text} from 'components';
 import {storage} from 'services/storage';
-import {ActivityIndicator} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import ActivitiesCard from './components/ActivitiesCard';
+
+import {DefaultBackDrop} from 'components/BackDrop';
+
+import {BottomSheetModal} from '@gorhom/bottom-sheet';
+
+import styles from './styles';
 
 const Home = props => {
   const {user} = useSelector(state => state.user);
+  const user_id = user.id;
+  const initialTab = props.route;
+  const {activities} = useSelector(state => state.activities);
   const dispatch = useDispatch();
+  const [search, setSearch] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [hideShadowHeader, setHideShadowHeader] = useState(false);
+  const [hideScrollToTopButton, setHideScrollToTopButton] = useState(false);
+  const scrollRef = useRef();
+  const [hideShadowHeader, setHideShadowHeader] = useState(true);
   const [refresh, setRefresh] = useState(false);
+  const [hideSearch, setHideSearch] = useState(true);
+  const [tab, setTab] = useState(true || initialTab);
+
+  const bottomSheetRef = useRef();
+
+  // variables
+  const snapPoints = useMemo(() => ['25%', '40%'], []);
+
+  useEffect(() => {
+    let data = {user_id, actual: tab};
+
+    if (search.length >= 3) {
+      data.title = search;
+    }
+
+    dispatch(activitiesActions.getActivities(data));
+
+    setRefresh(false);
+  }, [tab, refresh, search, initialTab]);
 
   useEffect(() => {
     scrollY.addListener(({value}) => {
-      if (value >= 0 && value <= 40) {
-        setHideShadowHeader(value / 200);
+      if (value <= 10) {
+        setHideShadowHeader(true);
+      } else {
+        setHideShadowHeader(false);
+      }
+
+      if (value > 100) {
+        setHideScrollToTopButton(true);
+      } else {
+        setHideScrollToTopButton(false);
       }
     });
     return () => {
       scrollY.removeAllListeners();
     };
-  }, []);
-
-  const data = [
-    {
-      username: 'Admin',
-      avatar: images.startBackground,
-      image: null,
-      user_rating: 2.5,
-      text: 'Прогулка на велосипедах',
-      category: 'Спорт',
-      createdAt: '2021-09-10',
-    },
-    {
-      username: 'Admin2',
-      avatar: images.startBackground,
-      image: images.startBackground,
-      user_rating: 2,
-      text: 'Выпить кофе',
-      category: 'Спорт',
-      createdAt: '2021-09-10',
-    },
-    {
-      username: 'Admin3',
-      avatar: images.startBackground,
-      images: null,
-      user_rating: 5,
-      text: 'Прогулка',
-      category: 'Спорт',
-      createdAt: '2021-09-10',
-    },
-    {
-      username: 'Admin3',
-      avatar: images.startBackground,
-      image: null,
-      user_rating: 5,
-      text: 'Прогулка',
-      category: 'Спорт',
-      createdAt: '2021-09-10',
-    },
-    {
-      username: 'Admin3',
-      avatar: images.startBackground,
-      image: null,
-      user_rating: 5,
-      text: 'Прогулка',
-      category: 'Спорт',
-      createdAt: '2021-09-10',
-    },
-  ];
+  }, [hideSearch, scrollY]);
 
   const handleRefreshList = () => {
-    setTimeout(() => {
-      setRefresh(false);
-    }, 800);
+    setRefresh(true);
   };
 
   const renderItem = ({item, index}) => {
+    return <ActivitiesCard item={item} index={index} user_id={user_id} />;
+  };
+
+  const returnTabBatton = (title, status) => {
     return (
       <TouchableOpacity
-        key={index}
+        onPress={() => setTab(!tab)}
         style={{
-          marginBottom: 16,
-          backgroundColor: 'white',
-          borderRadius: 14,
-          paddingRight: 20,
-          padding: 16,
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.2,
-          shadowRadius: 4,
-
-          elevation: 4,
+          ...styles.tab,
+          backgroundColor: tab === status ? '#4285f4' : '#f4f4f4',
         }}>
-        <View row centered>
-          <Image
-            source={images.startBackground}
-            style={{width: 34, height: 34, borderRadius: 17}}
-          />
-          <View mLeft={10}>
-            <Text size={15} style={{fontWeight: '500'}}>
-              {item.username}
-            </Text>
-            <StarRating
-              starStyle={{marginHorizontal: 1, marginTop: 2}}
-              disabled={false}
-              maxStars={5}
-              starSize={10}
-              rating={item.user_rating}
-              emptyStarColor="#A2A3A5"
-              fullStarColor={'#F5B942'}
-            />
-          </View>
-        </View>
-        <Text size={18} mTop={8} style={{fontWeight: '500'}}>
-          {item.text}
+        <Text
+          color={tab === status && 'white'}
+          style={{fontWeight: tab === status ? '600' : '400'}}>
+          {title}
         </Text>
-        {item.image && (
-          <Image
-            source={item.image}
-            style={{
-              height: 160,
-              width: '100%',
-              borderRadius: 14,
-              marginTop: 10,
-            }}
-            resizeMode="cover"
-          />
-        )}
-        <View row sBetween centered mTop={6}>
-          <Text>{item.category}</Text>
-          <Text color={'grey'}>{item.createdAt}</Text>
-        </View>
-        <Button
-          text={'Присойденится'}
-          style={{height: 36, flex: 1, marginTop: 16}}
-        />
       </TouchableOpacity>
     );
   };
 
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
   return (
     <View flex style={{backgroundColor: 'white'}}>
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        index={1}
+        snapPoints={snapPoints}
+        backdropComponent={DefaultBackDrop}
+        onChange={handleSheetChanges}>
+        <View style={styles.contentContainer}>
+          <Text>Awesome 🎉</Text>
+        </View>
+      </BottomSheetModal>
       <StatusBar animated barStyle={'dark-content'} />
-      <SafeAreaView
-        style={
-          // hideShadowHeader &&
-          {
-            zIndex: 9999,
-            backgroundColor: 'white',
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: hideShadowHeader,
-            shadowRadius: 4,
-
-            elevation: 4,
-          }
-        }>
-        <View
-          style={{paddingHorizontal: 20, paddingBottom: 10}}
-          row
-          centered
-          sBetween>
-          <Text size={24}>Logo</Text>
-          <TouchableOpacity>
-            <Text>Filter</Text>
-          </TouchableOpacity>
+      <SafeAreaView style={!hideShadowHeader && styles.shadowHeader}>
+        <View>
+          <View
+            style={{paddingHorizontal: 20, paddingBottom: 20}}
+            row
+            centered
+            sBetween>
+            <Text size={24} style={{fontWeight: '700', color: '#386ec7'}}>
+              Leafy
+            </Text>
+            <View row centered>
+              <TouchableOpacity
+                style={{marginRight: 16}}
+                onPress={() => setHideSearch(!hideSearch)}>
+                <Icon name="search-outline" size={24} color="grey" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => bottomSheetRef.current.present()}>
+                <Icon name="filter" size={24} color="grey" />
+                <View style={styles.activeFilter} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          {!hideSearch && (
+            <TextInput
+              onChangeText={setSearch}
+              placeholder={'Поиск'}
+              style={styles.headerInput}
+            />
+          )}
         </View>
       </SafeAreaView>
       <Animated.FlatList
+        ref={scrollRef}
         scrollEventThrottle={1}
         onScroll={Animated.event(
           [
@@ -205,22 +162,32 @@ const Home = props => {
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
-          <TextInput
-            placeholder={'Поиск'}
-            style={{
-              backgroundColor: '#f4f4f4',
-              height: 46,
-              marginBottom: 20,
-              borderRadius: 14,
-              paddingHorizontal: 16,
-              fontSize: 16,
-            }}
-          />
+          <View row centered style={styles.tabBar}>
+            {returnTabBatton('Актиальные', true)}
+            {returnTabBatton('Мои', false)}
+          </View>
         )}
-        contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 40}}
-        data={data}
+        contentContainerStyle={styles.flatList}
+        data={activities}
         keyExtractor={(_, index) => index.toString()}
       />
+      {hideScrollToTopButton && (
+        <TouchableOpacity
+          onPress={() =>
+            scrollRef.current.scrollToOffset({
+              animated: true,
+              offset: 0,
+            })
+          }
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            right: 20,
+            zIndex: 9999,
+          }}>
+          <Icon name="chevron-up-circle-sharp" size={48} color={'#386ec7'} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

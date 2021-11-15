@@ -20,7 +20,7 @@ export default StyleSheet.create({
     position: 'absolute',
   },
   backgroundImage: {flex: 1, width: '100%', marginBottom: -20},
-  title: {fontSize: 30, color: 'white', fontWeight: '700'},
+  title: {fontSize: 34, color: colors.white, fontWeight: '700'},
   subtitle: {
     color: '#d3d3d3',
     fontSize: 18,
@@ -40,7 +40,7 @@ export default StyleSheet.create({
   },
   registerBtn: {
     width: '100%',
-    backgroundColor: 'white',
+    backgroundColor: colors.white,
     height: 56,
     borderRadius: 14,
     alignItems: 'center',

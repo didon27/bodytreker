@@ -1,56 +1,44 @@
-import React, {useState} from 'react';
-import {Keyboard, ScrollView, View} from 'react-native';
+import React, {useContext, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {Text, TextInput, Button, KeyboardAvoidWrapper} from 'components';
 import {routeNames} from 'enums';
-import {fieldValidator} from 'services/validator';
-import {userActions} from 'store/user';
-import {colors} from 'colors';
-import {replaceText} from 'helpers';
+import {SendEmail} from 'layouts';
+import {authActions} from 'store/auth';
+import {LocalizationContext} from 'services';
 
-import styles from './styles';
-import {SafeAreaView} from 'react-native-safe-area-context';
-
-const SignUp = props => {
-  const {createUserLoading, createUserError} = useSelector(state => state.user);
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [confrimPassword, setConfirmPassword] = useState('');
-
+const SignUp = ({navigation}) => {
+  const {translations} = useContext(LocalizationContext);
   const dispatch = useDispatch();
+  const {loading, errorRegister} = useSelector(state => state.auth);
+  const [email, setEmail] = useState('');
 
-  const signUp = () => {
-    console.log('fsdfsf32232');
-
+  const sendServer = () => {
     dispatch(
-      userActions.create(
-        {email},
-        {route: routeNames.confirmEmail, params: {email}},
+      authActions.signUp(
+        {
+          email: email,
+        },
+        {
+          route: routeNames.registerEmail,
+          params: {email: email.toLowerCase().trim()},
+        },
       ),
     );
   };
 
   return (
-    <View style={{backgroundColor: colors.white}}>
-      <SafeAreaView></SafeAreaView>
-      <View style={{paddingHorizontal: 20}}>
-        <TextInput placeholder="Email" onChangeText={setEmail} />
-        {/* <TextInput placeholder="Username" onChangeText={setUsername} />
-        <TextInput
-          placeholder="Password"
-          onChangeText={setPassword}
-          isPassword
-        />
-        <TextInput
-          placeholder="Confrim password"
-          onChangeText={setConfirmPassword}
-          isPassword
-        /> */}
-        <Button text="Sign Up" onPress={signUp} />
-      </View>
-    </View>
+    <SendEmail
+      error={errorRegister}
+      email={email}
+      title={translations.signUp}
+      subtitle={translations.enter_your_email}
+      buttonText={translations.continue}
+      navigation={navigation}
+      loading={loading}
+      setEmail={setEmail}
+      sendServer={sendServer}
+      setError={error => dispatch(authActions.setErrorRegister(error))}
+    />
   );
 };
 

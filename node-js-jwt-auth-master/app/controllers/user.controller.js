@@ -31,18 +31,17 @@ exports.getUser = (req, res) => {
       });
     }
     userId = decoded.id;
+    console.log("\n", userId, "\n");
   });
 
   // Fetch the user by id
-  User.findOne({ id: userId }).then(function (user) {
+  User.findOne({ where: { id: userId } }).then(function (user) {
     // Do something with the user
-    return res
-      .status(200)
-      .send({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        body_type: user.body_type,
-      });
+    return res.status(200).send({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      hello: "432423",
+    });
   });
 };

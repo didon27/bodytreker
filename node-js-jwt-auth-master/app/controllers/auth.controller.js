@@ -2,6 +2,7 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 const PasswordResets = db.password_resets;
+const RefreshToken = db.refreshToken;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -27,12 +28,13 @@ var mail = {
 exports.signUp = (req, res) => {
   // Save User to Database
   let { email } = req.body;
+
   let activation_token = (Math.floor(Math.random() * 10000) + 10000)
     .toString()
     .substring(1);
 
   User.create({
-    email,
+    email: email.toLowerCase().trim(),
     activation_token,
   })
     .then(() => {
@@ -59,7 +61,7 @@ exports.signUpContinue = (req, res) => {
   let { username, password, email } = req.body;
 
   User.findOne({ where: { email } })
-    .then((user) => {
+    .then(async (user) => {
       user.password = bcrypt.hashSync(password, 8);
       user.username = username;
       user.registration_completed = true;
@@ -74,12 +76,15 @@ exports.signUpContinue = (req, res) => {
         });
       }
 
+      let refreshToken = await RefreshToken.createToken(user);
+
       var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400, // 24 hours
+        expiresIn: config.jwtExpiration,
       });
 
       res.status(200).send({
         accessToken: token,
+        refreshToken: refreshToken,
       });
     })
     .catch((err) => {
@@ -115,31 +120,99 @@ exports.signIn = (req, res) => {
   User.findOne({
     where: data,
   })
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(404).send({ email: "User Not found." });
       }
 
       var passwordIsValid = bcrypt.compareSync(password, user.password);
 
       if (!passwordIsValid) {
         return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!",
+          password: "Invalid Password!",
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400, // 24 hours
+      const token = jwt.sign({ id: user.id }, config.secret, {
+        expiresIn: config.jwtExpiration,
       });
+
+      let refreshToken = await RefreshToken.createToken(user);
 
       res.status(200).send({
         accessToken: token,
+        refreshToken: refreshToken,
       });
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
     });
+};
+
+exports.resendCode = (req, res) => {
+  let { email } = req.body;
+
+  User.findOne({
+    where: { email },
+  })
+    .then((user) => {
+      mail.to = email;
+      mail.html = `<b>Node.js New world for me ${user.activation_token}</b>`;
+
+      smtpTransport.sendMail(mail, function (error, response) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Message sent: " + response.message);
+        }
+
+        smtpTransport.close();
+      });
+      res.status(200).send({ message: "Send code your email!" });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
+};
+
+exports.refreshToken = async (req, res) => {
+  const { refreshToken: requestToken } = req.body;
+
+  if (requestToken == null) {
+    return res.status(403).json({ message: "Refresh Token is required!" });
+  }
+
+  try {
+    let refreshToken = await RefreshToken.findOne({
+      where: { token: requestToken },
+    });
+
+    if (!refreshToken) {
+      res.status(403).json({ message: "Refresh token is not in database!" });
+      return;
+    }
+
+    if (RefreshToken.verifyExpiration(refreshToken)) {
+      RefreshToken.destroy({ where: { id: refreshToken.id } });
+
+      res.status(403).json({
+        message: "Refresh token was expired. Please make a new signin request",
+      });
+      return;
+    }
+
+    const user = await refreshToken.getUser();
+    let newAccessToken = jwt.sign({ id: user.id }, config.secret, {
+      expiresIn: config.jwtExpiration,
+    });
+
+    return res.status(200).json({
+      accessToken: newAccessToken,
+      refreshToken: refreshToken.token,
+    });
+  } catch (err) {
+    return res.status(500).send({ message: err });
+  }
 };
 
 exports.forgotPassword = (req, res) => {
@@ -169,7 +242,7 @@ exports.forgotPassword = (req, res) => {
       res.status(200).send({ message: "Send code your email!" });
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res.status(400).send({ message:  'User not found!'});
     });
 };
 

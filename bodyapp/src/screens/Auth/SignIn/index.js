@@ -1,30 +1,52 @@
-import React, {useState} from 'react';
-import {TouchableOpacity, Image} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {
+  TouchableOpacity,
+  Image,
+  KeyboardAvoidingView,
+  StatusBar,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import PropTypes from 'prop-types';
 
 import {Button, Text, View, TextInput} from 'components';
 import {images} from 'images';
 import {authActions} from 'store/auth';
+import Header from '../components/Header';
+import {colors} from 'colors';
+import {LocalizationContext} from 'services';
+import {routeNames} from 'enums';
 
 import styles from './styles';
-import {colors} from 'colors';
 
-const SignIn = props => {
+const SignIn = ({navigation}) => {
+  const {translations} = useContext(LocalizationContext);
   const [emailOrLogin, setEmailOrLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [saveMe, setSaveMe] = useState(false);
-
   const dispatch = useDispatch();
 
-  const {loading, error} = useSelector(state => state.auth);
+  const {loading, errorLogin} = useSelector(state => state.auth);
+
+  useEffect(() => {
+    if (errorLogin) {
+      dispatch(authActions.setErrorLogin(null));
+    }
+  }, [password, emailOrLogin]);
 
   const signIn = () => {
+    if (emailOrLogin.length < 6) {
+      dispatch(authActions.setErrorLogin({email: 'Min length 6'}));
+      return;
+    }
+
+    if (password.length < 6) {
+      dispatch(authActions.setErrorLogin({password: 'Min lenght 6'}));
+      return;
+    }
+
     let data;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     if (reg.test(emailOrLogin)) {
-      data = {email: emailOrLogin, password};
+      data = {email: emailOrLogin.toLowerCase().trim(), password};
     } else {
       data = {password, username: emailOrLogin};
     }
@@ -33,7 +55,9 @@ const SignIn = props => {
   };
 
   return (
-    <View flex>
+    <KeyboardAvoidingView behavior="padding">
+      <StatusBar barStyle="light-content" />
+      <Header navigation={navigation} />
       <Image
         resizeMode="cover"
         blurRadius={20}
@@ -42,56 +66,40 @@ const SignIn = props => {
       />
       <View style={styles.dimmer} />
       <View style={styles.centerContainer}>
-        <Text color={colors.white} size={32}>
-          Вход
-        </Text>
         <View style={styles.centerBlock}>
+          <Text color={colors.white} size={28}>
+            {translations.singIn}
+          </Text>
           <TextInput
             placeholderTextColor={'#adadad'}
-            placeholder="Email"
+            placeholder="Email | Login"
+            error={errorLogin?.email}
             onChangeText={setEmailOrLogin}
           />
           <TextInput
             placeholderTextColor={'#adadad'}
-            placeholder="Пароль"
+            placeholder={translations.password}
+            error={errorLogin?.password}
             onChangeText={setPassword}
             isPassword
           />
-          {error && (
-            <Text style={{color: 'red', textAlign: 'center', marginTop: 20}}>
-              {error}
-            </Text>
-          )}
-          <View row centered mTop={16} mBottom={10}>
-            <TouchableOpacity
-              onPress={() => setSaveMe(!saveMe)}
-              style={styles.saveMeContainer}>
-              {saveMe && <View style={styles.saveMeBlock} />}
-            </TouchableOpacity>
-            <Text color={'white'} mLeft={10}>
-              Запомнить меня
-            </Text>
-          </View>
-          <Button text={'Войти'} onPress={signIn} loading={loading} />
+          <Button
+            text={translations.singIn}
+            onPress={signIn}
+            loading={loading}
+            style={{marginTop: 24}}
+          />
           <TouchableOpacity
-            style={{marginTop: 20}}
-            onPress={() => console.log('fsdfs')}>
-            <Text size={14} color={'white'} right>
-              Забыли пароль?
+            style={{marginTop: 16}}
+            onPress={() => navigation.navigate(routeNames.forgotPassword)}>
+            <Text size={14} color={colors.white} right>
+              {translations.forgotPassword}
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
-};
-
-SignIn.propTypes = {
-  navigation: PropTypes.object.isRequired,
-};
-
-SignIn.defaultProps = {
-  navigation: null,
 };
 
 export default SignIn;

@@ -13,7 +13,7 @@ export default StyleSheet.create({
   },
   centerContainer: {
     position: 'absolute',
-    zIndex: 9999,
+    zIndex: 3,
     width: '100%',
     height: '100%',
     paddingHorizontal: 20,
@@ -26,13 +26,4 @@ export default StyleSheet.create({
     marginTop: 20,
   },
   background: {width: '100%', height: '100%', zIndex: 0},
-  saveMeContainer: {
-    borderWidth: 1,
-    height: 16,
-    width: 16,
-    borderColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveMeBlock: {width: 6, height: 6, backgroundColor: 'white'}
 });

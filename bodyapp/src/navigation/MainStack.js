@@ -12,6 +12,7 @@ import {Text, View} from '../components/';
 import Home from '../screens/Home';
 import Profile from 'screens/Profile/Main';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AddActivities from 'screens/AddActivities';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -135,6 +136,14 @@ function AppNavigation() {
       <Tab.Screen
         name="Home"
         component={MenuStackScreen}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisibility(route),
+        })}
+        listeners={props => tabPressListener({...props})}
+      />
+      <Tab.Screen
+        name="AddActivities"
+        component={AddActivities}
         options={({route}) => ({
           tabBarVisible: getTabBarVisibility(route),
         })}

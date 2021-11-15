@@ -42,7 +42,7 @@ checkDuplicateUsername = (req, res, next) => {
   }).then((user) => {
     if (user) {
       res.status(400).send({
-        message: "Failed! Username is already in use!",
+        username: "Login is already in use!",
       });
       return;
     }
@@ -56,36 +56,27 @@ checkValidVerifyEmailCode = (req, res, next) => {
     where: {
       email: req.body.email,
     },
-  }).then((user) => {
-    if (req.body.activation_token !== user.activation_token) {
-      res.status(400).send({
-        message: "Wrong code!",
-      });
-      return;
-    }
-
-    next();
-  });
-};
-
-checkRolesExisted = (req, res, next) => {
-  if (req.body.roles) {
-    for (let i = 0; i < req.body.roles.length; i++) {
-      if (!ROLES.includes(req.body.roles[i])) {
+  })
+    .then((user) => {
+      if (req.body.activation_token !== user.activation_token) {
         res.status(400).send({
-          message: "Failed! Role does not exist = " + req.body.roles[i],
+          message: "Wrong code!",
         });
         return;
       }
-    }
-  }
 
-  next();
+      next();
+    })
+    .catch((error) => {
+      res.status(400).send({
+        message: "Email not found",
+      });
+      return;
+    });
 };
 
 const verifySignUp = {
   checkDuplicateEmail: checkDuplicateEmail,
-  checkRolesExisted: checkRolesExisted,
   checkValidVerifyEmailCode: checkValidVerifyEmailCode,
   checkDuplicateUsername: checkDuplicateUsername,
 };

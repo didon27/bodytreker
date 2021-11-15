@@ -8,23 +8,34 @@ import {colors} from 'colors';
 
 import {styles} from './styles';
 
-const CustomTextInput = (props) => {
+const CustomTextInput = props => {
   const [hidePassword, setHidePassword] = useState(true);
-
+  const {error, disabled} = props;
   return (
-    <View style={[styles.container, props.containerStyle]}>
+    <View
+      style={[
+        styles.container,
+        disabled && {backgroundColor: colors.lightGrey},
+        props.containerStyle,
+        error && {borderColor: colors.pink, borderWidth: 2},
+      ]}>
       <View style={styles.textBoxBtnHolder}>
         <TextInput
+          editable={!disabled}
           placeholder={props.placeholder}
           placeholderTextColor={props.placeholderTextColor}
           underlineColorAndroid="transparent"
           secureTextEntry={props.isPassword && hidePassword}
           value={props.value}
-          style={[styles.textBox, props.error && {borderBottomColor: colors.pink}, props.textInputStyle]}
+          style={[
+            styles.textBox,
+            props.textInputStyle,
+            disabled && {color: 'grey'},
+          ]}
           onChangeText={text => props.onChangeText(text)}
           {...props}
         />
-        { props.isPassword &&
+        {props.isPassword && (
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.visibilityBtn}
@@ -36,13 +47,13 @@ const CustomTextInput = (props) => {
               size={23}
             />
           </TouchableOpacity>
-        }
+        )}
       </View>
-      { props.error &&
+      {error && typeof error === 'string' && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorMsg}>{props.error}</Text>
+          <Text style={styles.errorMsg}>{error}</Text>
         </View>
-      }
+      )}
     </View>
   );
 };
@@ -56,7 +67,7 @@ CustomTextInput.propTypes = {
   error: PropTypes.string,
   isPassword: PropTypes.bool,
   isPasswordIconRed: PropTypes.string,
-  textInputStyle: PropTypes.object
+  textInputStyle: PropTypes.object,
 };
 
 CustomTextInput.defaultProps = {
@@ -68,7 +79,7 @@ CustomTextInput.defaultProps = {
   error: null,
   isPassword: false,
   isPasswordIconRed: null,
-  textInputStyle: {}
+  textInputStyle: {},
 };
 
 export default CustomTextInput;

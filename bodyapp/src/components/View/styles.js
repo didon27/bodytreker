@@ -18,5 +18,5 @@ export const styles = StyleSheet.create({
   },
   fEnd: {
     alignItems: 'flex-end'
-  }
+  },
 });

@@ -18,6 +18,9 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING,
     },
+    rating: {
+      type: Sequelize.FLOAT,
+    },
   });
 
   return User;

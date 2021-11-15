@@ -5,9 +5,13 @@ export {mamaAxios};
 export const api = {
   auth: {
     signIn: params => request.post('/auth/signin', params),
-    signUp: params => request.post('/auth/signup'),
-    reset: params => request.post('/reset-password', params),
-    resetNew: params => request.put('/reset-password', params),
+    signUp: params => request.post('/auth/signup', params),
+    forgotPassword: params => request.post('/auth/forgot-password', params),
+    refreshToken: params => request.post('/auth/refreshtoken', params),
+    verificationEmail: params =>
+      request.post('/auth/verification-email', params),
+    resendCode: params => request.post('/auth/resend-code', params),
+    continueRegister: params => request.post('/auth/signup-continue', params),
   },
   user: {
     getInterests: () => request.get('/interest'),
@@ -25,5 +29,12 @@ export const api = {
     removeChildren: params => request.delete('/child', params),
     updateChildren: params => request.put('/child', params),
     getAppUsageTypes: params => request.get('/app-usage-types', params),
+  },
+  activities: {
+    getActivitiesCategories: params =>
+      request.get('/activities/get-categories'),
+    createNewActivities: params =>
+      request.post('/activities/create-new-activities', params),
+    getActivities: params => request.post('/activities/get-activities', params),
   },
 };
