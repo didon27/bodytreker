@@ -7,9 +7,15 @@ import {api} from 'services/api';
 import {navigate} from '../../navigation';
 
 function* getActivities(data) {
+  const {payload} = data;
+
   try {
-    const response = yield call(api.activities.getActivities, data.payload);
-    yield put(activitiesActions.getActivitiesSuccess(response.data));
+    const response = yield call(api.activities.getActivities, payload);
+    if (payload.actual) {
+      yield put(activitiesActions.getActivitiesSuccess(response.data));
+    } else {
+      yield put(activitiesActions.getMyActivitiesSuccess(response.data));
+    }
   } catch (e) {
     yield put(activitiesActions.getActivitiesFailure(e.response.data.error));
   }

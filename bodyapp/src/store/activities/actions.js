@@ -9,6 +9,10 @@ export const activitiesActions = {
     type: activitiesConstants.GET_ACTIVITIES_SUCCESS,
     payload,
   }),
+  getMyActivitiesSuccess: payload => ({
+    type: activitiesConstants.GET_MY_ACTIVITIES_SUCCESS,
+    payload,
+  }),
   getActivitiesFailure: error => ({
     type: activitiesConstants.GET_ACTIVITIES_FAILURE,
     error,

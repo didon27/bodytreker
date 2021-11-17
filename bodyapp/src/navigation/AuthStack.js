@@ -13,6 +13,7 @@ import RegisterEmail from 'screens/Auth/SignUp/RegisterEmail';
 import ContinueRegister from 'screens/Auth/SignUp/ContinueRegister';
 import ForgotPassword from 'screens/Auth/ResetPassword/ForgotPassword';
 import VerificationPasswordCode from 'screens/Auth/ResetPassword/VerificationPasswordCode';
+import PasswordRecovery from 'screens/Auth/ResetPassword/PasswordRecovery';
 
 const AuthStack = createStackNavigator();
 
@@ -46,6 +47,10 @@ export default props => {
       <AuthStack.Screen
         name={routeNames.verificationPasswordCode}
         component={VerificationPasswordCode}
+      />
+      <AuthStack.Screen
+        name={routeNames.passwordRecovery}
+        component={PasswordRecovery}
       />
     </AuthStack.Navigator>
   );

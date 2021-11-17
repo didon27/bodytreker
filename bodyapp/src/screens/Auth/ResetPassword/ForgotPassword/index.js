@@ -19,7 +19,7 @@ const ForgotPassword = ({navigation}) => {
           email: email,
         },
         {
-          route: routeNames.forgotPasswordCode,
+          route: routeNames.verificationPasswordCode,
           params: {email: email.toLowerCase().trim()},
         },
       ),

@@ -10,8 +10,11 @@ export const api = {
     refreshToken: params => request.post('/auth/refreshtoken', params),
     verificationEmail: params =>
       request.post('/auth/verification-email', params),
+    verificationForgotPassword: params =>
+      request.post('/auth/verification-forgot-password', params),
     resendCode: params => request.post('/auth/resend-code', params),
     continueRegister: params => request.post('/auth/signup-continue', params),
+    resetPassword: params => request.post('/auth/reset-password', params),
   },
   user: {
     getInterests: () => request.get('/interest'),

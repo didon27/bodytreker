@@ -6,18 +6,18 @@ import {CodeVerify} from 'layouts';
 import {authActions} from 'store/auth';
 
 const VerificationPasswordCode = props => {
-  const {loading, errorRegisterCode} = useSelector(state => state.auth);
+  const {loading, verificationForgotPasswordError} = useSelector(state => state.auth);
   const dispatch = useDispatch();
   let {email} = props.route.params;
 
   const setError = error => {
-    dispatch(authActions.setErrorRegisterCode(error));
+    dispatch(authActions.setErrorVerificationForgotPassword(error));
   };
 
   const sendCode = data => {
     dispatch(
-      authActions.verificationEmailRequest(data, {
-        route: routeNames.continueRegister,
+      authActions.verificationForgotPasswordRequest(data, {
+        route: routeNames.passwordRecovery,
         params: {email: email.toLowerCase().trim()},
       }),
     );
@@ -34,7 +34,7 @@ const VerificationPasswordCode = props => {
       resendCode={resendCode}
       sendCode={sendCode}
       setError={setError}
-      codeError={errorRegisterCode}
+      codeError={verificationForgotPasswordError}
       codeLoading={loading}
     />
   );

@@ -71,4 +71,4 @@ const ActivitiesCard = ({item, index, user_id}) => {
   );
 };
 
-export default ActivitiesCard;
+export default React.memo(ActivitiesCard);

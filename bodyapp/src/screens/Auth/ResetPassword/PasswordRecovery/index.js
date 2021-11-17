@@ -1,57 +1,121 @@
-import React from 'react';
-import {View, ScrollView} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {Image, KeyboardAvoidingView, StatusBar} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
+import {Button, Text, View, TextInput} from 'components';
+import {images} from 'images';
+import {authActions} from 'store/auth';
+import Header from '../../components/Header';
 import {colors} from 'colors';
-import {routeNames} from '_enums';
-import {Button, Text, TextInput, KeyboardAvoidWrapper} from '_components';
-import {authActions} from '_store/auth';
-import {fieldValidator} from '_services/validator';
-import {replaceText} from '_helpers';
+import {LocalizationContext} from 'services';
 
 import styles from './styles';
 
-const ResetPassword = props => {
-  const {resetPasswordError, resetPasswordLoading} = useSelector(state => state.auth);
-  const {values, errors, handleChange, handleSubmit} = fieldValidator(handleReset, 'reset');
+const PasswordRecovery = props => {
+  const {translations} = useContext(LocalizationContext);
+  const {email} = props.route.params;
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const {loading, resetPasswordError, reset_token} = useSelector(
+    state => state.auth,
+  );
+
   const dispatch = useDispatch();
 
-  function handleReset() {
-    dispatch(authActions.resetPasswordRequest({email: values.email}, {route: routeNames.confirmPasswordRecovery, params: {email: values.email}}));
-  }
+  useEffect(() => {
+    if (resetPasswordError) {
+      dispatch(authActions.setErrorContinueRegister(null));
+    }
+  }, [password, confirmPassword]);
+
+  const signUp = () => {
+    if (password.length < 6) {
+      dispatch(
+        authActions.setErrorPasswordReset({
+          password: translations.minimum_six_characters,
+        }),
+      );
+      return;
+    }
+
+    if (confirmPassword.length < 6) {
+      dispatch(
+        authActions.setErrorPasswordReset({
+          confirmPassword: translations.minimum_six_characters,
+        }),
+      );
+      return;
+    }
+
+    if (confirmPassword !== password) {
+      dispatch(
+        authActions.setErrorPasswordReset({
+          confirmPassword: translations.password_mismatch,
+          password: translations.password_mismatch,
+        }),
+      );
+      return;
+    }
+
+    dispatch(
+      authActions.resetPasswordRequest({
+        email,
+        password,
+        reset_token,
+      }),
+    );
+  };
 
   return (
-    <KeyboardAvoidWrapper>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.inner}>
-          <Text style={styles.title}>Password recovery</Text>
-          <Text style={styles.subtitle}>
-            Please fill in an email you used on registration.
-            We’ll send you a confirmation code.
+    <KeyboardAvoidingView behavior="padding">
+      <StatusBar barStyle="light-content" />
+      <Header navigation={props.navigation} />
+      <Image
+        resizeMode="cover"
+        blurRadius={20}
+        style={styles.background}
+        source={images.startBackground}
+      />
+      <View style={styles.dimmer} />
+      <View style={styles.centerContainer}>
+        <View style={styles.centerBlock}>
+          <Text color={colors.white} size={28}>
+            {translations.signUp}
           </Text>
-          <View mTop={32}>
-            <TextInput
-              autoCapitalize={'none'}
-              placeholder={'Email'}
-              value={replaceText(values.email)}
-              error={errors.email}
-              placeholderTextColor={colors.grey}
-              onChangeText={text => handleChange('email', replaceText(text))}
-            />
-          </View>
+          <Text color={colors.lightGrey} size={16} mTop={10} mBottom={10}>
+            {translations.fields_to_complete_registration}
+          </Text>
+          <TextInput
+            value={email}
+            placeholderTextColor={'#adadad'}
+            placeholder="Email"
+            disabled
+          />
+          <TextInput
+            value={password}
+            placeholderTextColor={'#adadad'}
+            placeholder={translations.password}
+            isPassword
+            error={resetPasswordError?.password}
+            onChangeText={setPassword}
+          />
+          <TextInput
+            value={confirmPassword}
+            placeholderTextColor={'#adadad'}
+            placeholder={translations.repeat_password}
+            isPassword
+            error={resetPasswordError?.confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+          <Button
+            text={translations.continue}
+            onPress={signUp}
+            loading={loading}
+          />
         </View>
-      </ScrollView>
-      <View style={{paddingBottom: 35, marginHorizontal: 16}}>
-        {resetPasswordError && <Text style={styles.errorText}>{resetPasswordError}</Text>}
-        <Button
-          text={'Continue'}
-          onPress={handleSubmit}
-          loading={resetPasswordLoading}
-          disabled={resetPasswordLoading}
-        />
       </View>
-    </KeyboardAvoidWrapper>
+    </KeyboardAvoidingView>
   );
 };
 
-export default ResetPassword;
+export default PasswordRecovery;

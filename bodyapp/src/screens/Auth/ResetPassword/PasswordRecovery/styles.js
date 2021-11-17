@@ -3,30 +3,42 @@ import {StyleSheet} from 'react-native';
 import {colors} from 'colors';
 
 export default StyleSheet.create({
-  container: {
+  dimmer: {
+    width: '100%',
+    height: '100%',
+    opacity: 0.4,
+    zIndex: 2,
+    backgroundColor: 'black',
+    position: 'absolute',
+  },
+  centerContainer: {
+    position: 'absolute',
+    zIndex: 3,
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+  },
+  centerBlock: {
+    padding: 20,
+    backgroundColor: '#202124cc',
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  background: {width: '100%', height: '100%', zIndex: 0},
+  saveMeContainer: {
+    borderWidth: 1,
+    height: 16,
+    borderRadius: 4,
+    width: 16,
+    borderColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveMeBlock: {
+    width: 6,
+    height: 6,
     backgroundColor: colors.white,
-    paddingHorizontal: 16
+    borderRadius: 2,
   },
-  inner: {
-    paddingTop: 32
-  },
-  title: {
-    fontSize: 28,
-    color: colors.blackLabelBold,
-    fontWeight: '700',
-    marginBottom: 16,
-    textAlign: 'center'
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.grey,
-    fontWeight: '400',
-    marginBottom: 20,
-    textAlign: 'center'
-  },
-  errorText: {
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: colors.errorColor
-  }
 });

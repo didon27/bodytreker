@@ -24,6 +24,7 @@ function* create(data) {
         ),
       );
     } else {
+      console.log('fdsgsdfg', e)
       yield put(authActions.loginFailure(e.response.data));
     }
   }
@@ -57,8 +58,44 @@ function* forgotPassword(data) {
       yield call(navigate, route.route, route.params);
     }
   } catch (e) {
-    console.log('error', e);
     yield put(authActions.forgotPasswordFailure(e.response.data.message));
+  }
+}
+
+function* verificationForgotPassword(data) {
+  const {route, payload} = data;
+
+  try {
+    const response = yield call(api.auth.verificationForgotPassword, payload);
+    yield put(
+      authActions.verificationForgotPasswordSuccess(response.data.reset_token),
+    );
+    if (route) {
+      yield call(navigate, route.route, route.params);
+    }
+  } catch (e) {
+    yield put(
+      authActions.verificationForgotPasswordFailure(e.response.data.message),
+    );
+  }
+}
+
+function* resetPassword(data) {
+  const {route, payload} = data;
+
+  try {
+    const response = yield call(api.auth.resetPassword, payload);
+    const userToken = `Bearer ${response.data.accessToken}`;
+    yield call(storage.save, 'UserToken', userToken);
+    yield call(storage.save, 'RefreshToken', response.data.refreshToken);
+    yield put(authActions.setToken(userToken));
+
+    yield put(authActions.resetPasswordSuccess());
+    if (route) {
+      yield call(navigate, route.route, route.params);
+    }
+  } catch (e) {
+    yield put(authActions.resetPasswordFailure(e.response.data));
   }
 }
 
@@ -126,7 +163,12 @@ function* continueRegister(data) {
 }
 
 export function* authSaga() {
+  yield takeLatest(
+    authConstants.VERIFICATION_FORGOT_PASSWORD_REQUEST,
+    verificationForgotPassword,
+  );
   yield takeLatest(authConstants.FORGOT_PASSWORD_REQUEST, forgotPassword);
+  yield takeLatest(authConstants.RESET_PASSWORD_REQUEST, resetPassword);
   yield takeLatest(authConstants.CREATE_AUTH_REQUEST, create);
   yield takeLatest(authConstants.SET_TOKEN_REQUEST, set);
   yield takeLatest(authConstants.SIGN_UP_REQUEST, signUp);

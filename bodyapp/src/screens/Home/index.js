@@ -1,17 +1,9 @@
 import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
-import {
-  StatusBar,
-  TouchableOpacity,
-  SafeAreaView,
-  TextInput,
-  Animated,
-} from 'react-native';
+import {StatusBar, TouchableOpacity, TextInput, Animated} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 
-import {colors} from 'colors';
 import {activitiesActions} from 'store/activities';
-import {View, Text} from 'components';
-import {storage} from 'services/storage';
+import {View, Text, CustomSafeAreaView} from 'components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ActivitiesCard from './components/ActivitiesCard';
 
@@ -20,18 +12,16 @@ import {DefaultBackDrop} from 'components/BackDrop';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 
 import styles from './styles';
+import {DEVICE_HEIGHT} from 'constants';
 
 const Home = props => {
   const {user} = useSelector(state => state.user);
   const user_id = user.id;
   const initialTab = props.route;
-  const {activities} = useSelector(state => state.activities);
+  const {activities, myActivities} = useSelector(state => state.activities);
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [hideScrollToTopButton, setHideScrollToTopButton] = useState(false);
-  const scrollRef = useRef();
-  const [hideShadowHeader, setHideShadowHeader] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const [hideSearch, setHideSearch] = useState(true);
   const [tab, setTab] = useState(true || initialTab);
@@ -42,42 +32,23 @@ const Home = props => {
   const snapPoints = useMemo(() => ['25%', '40%'], []);
 
   useEffect(() => {
-    let data = {user_id, actual: tab};
+    let data = {user_id};
 
     if (search.length >= 3) {
       data.title = search;
     }
 
-    dispatch(activitiesActions.getActivities(data));
+    dispatch(activitiesActions.getActivities({...data, actual: true}));
+
+    setTimeout(() => {
+      dispatch(activitiesActions.getActivities({...data, actual: false}));
+    }, 400);
 
     setRefresh(false);
-  }, [tab, refresh, search, initialTab]);
-
-  useEffect(() => {
-    scrollY.addListener(({value}) => {
-      if (value <= 10) {
-        setHideShadowHeader(true);
-      } else {
-        setHideShadowHeader(false);
-      }
-
-      if (value > 100) {
-        setHideScrollToTopButton(true);
-      } else {
-        setHideScrollToTopButton(false);
-      }
-    });
-    return () => {
-      scrollY.removeAllListeners();
-    };
-  }, [hideSearch, scrollY]);
+  }, [refresh, search, initialTab]);
 
   const handleRefreshList = () => {
     setRefresh(true);
-  };
-
-  const renderItem = ({item, index}) => {
-    return <ActivitiesCard item={item} index={index} user_id={user_id} />;
   };
 
   const returnTabBatton = (title, status) => {
@@ -101,6 +72,12 @@ const Home = props => {
     console.log('handleSheetChanges', index);
   }, []);
 
+  const headerBackgroundColor = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['white', '#dddcdc'],
+    extrapolate: 'clamp',
+  });
+
   return (
     <View flex style={{backgroundColor: 'white'}}>
       <BottomSheetModal
@@ -114,40 +91,43 @@ const Home = props => {
         </View>
       </BottomSheetModal>
       <StatusBar animated barStyle={'dark-content'} />
-      <SafeAreaView style={!hideShadowHeader && styles.shadowHeader}>
-        <View>
-          <View
-            style={{paddingHorizontal: 20, paddingBottom: 20}}
-            row
-            centered
-            sBetween>
-            <Text size={24} style={{fontWeight: '700', color: '#386ec7'}}>
-              Leafy
-            </Text>
-            <View row centered>
-              <TouchableOpacity
-                style={{marginRight: 16}}
-                onPress={() => setHideSearch(!hideSearch)}>
-                <Icon name="search-outline" size={24} color="grey" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => bottomSheetRef.current.present()}>
-                <Icon name="filter" size={24} color="grey" />
-                <View style={styles.activeFilter} />
-              </TouchableOpacity>
-            </View>
+      <CustomSafeAreaView>
+        <View
+          style={{paddingHorizontal: 20, paddingBottom: 20}}
+          row
+          centered
+          sBetween>
+          <Text size={24} style={{fontWeight: '700', color: '#386ec7'}}>
+            Leafy
+          </Text>
+          <View row centered>
+            <TouchableOpacity
+              style={{marginRight: 16}}
+              onPress={() => setHideSearch(!hideSearch)}>
+              <Icon name="search-outline" size={24} color="grey" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => bottomSheetRef.current.present()}>
+              <Icon name="filter" size={24} color="grey" />
+              <View style={styles.activeFilter} />
+            </TouchableOpacity>
           </View>
-          {!hideSearch && (
-            <TextInput
-              onChangeText={setSearch}
-              placeholder={'Поиск'}
-              style={styles.headerInput}
-            />
-          )}
         </View>
-      </SafeAreaView>
+        {!hideSearch && (
+          <TextInput
+            onChangeText={setSearch}
+            placeholder={'Поиск'}
+            style={styles.headerInput}
+          />
+        )}
+        <Animated.View
+          style={{
+            width: '100%',
+            height: 0.5,
+            backgroundColor: headerBackgroundColor,
+          }}
+        />
+      </CustomSafeAreaView>
       <Animated.FlatList
-        ref={scrollRef}
         scrollEventThrottle={1}
         onScroll={Animated.event(
           [
@@ -155,11 +135,26 @@ const Home = props => {
               nativeEvent: {contentOffset: {y: scrollY}},
             },
           ],
-          {useNativeDriver: true},
+          {useNativeDriver: false},
         )}
+        initialNumToRender={6}
+        ListEmptyComponent={() => (
+          <View
+            style={{
+              width: '100%',
+              height: DEVICE_HEIGHT * 0.7,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text>К сожелению нету активити</Text>
+          </View>
+        )}
+        ItemSeparatorComponent={() => <View style={{height: 16}} />}
         refreshing={refresh}
         onRefresh={handleRefreshList}
-        renderItem={renderItem}
+        renderItem={({item, index}) => (
+          <ActivitiesCard item={item} index={index} user_id={user_id} />
+        )}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View row centered style={styles.tabBar}>
@@ -168,10 +163,10 @@ const Home = props => {
           </View>
         )}
         contentContainerStyle={styles.flatList}
-        data={activities}
+        data={tab ? activities : myActivities}
         keyExtractor={(_, index) => index.toString()}
       />
-      {hideScrollToTopButton && (
+      {/* {hideScrollToTopButton && (
         <TouchableOpacity
           onPress={() =>
             scrollRef.current.scrollToOffset({
@@ -187,7 +182,7 @@ const Home = props => {
           }}>
           <Icon name="chevron-up-circle-sharp" size={48} color={'#386ec7'} />
         </TouchableOpacity>
-      )}
+      )} */}
     </View>
   );
 };

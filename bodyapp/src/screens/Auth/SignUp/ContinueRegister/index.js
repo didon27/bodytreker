@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Image, KeyboardAvoidingView, StatusBar} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
+import {LocalizationContext} from 'services';
 import {Button, Text, View, TextInput} from 'components';
 import {images} from 'images';
 import {authActions} from 'store/auth';
 import Header from '../../components/Header';
 import {colors} from 'colors';
-import {routeNames} from 'enums';
 
 import styles from './styles';
 
 const ContinueRegister = props => {
+  const {translations} = useContext(LocalizationContext);
   const {email} = props.route.params;
   const [username, setUresname] = useState('');
   const [password, setPassword] = useState('');
@@ -51,8 +52,8 @@ const ContinueRegister = props => {
     if (confirmPassword !== password) {
       dispatch(
         authActions.setErrorContinueRegister({
-          confirmPassword: 'Пароли не совпадают',
-          password: 'Пароли не совпадают',
+          confirmPassword: translations.password_mismatch,
+          password: translations.password_mismatch,
         }),
       );
       return;
@@ -81,10 +82,10 @@ const ContinueRegister = props => {
       <View style={styles.centerContainer}>
         <View style={styles.centerBlock}>
           <Text color={colors.white} size={28}>
-            Регистрация
+            {translations.signUp}
           </Text>
           <Text color={colors.lightGrey} size={16} mTop={10} mBottom={10}>
-            Заполните все поля что бы заветршить регистрацию
+            {translations.fields_to_complete_registration}
           </Text>
           <TextInput
             value={email}
@@ -95,14 +96,14 @@ const ContinueRegister = props => {
           <TextInput
             value={username}
             placeholderTextColor={'#adadad'}
-            placeholder="Логин"
+            placeholder={translations.login}
             error={errorContinueRegister?.username}
             onChangeText={setUresname}
           />
           <TextInput
             value={password}
             placeholderTextColor={'#adadad'}
-            placeholder="Пароль"
+            placeholder={translations.password}
             isPassword
             error={errorContinueRegister?.password}
             onChangeText={setPassword}
@@ -110,12 +111,16 @@ const ContinueRegister = props => {
           <TextInput
             value={confirmPassword}
             placeholderTextColor={'#adadad'}
-            placeholder="Повторите пароль"
+            placeholder={translations.repeat_password}
             isPassword
             error={errorContinueRegister?.confirmPassword}
             onChangeText={setConfirmPassword}
           />
-          <Button text={'Подовжити'} onPress={signUp} loading={loading} />
+          <Button
+            text={translations.continue}
+            onPress={signUp}
+            loading={loading}
+          />
         </View>
       </View>
     </KeyboardAvoidingView>

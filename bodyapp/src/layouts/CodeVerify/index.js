@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -16,6 +16,7 @@ import {Button, View, Text, Loader} from 'components';
 import Header from '../../screens/Auth/components/Header';
 import {colors} from 'colors';
 import {images} from 'images';
+import {LocalizationContext} from 'services';
 
 import {styles} from './styles';
 
@@ -30,6 +31,7 @@ const CodeVerify = ({
   navigation,
   email,
 }) => {
+  const {translations} = useContext(LocalizationContext);
   const [value, setValue] = useState('');
   const [resendLoader, setResendLoader] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -84,10 +86,10 @@ const CodeVerify = ({
       <View style={styles.centerContainer}>
         <View style={styles.centerBlock}>
           <Text color={colors.white} size={28}>
-            Код подтверждения
+            {translations.confirmation_code}
           </Text>
           <Text color={colors.lightGrey} size={16} mTop={10} mBottom={20}>
-            Введите код который пришел к вам на почту{' '}
+            {translations.enter_the_code_that_came_to_your_mail}{' '}
             {email.toLowerCase().trim()}
           </Text>
           <CodeField
@@ -118,7 +120,7 @@ const CodeVerify = ({
           />
           {codeError && <Text style={styles.errorText}>{codeError}</Text>}
           <Button
-            text={'Продолжить'}
+            text={translations.continue}
             style={{marginTop: 30}}
             disabled={value.length < 4}
             onPress={_sendCode}
@@ -130,11 +132,13 @@ const CodeVerify = ({
             disabled={resendLoader || timeLeft !== 0}>
             {resendLoader && <Loader color={colors.turquoise} />}
             {timeLeft === 0 && !resendLoader && (
-              <Text style={styles.resendCodeTxt}>Отправить еще раз</Text>
+              <Text style={styles.resendCodeTxt}>
+                {translations.resend_code}
+              </Text>
             )}
             {timeLeft !== 0 && (
               <Text style={styles.resetText}>
-                Resend Code in {timeLeft} seconds
+                {translations.resend_code_via} {timeLeft} {translations.seconds}
               </Text>
             )}
           </TouchableOpacity>

@@ -33,12 +33,18 @@ const SignIn = ({navigation}) => {
 
   const signIn = () => {
     if (emailOrLogin.length < 6) {
-      dispatch(authActions.setErrorLogin({email: 'Min length 6'}));
+      dispatch(
+        authActions.setErrorLogin({email: translations.minimum_six_characters}),
+      );
       return;
     }
 
     if (password.length < 6) {
-      dispatch(authActions.setErrorLogin({password: 'Min lenght 6'}));
+      dispatch(
+        authActions.setErrorLogin({
+          password: translations.minimum_six_characters,
+        }),
+      );
       return;
     }
 
@@ -72,7 +78,7 @@ const SignIn = ({navigation}) => {
           </Text>
           <TextInput
             placeholderTextColor={'#adadad'}
-            placeholder="Email | Login"
+            placeholder={`Email | ${translations.login}`}
             error={errorLogin?.email}
             onChangeText={setEmailOrLogin}
           />

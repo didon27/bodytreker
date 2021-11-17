@@ -2,6 +2,7 @@ import {activitiesConstants} from './constants';
 
 const initialState = {
   activities: [],
+  myActivities: [],
   activities_categories: [],
 };
 
@@ -13,6 +14,8 @@ export const activitiesReducer = (state = initialState, action) => {
       return {...state, loading: true, error: null};
     case activitiesConstants.GET_ACTIVITIES_SUCCESS:
       return {...state, loading: false, activities: payload};
+    case activitiesConstants.GET_MY_ACTIVITIES_SUCCESS:
+      return {...state, loading: false, myActivities: payload};
     case activitiesConstants.GET_ACTIVITIES_FAILURE:
       return {...state, loading: false, error: error};
 

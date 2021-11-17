@@ -10,6 +10,9 @@ const initialState = {
   errorContinueRegister: null,
   token: null,
   forgotPasswordError: null,
+  verificationForgotPasswordError: null,
+  reset_token: null,
+  resetPasswordError: null,
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -37,6 +40,13 @@ export const authReducer = (state = initialState, action) => {
     case authConstants.REFRESH_TOKEN_FAILURE:
       return {...state, loading: false, error: error};
 
+    case authConstants.RESET_PASSWORD_REQUEST:
+      return {...state, loading: true, resetPasswordError: null};
+    case authConstants.RESET_PASSWORD_SUCCESS:
+      return {...state, loading: false};
+    case authConstants.RESET_PASSWORD_FAILURE:
+      return {...state, loading: false, resetPasswordError: error};
+
     case authConstants.VERIFICATION_EMAIL_REQUEST:
       return {...state, loading: true, errorRegisterCode: null};
     case authConstants.VERIFICATION_EMAIL_SUCCESS:
@@ -58,6 +68,18 @@ export const authReducer = (state = initialState, action) => {
     case authConstants.FORGOT_PASSWORD_FAILURE:
       return {...state, loading: false, forgotPasswordError: error};
 
+    case authConstants.VERIFICATION_FORGOT_PASSWORD_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        verificationForgotPasswordError: null,
+        reset_token: null,
+      };
+    case authConstants.VERIFICATION_FORGOT_PASSWORD_SUCCESS:
+      return {...state, loading: false, reset_token: action.payload};
+    case authConstants.VERIFICATION_FORGOT_PASSWORD_FAILURE:
+      return {...state, loading: false, verificationForgotPasswordError: error};
+
     case authConstants.SET_TOKEN_REQUEST:
       return {...state, tokenLoading: true};
     case authConstants.SET_TOKEN_SUCCESS:
@@ -71,6 +93,12 @@ export const authReducer = (state = initialState, action) => {
 
     case authConstants.SET_ERROR_FORGOT_PASSWORD:
       return {...state, forgotPasswordError: action.payload};
+      
+    case authConstants.SET_ERROR_PASSWORD_RESET:
+      return {...state, resetPasswordError: action.payload};
+
+    case authConstants.SET_ERROR_VERIFICATION_FORGOT_PASSWORD:
+      return {...state, verificationForgotPasswordError: action.payload};
 
     case authConstants.SET_ERROR_CONTINUE_REGISTER:
       return {...state, errorContinueRegister: action.payload};

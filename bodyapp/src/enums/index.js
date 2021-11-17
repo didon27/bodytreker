@@ -6,6 +6,7 @@ export const routeNames = Object.freeze({
   continueRegister: 'ContinueRegister',
   forgotPassword: 'ForgotPassword',
   verificationPasswordCode: 'VerificationPasswordCode',
+  passwordRecovery: 'PasswordRecovery',
 });
 
 export const keys = Object.freeze({

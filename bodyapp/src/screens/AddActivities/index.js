@@ -37,7 +37,6 @@ import styles from './styles';
 const AddActivities = props => {
   const {user} = useSelector(state => state.user);
   const {activities_categories} = useSelector(state => state.activities);
-  const [parsedCategories, parseCategories] = useState(activities_categories);
   const [currentPhoto, setCurrentPhoto] = useState(null);
   const {token} = useSelector(state => state.auth);
 
@@ -47,7 +46,6 @@ const AddActivities = props => {
 
   useEffect(() => {
     dispatch(activitiesActions.getActivitiesCategories());
-    parseCategories(activities_categories);
   }, []);
 
   // variables
