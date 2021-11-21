@@ -1,11 +1,7 @@
-import React from 'react';
-import {Dimensions, Image} from 'react-native';
+import React, {useContext} from 'react';
+import {StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
-import {
-  getFocusedRouteNameFromRoute,
-  StackActions,
-} from '@react-navigation/native';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {images} from 'images';
 import {colors} from 'colors';
 import {Text, View} from '../components/';
@@ -14,66 +10,54 @@ import Profile from 'screens/Profile/Main';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AddActivities from 'screens/AddActivities';
 
-const windowHeight = Dimensions.get('window').height;
-
 const Tab = createBottomTabNavigator();
 
-const MenuStack = createStackNavigator();
+const styles = StyleSheet.create({
+  tabBar: {
+    height: 80,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
 
-const getTabBarVisibility = route => {
+    elevation: 17,
+    borderColor: colors.outerBorder,
+  },
+  tabImage: {
+    width: 28,
+    height: 28,
+    borderRadius: 16,
+  },
+});
+
+const getTabBarVisibility = (route, stack, routeProps) => {
   const routeName = getFocusedRouteNameFromRoute(route);
-  const hideOnScreens = ['Camera'];
-  if (hideOnScreens.indexOf(routeName) > -1) return false;
-  return true;
+
+  // console.log(routeName);
+  const hideOnScreens = ['AddActivities'];
+
+  // if (stack === 'AddActivities') {
+  //   return {display: 'none'};
+  // }
+  if (hideOnScreens.includes(routeName)) {
+    return {display: 'none'};
+  } else {
+    return styles.tabBar;
+  }
 };
 
-function MenuStackScreen() {
-  return (
-    <MenuStack.Navigator
-      screenOptions={({navigation, route}) => ({
-        headerTitleStyle: {
-          fontSize: 24,
-          color: colors.text,
-        },
-        headerStyle: {
-          backgroundColor: colors.primary,
-          shadowColor: 'transparent',
-        },
-      })}>
-      <MenuStack.Screen
-        name="Home"
-        options={({navigation, route}) => ({
-          headerShown: false,
-        })}
-        component={Home}
-      />
-    </MenuStack.Navigator>
-  );
-}
-
-const tabPressListener = props => {
-  const {navigation} = props;
-  return {
-    blur: e => {
-      const target = e.target;
-      const state = navigation.dangerouslyGetState();
-      const route = state.routes.find(r => r.key === target);
-      // If we are leaving a tab that has its own stack navigation, then clear it
-      if (route.state?.type === 'stack' && route.state.routes?.length > 1) {
-        navigation.dispatch(StackActions.popToTop());
-      }
-    },
-    // Log the state for debug only
-    state: e => {
-      const state = navigation.dangerouslyGetState();
-    },
-  };
-};
-
-function AppNavigation() {
+function AppNavigation(props) {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+        tabBarShowLabel: false,
+        tabBarStyle: styles.tabBar,
         tabBarIcon: ({focused, color, size}) => {
           let source = 'home';
 
@@ -85,12 +69,12 @@ function AppNavigation() {
             source = 'person';
           }
 
-          if (route.name === 'Messenger') {
-            source = 'home';
+          if (route.name === 'Message') {
+            source = 'chatbubbles-sharp';
           }
 
-          if (route.name === 'Menu') {
-            source = 'home';
+          if (route.name === 'AddActivities') {
+            source = 'ios-duplicate';
           }
 
           // You can return any component that you like here!
@@ -98,72 +82,60 @@ function AppNavigation() {
             <View style={{alignItems: 'center'}}>
               <Icon
                 name={source}
-                size={24}
+                size={focused ? 30 : 26}
                 color={focused ? '#4285f4' : '#c9c9c9'}
               />
-              <Text
-                style={{
-                  color: focused ? '#4285f4' : '#c9c9c9',
-                  marginTop: 8,
-                  fontSize: 12,
-                  fontWeight: '400',
-                }}>
-                {route.name}
-              </Text>
             </View>
           );
         },
       })}
-      tabBarOptions={{
-        showLabel: false,
-        keyboardHidesTabBar: true,
-        style: {
-          backgroundColor: colors.white,
-          paddingTop: 20,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderTopWidth: 0.5,
-          borderTopColor: 'rgba(68, 68, 68, 0.2)',
-        },
-        tabStyle: {
-          backgroundColor: 'transparent',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        activeTintColor: colors.mainRed,
-        inactiveTintColor: 'gray',
-      }}>
+      // tabBarOptions={{
+      //   showLabel: false,
+      //   keyboardHidesTabBar: true,
+      //   style: {
+      //     backgroundColor: colors.white,
+      //     paddingTop: 20,
+      //     alignItems: 'center',
+      //     justifyContent: 'center',
+      //     borderTopWidth: 0.5,
+      //     borderTopColor: 'rgba(68, 68, 68, 0.2)',
+      //   },
+      //   tabStyle: {
+      //     backgroundColor: 'transparent',
+      //     alignItems: 'center',
+      //     justifyContent: 'center',
+      //   },
+      //   activeTintColor: colors.mainRed,
+      //   inactiveTintColor: 'gray',
+      // }}
+    >
       <Tab.Screen
         name="Home"
-        component={MenuStackScreen}
+        component={Home}
         options={({route}) => ({
-          tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: getTabBarVisibility(route, 'homeStack', props),
         })}
-        listeners={props => tabPressListener({...props})}
       />
       <Tab.Screen
         name="AddActivities"
         component={AddActivities}
         options={({route}) => ({
-          tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: getTabBarVisibility(route, 'AddActivities'),
         })}
-        listeners={props => tabPressListener({...props})}
       />
       <Tab.Screen
         name="Message"
         component={Profile}
         options={({route}) => ({
-          tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: getTabBarVisibility(route),
         })}
-        listeners={props => tabPressListener({...props})}
       />
       <Tab.Screen
         name="Profile"
         component={Profile}
         options={({route}) => ({
-          tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: getTabBarVisibility(route),
         })}
-        listeners={props => tabPressListener({...props})}
       />
     </Tab.Navigator>
   );

@@ -12,7 +12,7 @@ const CheckBox = ({selected, changeSelect}) => {
       onPress={() => changeSelect(!selected)}
       style={{
         borderWidth: 1,
-        borderColor: 'grey',
+        borderColor: colors.lightGrey,
         width: 16,
         height: 16,
         borderRadius: 8,
@@ -23,8 +23,8 @@ const CheckBox = ({selected, changeSelect}) => {
         <View
           style={{
             backgroundColor: '#4285f4',
-            width: 8,
-            height: 8,
+            width: 10,
+            height: 10,
             borderRadius: 5,
           }}
         />

@@ -13,7 +13,7 @@ export const colors = {
   trackDisabled: '#767577',
   purple: '#E3A9FF',
 
-
+  mainBlue: '#4285f4',
   lightGrey: '#dddcdc',
 
   pinkBorder: '#ECB3B6',
@@ -21,5 +21,5 @@ export const colors = {
   blueBlock: '#016A7C',
   orangeBlock: '#825900',
   orange: '#FF9800',
-  btnNonSelected: '#F7F9FC'
+  btnNonSelected: '#F7F9FC',
 };

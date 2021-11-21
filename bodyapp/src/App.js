@@ -34,4 +34,5 @@ function App() {
 }
 
 setupInterceptors(store);
+
 export default App;

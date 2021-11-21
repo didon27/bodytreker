@@ -6,6 +6,9 @@ module.exports = (sequelize, Sequelize) => {
     title: {
       type: Sequelize.STRING,
     },
+    partner: {
+      type: Sequelize.INTEGER,
+    },
     user_id: {
       type: Sequelize.INTEGER,
     },

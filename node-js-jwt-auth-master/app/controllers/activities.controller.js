@@ -5,34 +5,62 @@ const User = db.user;
 const ActivitiesCategories = db.activities_categories;
 const IdsActivitiesCategories = db.ids_activities_categories;
 const ActivitiesImages = db.activities_images;
+const strings = require("../strings");
+const IdsActivitiesImages = db.ids_activities_images;
 
-exports.createNewActivities = (req, res) => {
-  let { title, description, user_id, categories_ids } = req.body;
+const upload = require("../middleware/upload");
 
-  Activities.create({ title, description, user_id })
-    .then((activity) => {
-      let categories = categories_ids?.map((category) => {
-        return {
-          activityId: activity.id,
-          activitiesCategoryId: category,
-        };
-      });
+exports.createNewActivities = async (req, res) => {
+  try {
+    await upload(req, res);
+    let { title, description, user_id, categories_ids, partner } = req.body;
 
-      ActivitiesImages.create({
-        filename: req.file.filename,
-        activity_id: activity.id,
+    Activities.create({ title, description, user_id, partner })
+      .then((activity) => {
+        let categories = categories_ids?.map((category) => {
+          return {
+            activityId: activity.id,
+            activitiesCategoryId: category,
+          };
+        });
+
+        const images = req.files.map((item) => {
+          return {
+            filename: item.filename,
+            activity_id: activity.id,
+          };
+        });
+
+        ActivitiesImages.bulkCreate(images).then((image) => {
+          let images = image.map((item) => {
+            let el = Object.values(item)[0];
+            return {
+              activityId: activity.id,
+              activitiesImageId: el.id,
+            };
+          });
+
+          IdsActivitiesImages.bulkCreate(images);
+        });
+
+        IdsActivitiesCategories.bulkCreate(categories).then((id) => {
+          res.status(200).send(id);
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
       });
-      IdsActivitiesCategories.bulkCreate(categories).then((id) => {
-        res.status(200).send(id);
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
-    });
+  } catch (e) {
+    res.status(500).send({ error: e });
+  }
 };
 
 exports.getCategories = (req, res) => {
-  ActivitiesCategories.findAll()
+  let lang = req.headers["accept-language"] || "en";
+
+  ActivitiesCategories.findAll({
+    attributes: ["id", [lang, "title"], "color"],
+  })
     .then((categories) => {
       res.status(200).send(categories);
     })
@@ -43,6 +71,8 @@ exports.getCategories = (req, res) => {
 
 exports.getActivities = (req, res) => {
   let { user_id, title, actual } = req.body;
+  let lang = req.headers["accept-language"] || "en";
+
   let dataUser = {};
   let dataActivities = {};
 
@@ -63,9 +93,8 @@ exports.getActivities = (req, res) => {
     through: IdsActivitiesCategories,
   });
 
-  Activities.belongsTo(ActivitiesImages, {
-    foreignKey: "id",
-    targetKey: "activity_id",
+  Activities.belongsToMany(ActivitiesImages, {
+    through: IdsActivitiesImages,
   });
 
   Activities.findAll({
@@ -82,12 +111,15 @@ exports.getActivities = (req, res) => {
       {
         as: "activities_categories",
         model: ActivitiesCategories,
-        // attributes: ["id"],
+        attributes: [[lang, "title"], "color"],
         through: { attributes: [] },
       },
       {
-        as: "activities_image",
+        as: "activities_images",
         model: ActivitiesImages,
+        through: { attributes: [] },
+        attributes: ["filename"],
+        // through: { attributes: [] },
       },
     ],
   })

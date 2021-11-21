@@ -1,6 +1,7 @@
 const controller = require("../controllers/activities.controller");
 const uploadFile = require("../middleware/file");
 const { authJwt } = require("../middleware");
+const uploadController = require("../controllers/upload.controller");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -21,9 +22,10 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.getCategories
   );
+  app.post("/api/activities/multiple-upload", uploadController.multipleUpload);
+
   app.post(
     "/api/activities/create-new-activities",
-    uploadFile.single("image"),
     controller.createNewActivities
   );
 };

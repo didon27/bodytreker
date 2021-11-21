@@ -1,6 +1,7 @@
 const db = require("../models");
 const ROLES = db.ROLES;
 const User = db.user;
+const strings = require("../strings");
 
 checkDuplicateEmail = (req, res, next) => {
   // Username
@@ -52,6 +53,8 @@ checkDuplicateUsername = (req, res, next) => {
 };
 
 checkValidVerifyEmailCode = (req, res, next) => {
+  let lang = req.headers["accept-language"] || 'en';
+
   User.findOne({
     where: {
       email: req.body.email,
@@ -60,7 +63,7 @@ checkValidVerifyEmailCode = (req, res, next) => {
     .then((user) => {
       if (req.body.activation_token !== user.activation_token) {
         res.status(400).send({
-          message: "Wrong code!",
+          message: strings[lang].wrong_code,
         });
         return;
       }
@@ -69,7 +72,7 @@ checkValidVerifyEmailCode = (req, res, next) => {
     })
     .catch((error) => {
       res.status(400).send({
-        message: "Email not found",
+        message: strings[lang].user_not_found,
       });
       return;
     });

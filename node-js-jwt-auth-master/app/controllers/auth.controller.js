@@ -3,6 +3,7 @@ const config = require("../config/auth.config");
 const User = db.user;
 const PasswordResets = db.password_resets;
 const RefreshToken = db.refreshToken;
+const strings = require("../strings");
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -59,6 +60,7 @@ exports.signUp = (req, res) => {
 
 exports.signUpContinue = (req, res) => {
   let { username, password, email } = req.body;
+  let lang = req.headers["accept-language"] || 'en';
 
   User.findOne({ where: { email } })
     .then(async (user) => {
@@ -72,7 +74,7 @@ exports.signUpContinue = (req, res) => {
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
-          message: "Invalid Password!",
+          message: strings[lang].invalid_password,
         });
       }
 
@@ -109,6 +111,8 @@ exports.verificationEmail = (req, res) => {
 
 exports.signIn = (req, res) => {
   let { email, username, password } = req.body;
+  let lang = req.headers["accept-language"] || 'en';
+
   let data;
 
   if (email && email.length) {
@@ -122,14 +126,14 @@ exports.signIn = (req, res) => {
   })
     .then(async (user) => {
       if (!user) {
-        return res.status(404).send({ email: "User Not found." });
+        return res.status(404).send({ email: strings[lang].user_not_found });
       }
 
       var passwordIsValid = bcrypt.compareSync(password, user.password);
 
       if (!passwordIsValid) {
         return res.status(401).send({
-          password: "Invalid Password!",
+          password: strings[lang].invalid_password,
         });
       }
 
@@ -217,6 +221,7 @@ exports.refreshToken = async (req, res) => {
 
 exports.forgotPassword = (req, res) => {
   let { email } = req.body;
+  let lang = req.headers["accept-language"] || 'en';
 
   let activation_token = (Math.floor(Math.random() * 10000) + 10000)
     .toString()
@@ -242,12 +247,13 @@ exports.forgotPassword = (req, res) => {
       res.status(200).send({ message: "Send code your email!" });
     })
     .catch((err) => {
-      res.status(400).send({ message:  'User not found!'});
+      res.status(400).send({ message: strings[lang].user_not_found });
     });
 };
 
 exports.verificationForgotPassword = (req, res) => {
   let { email, activation_token } = req.body;
+  let lang = req.headers["accept-language"] || 'en';
 
   User.findOne({ where: { email, activation_token } })
     .then((user) => {
@@ -267,7 +273,7 @@ exports.verificationForgotPassword = (req, res) => {
         });
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: strings[lang].wrong_code });
     });
 };
 
@@ -285,16 +291,19 @@ exports.resetPassword = (req, res) => {
       }
 
       User.findOne({ where: { email } })
-        .then((user) => {
+        .then(async (user) => {
           user.password = bcrypt.hashSync(password, 8);
           user.save();
 
-          var token = jwt.sign({ id: user.id }, config.secret, {
-            expiresIn: 86400, // 24 hours
+          const token = jwt.sign({ id: user.id }, config.secret, {
+            expiresIn: config.jwtExpiration,
           });
+
+          let refreshToken = await RefreshToken.createToken(user);
 
           res.status(200).send({
             accessToken: token,
+            refreshToken: refreshToken,
           });
         })
         .catch((err) => {

@@ -17,11 +17,11 @@ export default StyleSheet.create({
     elevation: 4,
   },
   image: {
-    height: 160,
+    height: 140,
     width: '100%',
     borderRadius: 14,
     marginTop: 10,
-    marginBottom: 12,
+    marginBottom: 4,
   },
   avatar: {width: 34, height: 34, borderRadius: 17},
   button: {height: 36, flex: 1, marginTop: 16},

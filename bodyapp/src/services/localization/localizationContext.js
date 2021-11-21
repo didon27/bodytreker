@@ -1,7 +1,8 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import {storage} from 'services/storage';
 import translations, {DEFAULT_LANGUAGE} from './translations';
 import {APP_LANGUAGE_KEY} from 'constants';
+import {mamaAxios} from 'services/api';
 
 export const LocalizationContext = createContext({
   translations,
@@ -12,6 +13,11 @@ export const LocalizationContext = createContext({
 
 export const LocalizationProvider = ({children}) => {
   const [appLanguage, setAppLanguage] = useState(DEFAULT_LANGUAGE);
+  mamaAxios.defaults.headers.common['Accept-Language'] = appLanguage;
+
+  useEffect(() => {
+    initializeAppLanguage();
+  }, []);
 
   const setLanguage = language => {
     translations.setLanguage(language);
@@ -23,9 +29,11 @@ export const LocalizationProvider = ({children}) => {
     const currentLanguage = await storage.get(APP_LANGUAGE_KEY);
 
     if (!currentLanguage) {
-      setLanguage(DEFAULT_LANGUAGE);
+      mamaAxios.defaults.headers.common['Accept-Language'] = DEFAULT_LANGUAGE;
+      translations.setLanguage(DEFAULT_LANGUAGE);
     } else {
-      setLanguage(currentLanguage);
+      mamaAxios.defaults.headers.common['Accept-Language'] = currentLanguage;
+      translations.setLanguage(currentLanguage);
     }
   };
 

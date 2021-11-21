@@ -5,14 +5,14 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 
 import {colors} from 'colors';
-import {View, Text, Button} from 'components';
+import {View, Text, Button, ItemCategory} from 'components';
 import {images} from 'images';
 import {API} from 'constants';
 
 import styles from './styles';
 
-const ActivitiesCard = ({item, index, user_id}) => {
-  let {user, title, createdAt, activities_categories, activities_image} = item;
+const ActivitiesCard = ({item, index, user_id, translations}) => {
+  let {user, title, createdAt, activities_categories, activities_images} = item;
 
   return (
     <TouchableOpacity key={index} style={styles.container}>
@@ -43,28 +43,21 @@ const ActivitiesCard = ({item, index, user_id}) => {
       <Text size={18} mTop={8} style={{fontWeight: '500'}}>
         {title}
       </Text>
-      {activities_image?.filename && (
+      {activities_images[0]?.filename && (
         <Image
-          source={{uri: API + '/images/' + activities_image?.filename}}
+          source={{uri: API + '/images/' + activities_images[0]?.filename}}
           style={styles.image}
           resizeMode="cover"
         />
       )}
       <View row centered style={{flexWrap: 'wrap'}}>
         {activities_categories.map((e, i) => (
-          <View
-            key={i}
-            style={{
-              ...styles.category,
-              backgroundColor: e.color,
-            }}>
-            <Text color={colors.white}>{e?.ru}</Text>
-          </View>
+          <ItemCategory key={i} item={e} />
         ))}
       </View>
       <Text color={'grey'}>{moment(createdAt).startOf('hour').fromNow()}</Text>
       <Button
-        text={user_id === user.id ? 'Редактировать' : 'Подписаться'}
+        text={user_id === user.id ? translations.edit : 'Подписаться'}
         style={styles.button}
       />
     </TouchableOpacity>

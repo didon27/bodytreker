@@ -1,8 +1,12 @@
 export const en = {
   singIn: 'Login',
   signUp: 'Register',
+  publish: 'Publish',
   forgotPassword: 'Forgot password?',
   continue: 'Continue',
+  edit: 'Edit',
+  actual: 'Actual',
+  my: 'My',
   password: 'Password',
   tagline: 'We do not build boundaries between people, we bring them together.',
   enter_your_email:

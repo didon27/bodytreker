@@ -1,4 +1,11 @@
-import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+  useContext,
+} from 'react';
 import {StatusBar, TouchableOpacity, TextInput, Animated} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 
@@ -13,8 +20,10 @@ import {BottomSheetModal} from '@gorhom/bottom-sheet';
 
 import styles from './styles';
 import {DEVICE_HEIGHT} from 'constants';
+import {LocalizationContext} from 'services';
 
 const Home = props => {
+  const {appLanguage, translations} = useContext(LocalizationContext);
   const {user} = useSelector(state => state.user);
   const user_id = user.id;
   const initialTab = props.route;
@@ -45,7 +54,7 @@ const Home = props => {
     }, 400);
 
     setRefresh(false);
-  }, [refresh, search, initialTab]);
+  }, [refresh, search, initialTab, appLanguage]);
 
   const handleRefreshList = () => {
     setRefresh(true);
@@ -153,13 +162,18 @@ const Home = props => {
         refreshing={refresh}
         onRefresh={handleRefreshList}
         renderItem={({item, index}) => (
-          <ActivitiesCard item={item} index={index} user_id={user_id} />
+          <ActivitiesCard
+            item={item}
+            index={index}
+            user_id={user_id}
+            translations={translations}
+          />
         )}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View row centered style={styles.tabBar}>
-            {returnTabBatton('Актиальные', true)}
-            {returnTabBatton('Мои', false)}
+            {returnTabBatton(translations.actual, true)}
+            {returnTabBatton(translations.my, false)}
           </View>
         )}
         contentContainerStyle={styles.flatList}
