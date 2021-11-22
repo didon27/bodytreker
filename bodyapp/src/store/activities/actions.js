@@ -44,4 +44,9 @@ export const activitiesActions = {
     type: activitiesConstants.CREATE_NEW_ACTIVITIES_FAILURE,
     error,
   }),
+
+  createNewActivitiesError: error => ({
+    type: activitiesConstants.CREATE_NEW_ACTIVITIES_ERROR,
+    error,
+  }),
 };

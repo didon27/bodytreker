@@ -35,7 +35,7 @@ export const api = {
   },
   activities: {
     getActivitiesCategories: params =>
-      request.get('/activities/get-categories'),
+      request.post('/activities/get-categories', params),
     createNewActivities: params =>
       request.post('/activities/create-new-activities', params),
     getActivities: params => request.post('/activities/get-activities', params),

@@ -50,4 +50,10 @@ export default StyleSheet.create({
     right: 2,
     top: 16,
   },
+  partnerItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 10,
+    width: '100%',
+  },
 });

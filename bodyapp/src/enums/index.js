@@ -3,6 +3,7 @@ export const routeNames = Object.freeze({
   signUp: 'SignUp',
   registerEmail: 'RegisterEmail',
   home: 'Home',
+  dateils: 'Details',
   continueRegister: 'ContinueRegister',
   forgotPassword: 'ForgotPassword',
   verificationPasswordCode: 'VerificationPasswordCode',

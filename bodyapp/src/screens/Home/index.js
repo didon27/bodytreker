@@ -10,23 +10,25 @@ import {StatusBar, TouchableOpacity, TextInput, Animated} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 
 import {activitiesActions} from 'store/activities';
-import {View, Text, CustomSafeAreaView} from 'components';
+import {View, Text, CustomSafeAreaView, CheckBox} from 'components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ActivitiesCard from './components/ActivitiesCard';
 
 import {DefaultBackDrop} from 'components/BackDrop';
 
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
+import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 
 import styles from './styles';
 import {DEVICE_HEIGHT} from 'constants';
 import {LocalizationContext} from 'services';
+import {colors} from 'colors';
 
 const Home = props => {
   const {appLanguage, translations} = useContext(LocalizationContext);
   const {user} = useSelector(state => state.user);
   const user_id = user.id;
   const initialTab = props.route;
+  const [partner, setPartner] = useState(null);
   const {activities, myActivities} = useSelector(state => state.activities);
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
@@ -47,6 +49,10 @@ const Home = props => {
       data.title = search;
     }
 
+    if (partner) {
+      data.partner = partner;
+    }
+
     dispatch(activitiesActions.getActivities({...data, actual: true}));
 
     setTimeout(() => {
@@ -54,7 +60,7 @@ const Home = props => {
     }, 400);
 
     setRefresh(false);
-  }, [refresh, search, initialTab, appLanguage]);
+  }, [refresh, search, initialTab, appLanguage, partner]);
 
   const handleRefreshList = () => {
     setRefresh(true);
@@ -81,6 +87,22 @@ const Home = props => {
     console.log('handleSheetChanges', index);
   }, []);
 
+  const returnPartnerCheckbox = (title, id) => {
+    return (
+      <TouchableOpacity
+        style={styles.partnerItem}
+        onPress={() => setPartner(id)}>
+        <CheckBox
+          selected={partner === id}
+          changeSelect={() => setPartner(id)}
+        />
+        <Text size={16} mLeft={6}>
+          {title}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   const headerBackgroundColor = scrollY.interpolate({
     inputRange: [0, 100],
     outputRange: ['white', '#dddcdc'],
@@ -95,9 +117,18 @@ const Home = props => {
         snapPoints={snapPoints}
         backdropComponent={DefaultBackDrop}
         onChange={handleSheetChanges}>
-        <View style={styles.contentContainer}>
-          <Text>Awesome 🎉</Text>
-        </View>
+        <BottomSheetScrollView
+          style={{paddingHorizontal: 20, paddingBottom: 20}}>
+          <View style={styles.block} mTop={16}>
+            <Text size={18} style={{fontWeight: '600'}} mBottom={6}>
+              {translations.who_would_you_like}
+            </Text>
+            {returnPartnerCheckbox(translations.a_man, 0)}
+            {returnPartnerCheckbox(translations.a_women, 1)}
+            {returnPartnerCheckbox(translations.by_the_company, 2)}
+            {returnPartnerCheckbox(translations.all_the_same, null)}
+          </View>
+        </BottomSheetScrollView>
       </BottomSheetModal>
       <StatusBar animated barStyle={'dark-content'} />
       <CustomSafeAreaView>
@@ -113,7 +144,11 @@ const Home = props => {
             <TouchableOpacity
               style={{marginRight: 16}}
               onPress={() => setHideSearch(!hideSearch)}>
-              <Icon name="search-outline" size={24} color="grey" />
+              <Icon
+                name="search-outline"
+                size={24}
+                color={!hideSearch ? colors.mainBlue : 'grey'}
+              />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => bottomSheetRef.current.present()}>
               <Icon name="filter" size={24} color="grey" />
@@ -163,6 +198,7 @@ const Home = props => {
         onRefresh={handleRefreshList}
         renderItem={({item, index}) => (
           <ActivitiesCard
+            navigation={props.navigation}
             item={item}
             index={index}
             user_id={user_id}

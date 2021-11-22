@@ -1,6 +1,5 @@
 import React, {useState, useRef, useMemo, useEffect, useContext} from 'react';
 import {
-  StatusBar,
   TouchableOpacity,
   TextInput,
   ScrollView,
@@ -12,6 +11,7 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import {useSelector, useDispatch} from 'react-redux';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   request,
   check,
@@ -20,6 +20,7 @@ import {
   openSettings,
   openLimitedPhotoLibraryPicker,
 } from 'react-native-permissions';
+
 import axios from 'axios';
 import {API_URL} from 'constants';
 import {colors} from 'colors';
@@ -31,17 +32,16 @@ import {
   CustomSafeAreaView,
   ItemCategory,
 } from 'components';
-import {images} from 'images';
 import {activitiesActions} from 'store/activities';
 import {routeNames} from 'enums';
 import {DefaultBackDrop} from 'components/BackDrop';
+import {LocalizationContext} from 'services';
 
 import styles from './styles';
-import {LocalizationContext} from 'services';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const AddActivities = props => {
   const {appLanguage, translations} = useContext(LocalizationContext);
+  const {createNewActivitiesError} = useSelector(state => state.activities);
   const {user} = useSelector(state => state.user);
   const scrollY = useRef(new Animated.Value(0)).current;
   const {activities_categories, loading} = useSelector(
@@ -49,15 +49,28 @@ const AddActivities = props => {
   );
   const [currentPhoto, setCurrentPhoto] = useState([]);
   const {token} = useSelector(state => state.auth);
-
+  const [currentCategories, setCurrentCategories] = useState([]);
   const [title, setTitle] = useState('');
+  const [categoryTitle, setCategoryTitle] = useState('');
   const [partner, setPartner] = useState(null);
   const dispatch = useDispatch();
   const bottomSheetRef = useRef();
 
   useEffect(() => {
-    dispatch(activitiesActions.getActivitiesCategories());
-  }, [appLanguage]);
+    let data = {};
+
+    if (categoryTitle.length > 3) {
+      data.title = categoryTitle;
+    }
+
+    dispatch(activitiesActions.getActivitiesCategories(data));
+  }, [appLanguage, categoryTitle]);
+
+  useEffect(() => {
+    if (createNewActivitiesError) {
+      dispatch(activitiesActions.createNewActivitiesError(null));
+    }
+  }, [title, description]);
 
   // variables
   const snapPoints = useMemo(() => ['25%', '70%'], []);
@@ -66,6 +79,26 @@ const AddActivities = props => {
 
   const createNewActivities = () => {
     const data = new FormData();
+
+    if (title.length < 6) {
+      dispatch(
+        activitiesActions.createNewActivitiesError({
+          title: translations.minimum_six_characters,
+        }),
+      );
+      return;
+    }
+
+    if (description.length < 6) {
+      dispatch(
+        activitiesActions.createNewActivitiesError({
+          description: translations.minimum_six_characters,
+        }),
+      );
+      return;
+    }
+
+    dispatch(activitiesActions.createNewActivitiesError(null));
 
     if (currentPhoto.length > 1) {
       currentPhoto.map(photo =>
@@ -84,11 +117,13 @@ const AddActivities = props => {
       data.append('partner', partner);
     }
 
+    if (currentCategories.length) {
+      currentCategories.map(id => data.append('categories_ids', id));
+    }
+
     data.append('title', title);
     data.append('description', description);
     data.append('user_id', user.id);
-
-    currentCategories.map(id => data.append('categories_ids', id));
 
     axios({
       method: 'post',
@@ -103,14 +138,12 @@ const AddActivities = props => {
         // setTitle('');
         // setDescription('');
         // setCurrentCategories([]);
-        props.navigation.navigate(routeNames.home, {tab: false});
+        props.navigation.navigate(routeNames.home);
       })
       .catch(err => {
         console.log('Error', err.response.data);
       });
   };
-
-  const [currentCategories, setCurrentCategories] = useState([]);
 
   const changeSelected = id => {
     let categories = [...currentCategories];
@@ -187,6 +220,7 @@ const AddActivities = props => {
       </TouchableOpacity>
     );
   };
+
   const headerBackgroundColor = scrollY.interpolate({
     inputRange: [0, 100],
     outputRange: ['white', '#dddcdc'],
@@ -202,23 +236,14 @@ const AddActivities = props => {
           centered
           sBetween>
           <Text size={20} style={{fontWeight: '600'}}>
-            New post
+            {translations.newActivities}
           </Text>
           <Button
             onPress={createNewActivities}
             text={translations.publish}
             loading={loading}
             textStyle={{fontSize: 14}}
-            style={{
-              backgroundColor: colors.mainBlue,
-              paddingHorizontal: 12,
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: 32,
-              width: null,
-              marginTop: 0,
-              borderRadius: 8,
-            }}
+            style={styles.publishBtn}
           />
         </View>
         <Animated.View
@@ -254,61 +279,21 @@ const AddActivities = props => {
               key={index}
               source={{uri: item.path}}
               imageStyle={{borderRadius: 14}}
-              style={{
-                alignItems: 'flex-end',
-                borderRadius: 14,
-                justifyContent: 'flex-end',
-                height: 90,
-                width: 120,
-                marginRight: 10,
-              }}>
+              style={styles.image}>
               <TouchableOpacity
                 onPress={() =>
                   setCurrentPhoto(
                     currentPhoto.filter(el => el.path !== item.path),
                   )
                 }
-                style={{
-                  backgroundColor: 'white',
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-
-                  elevation: 5,
-                  width: 24,
-                  height: 24,
-                  borderRadius: 14,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+                style={styles.removeImage}>
                 <Icon name="close" size={14} />
               </TouchableOpacity>
             </ImageBackground>
           ))}
           {currentPhoto.length < 4 && (
-            <TouchableOpacity
-              onPress={openCamera}
-              style={{
-                height: 90,
-                width: 120,
-                borderRadius: 14,
-              }}>
-              <View
-                style={{
-                  height: '100%',
-                  borderRadius: 10,
-                  width: '100%',
-                  borderStyle: 'dashed',
-                  // backgroundColor: '#f4f4f4',
-                  borderWidth: 2,
-                  borderColor: colors.lightGrey,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+            <TouchableOpacity onPress={openCamera} style={styles.addPhotoBlock}>
+              <View style={styles.addPhoto}>
                 <Icon
                   name={'add-photo-alternate'}
                   size={40}
@@ -319,48 +304,10 @@ const AddActivities = props => {
           )}
         </ScrollView>
         <View style={{paddingHorizontal: 20}}>
-          {/* {currentPhoto ? (
-            <ImageBackground
-              source={{uri: currentPhoto.path}}
-              imageStyle={{borderRadius: 14}}
-              style={{
-                width: '100%',
-                alignItems: 'flex-end',
-                borderRadius: 14,
-                justifyContent: 'flex-end',
-                height: 160,
-              }}>
-              <TouchableOpacity
-                onPress={() => setCurrentPhoto(null)}
-                style={{
-                  backgroundColor: 'blue',
-                  width: 50,
-                  height: 50,
-                  borderRadius: 14,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Text>fsdfsd</Text>
-              </TouchableOpacity>
-            </ImageBackground>
-          ) : (
-            <TouchableOpacity
-              onPress={openCamera}
-              style={{
-                width: '100%',
-                borderRadius: 14,
-                height: 160,
-                backgroundColor: 'grey',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text>Загрузить фотографию</Text>
-            </TouchableOpacity>
-          )} */}
           <View style={styles.block}>
             <View row sBetween centered>
               <Text size={18} style={{fontWeight: '600'}}>
-                Заголовок
+                {translations.title}
               </Text>
               <Text>
                 {title.length}
@@ -371,21 +318,22 @@ const AddActivities = props => {
               multiline
               value={title}
               onChangeText={setTitle}
-              placeholder="Заголовок"
+              placeholder={translations.title}
               style={{
-                backgroundColor: '#f4f4f4',
-                marginTop: 8,
-                borderRadius: 10,
-                fontSize: 16,
-                paddingHorizontal: 12,
-                paddingTop: 12,
-                paddingBottom: 12,
+                ...styles.titleInput,
+                borderColor: createNewActivitiesError?.title
+                  ? colors.errorColor
+                  : colors.white,
               }}
             />
-
+            {/* {createNewActivitiesError?.title && (
+              <Text color={colors.errorColor} style={{marginBottom: -18}}>
+                {createNewActivitiesError.title}
+              </Text>
+            )} */}
             <View row sBetween centered mTop={16}>
               <Text size={18} style={{fontWeight: '600'}}>
-                Описание
+                {translations.description}
               </Text>
               <Text>
                 {description.length}
@@ -396,29 +344,30 @@ const AddActivities = props => {
               multiline
               maxLength={250}
               value={description}
-              placeholder="Текст"
+              placeholder={translations.description}
               onChangeText={setDescription}
               style={{
-                backgroundColor: '#f4f4f4',
-                minHeight: 160,
-                fontSize: 16,
-                borderRadius: 10,
-                paddingHorizontal: 10,
-                paddingTop: 10,
-                paddingBottom: 10,
-                marginTop: 8,
+                ...styles.descriptionInput,
+                borderColor: createNewActivitiesError?.description
+                  ? colors.errorColor
+                  : colors.white,
               }}
             />
+            {/* {createNewActivitiesError?.description && (
+              <Text color={colors.errorColor} style={{marginBottom: -18}}>
+                {createNewActivitiesError.description}
+              </Text>
+            )} */}
           </View>
           <View style={styles.block} mTop={16}>
             <View row centered sBetween>
               <Text size={18} style={{fontWeight: '600'}}>
-                Категории
+                {translations.categories}
               </Text>
               <TouchableOpacity
                 onPress={() => bottomSheetRef.current.present()}>
                 <Text color={colors.mainBlue} style={{fontWeight: '600'}}>
-                  Добавить
+                  {translations.add}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -433,72 +382,12 @@ const AddActivities = props => {
                       item={item}
                       changeSelected={changeSelected}
                     />
-                    // <TouchableOpacity
-                    //   onPress={() => changeSelected(item.id)}
-                    //   key={index}
-                    //   style={{
-                    //     marginRight: 8,
-                    //     height: 32,
-                    //     position: 'relative',
-                    //     alignItems: 'center',
-                    //     justifyContent: 'center',
-                    //     paddingHorizontal: 10,
-                    //     marginBottom: 8,
-                    //   }}>
-                    //   <View
-                    //     style={{
-                    //       opacity: 0.16,
-                    //       position: 'absolute',
-                    //       top: 0,
-                    //       left: 0,
-                    //       bottom: 0,
-                    //       right: 0,
-                    //       zIndex: -1,
-                    //       borderRadius: 12,
-                    //       backgroundColor: item.color,
-                    //     }}
-                    //   />
-                    //   <View row centered>
-                    //     <Text
-                    //       style={{
-                    //         fontWeight: '600',
-                    //         color: item.color,
-                    //         marginRight: 4,
-                    //       }}>
-                    //       {item.title}
-                    //     </Text>
-                    //     <Icon name="ios-close" size={16} color={item.color} />
-                    //   </View>
-                    // </TouchableOpacity>
-                    // <TouchableOpacity
-                    //   onPress={() => changeSelected(item)}
-                    //   key={index}
-                    //   style={{
-                    //     height: 32,
-                    //     borderRadius: 10,
-                    //     justifyContent: 'center',
-                    //     alignItems: 'center',
-                    //     paddingHorizontal: 16,
-                    //     marginRight: 8,
-                    //     marginBottom: 8,
-                    //     backgroundColor: item.color,
-                    //   }}>
-                    //   <Text size={16} color={colors.white}>
-                    //     {item.title}
-                    //   </Text>
-                    // </TouchableOpacity>
                   );
                 })
               ) : (
-                <View
-                  style={{
-                    height: 44,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                  }}>
+                <View style={styles.messageAddCategories}>
                   <Text size={16} color="grey">
-                    Добавить категории максимально 3
+                    {translations.add_categories_maximum}
                   </Text>
                 </View>
               )}
@@ -506,62 +395,73 @@ const AddActivities = props => {
           </View>
           <View style={styles.block} mTop={16}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={6}>
-              С кем бы вы хотели выполнить действие?
+              {translations.who_would_you_like}
             </Text>
-            {returnPartnerCheckbox('Мужчиной', 0)}
-            {returnPartnerCheckbox('Женщиной', 1)}
-            {returnPartnerCheckbox('Компанией', 2)}
-            {returnPartnerCheckbox('Всеровно', 3)}
+            {returnPartnerCheckbox(translations.a_man, 0)}
+            {returnPartnerCheckbox(translations.a_women, 1)}
+            {returnPartnerCheckbox(translations.by_the_company, 2)}
+            {returnPartnerCheckbox(translations.all_the_same, null)}
           </View>
         </View>
       </Animated.ScrollView>
       <BottomSheetModal
+        onDismiss={() => setCategoryTitle('')}
         ref={bottomSheetRef}
         index={1}
         snapPoints={snapPoints}
         backdropComponent={DefaultBackDrop}>
-        <View
-          style={{
-            paddingHorizontal: 20,
-            borderBottomWidth: 1,
-            paddingBottom: 16,
-            borderColor: colors.lightGrey,
-          }}>
-          <Text size={20}>Выберете категорию</Text>
+        <View style={styles.sheet}>
+          <Text size={20}>{translations.select_categories}</Text>
           <TextInput
-            placeholder={'Поиск категории'}
-            style={{
-              backgroundColor: '#f4f4f4',
-              marginTop: 8,
-              borderRadius: 14,
-              fontSize: 18,
-              paddingHorizontal: 16,
-              paddingTop: 8,
-              paddingBottom: 8,
-            }}
+            placeholder={translations.category_search}
+            style={styles.categorySearch}
+            onChangeText={setCategoryTitle}
           />
         </View>
-        <BottomSheetScrollView style={styles.contentContainer}>
-          {activities_categories.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={{
-                height: 40,
-                borderBottomWidth: 0.5,
-                borderColor: colors.lightGrey,
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-              onPress={() => changeSelected(item.id)}>
-              <Text size={16}>{item.title}</Text>
-              <CheckBox
-                selected={currentCategories.includes(item.id)}
-                changeSelect={() => changeSelected(item.id)}
-              />
-            </TouchableOpacity>
-          ))}
+        <BottomSheetScrollView
+          style={{paddingHorizontal: 20, paddingBottom: 20}}>
+          {activities_categories.map((item, index) => {
+            let selected = currentCategories.includes(item.id);
+            return (
+              <TouchableOpacity
+                disabled={
+                  currentCategories.length >= 3 &&
+                  !currentCategories.includes(item.id)
+                }
+                onPress={() => changeSelected(item.id)}
+                key={index}
+                style={{
+                  ...styles.categoryContainer,
+                  borderColor: selected ? '#EDF1F7' : colors.white,
+                }}>
+                <View
+                  style={{
+                    ...styles.categoryBlock,
+                    backgroundColor: selected ? colors.white : item.color,
+                    borderColor: selected ? colors.blackLabel : colors.white,
+                  }}>
+                  <Text style={styles.fakeText}>{item.title}</Text>
+                </View>
+                <View row centered>
+                  <Text
+                    style={{
+                      ...styles.categoryText,
+                      color: selected ? colors.blackLabel : item.color,
+                    }}>
+                    {item.title}
+                  </Text>
+                  {selected && (
+                    <Icon
+                      name="close"
+                      size={17}
+                      color={colors.blackLabel}
+                      style={{position: 'absolute', right: -20}}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </BottomSheetScrollView>
       </BottomSheetModal>
     </View>

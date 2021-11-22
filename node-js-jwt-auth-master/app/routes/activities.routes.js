@@ -17,7 +17,7 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.getActivities
   );
-  app.get(
+  app.post(
     "/api/activities/get-categories",
     [authJwt.verifyToken],
     controller.getCategories

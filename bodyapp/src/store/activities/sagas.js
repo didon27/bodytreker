@@ -36,14 +36,12 @@ function* getActivitiesCategories(data) {
 }
 
 function* createNewActivities(data) {
-  const {route} = data;
+  const {route, payload} = data;
 
-  console.log('afsasfasd34', route.params);
   try {
-    const response = yield call(
-      api.activities.createNewActivities,
-      data.payload,
-    );
+    const response = yield call(api.activities.createNewActivities, payload);
+
+    console.log(response.data);
     yield put(activitiesActions.createNewActivitiesSuccess(response.data));
     if (route) {
       yield call(navigate, route.route, route.params);

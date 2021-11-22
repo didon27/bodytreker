@@ -4,6 +4,7 @@ const initialState = {
   activities: [],
   myActivities: [],
   activities_categories: [],
+  createNewActivitiesError: null,
 };
 
 export const activitiesReducer = (state = initialState, action) => {
@@ -32,6 +33,9 @@ export const activitiesReducer = (state = initialState, action) => {
       return {...state, loading: false, activities_categories: payload};
     case activitiesConstants.GET_ACTIVITIES_CATEGORIES_FAILURE:
       return {...state, loading: false, error: error};
+
+    case activitiesConstants.CREATE_NEW_ACTIVITIES_ERROR:
+      return {...state, loading: false, createNewActivitiesError: error};
 
     default:
       return state;

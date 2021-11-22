@@ -10,12 +10,16 @@ import {images} from 'images';
 import {API} from 'constants';
 
 import styles from './styles';
+import {routeNames} from 'enums';
 
-const ActivitiesCard = ({item, index, user_id, translations}) => {
+const ActivitiesCard = ({item, index, user_id, translations, navigation}) => {
   let {user, title, createdAt, activities_categories, activities_images} = item;
 
   return (
-    <TouchableOpacity key={index} style={styles.container}>
+    <TouchableOpacity
+      key={index}
+      style={styles.container}
+      onPress={() => navigation.navigate(routeNames.dateils)}>
       <View row centered sBetween>
         <View row>
           <Image source={images.startBackground} style={styles.avatar} />

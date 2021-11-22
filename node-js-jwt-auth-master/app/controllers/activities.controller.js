@@ -15,37 +15,45 @@ exports.createNewActivities = async (req, res) => {
     await upload(req, res);
     let { title, description, user_id, categories_ids, partner } = req.body;
 
+    if(title.length < 6) {
+      res.status(400).send({error: "Title short"});
+    } else if(description.length < 6) {
+      res.status(400).send({error: "Description short"});
+    }
+
     Activities.create({ title, description, user_id, partner })
       .then((activity) => {
-        let categories = categories_ids?.map((category) => {
-          return {
-            activityId: activity.id,
-            activitiesCategoryId: category,
-          };
-        });
-
-        const images = req.files.map((item) => {
-          return {
-            filename: item.filename,
-            activity_id: activity.id,
-          };
-        });
-
-        ActivitiesImages.bulkCreate(images).then((image) => {
-          let images = image.map((item) => {
-            let el = Object.values(item)[0];
+        if (req.files && req.files?.length) {
+          const images = req.files.map((item) => {
             return {
-              activityId: activity.id,
-              activitiesImageId: el.id,
+              filename: item.filename,
+              activity_id: activity.id,
             };
           });
 
-          IdsActivitiesImages.bulkCreate(images);
-        });
+          ActivitiesImages.bulkCreate(images).then((image) => {
+            let images = image.map((item) => {
+              let el = Object.values(item)[0];
+              return {
+                activityId: activity.id,
+                activitiesImageId: el.id,
+              };
+            });
 
-        IdsActivitiesCategories.bulkCreate(categories).then((id) => {
-          res.status(200).send(id);
-        });
+            IdsActivitiesImages.bulkCreate(images);
+          });
+        }
+        if (categories_ids && categories_ids.length) {
+          let categories = categories_ids?.map((category) => {
+            return {
+              activityId: activity.id,
+              activitiesCategoryId: category,
+            };
+          });
+
+          IdsActivitiesCategories.bulkCreate(categories)
+        }
+        res.status(200).send({message: "Activities created!"});
       })
       .catch((err) => {
         res.status(500).send({ message: err.message });
@@ -57,8 +65,15 @@ exports.createNewActivities = async (req, res) => {
 
 exports.getCategories = (req, res) => {
   let lang = req.headers["accept-language"] || "en";
+  const { title } = req.body;
+  let data = {};
+
+  if (title) {
+    data[lang] = { [Sequelize.Op.like]: `%${title}%` };
+  }
 
   ActivitiesCategories.findAll({
+    where: data,
     attributes: ["id", [lang, "title"], "color"],
   })
     .then((categories) => {
@@ -70,7 +85,7 @@ exports.getCategories = (req, res) => {
 };
 
 exports.getActivities = (req, res) => {
-  let { user_id, title, actual } = req.body;
+  let { user_id, title, actual, partner } = req.body;
   let lang = req.headers["accept-language"] || "en";
 
   let dataUser = {};
@@ -80,6 +95,10 @@ exports.getActivities = (req, res) => {
     dataActivities.user_id = { [Sequelize.Op.not]: user_id };
   } else if (user_id) {
     dataUser.id = user_id;
+  }
+
+  if(partner) {
+    dataActivities.partner = partner;
   }
 
   if (title) {

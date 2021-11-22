@@ -9,6 +9,7 @@ import Home from '../screens/Home';
 import Profile from 'screens/Profile/Main';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AddActivities from 'screens/AddActivities';
+import HomeStack from './HomeStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -111,7 +112,7 @@ function AppNavigation(props) {
     >
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={HomeStack}
         options={({route}) => ({
           tabBarStyle: getTabBarVisibility(route, 'homeStack', props),
         })}
