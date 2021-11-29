@@ -85,7 +85,6 @@ function* subscribeActivity(data) {
   try {
     const response = yield call(api.activities.subscribeActivity, payload);
 
-    console.log(item);
     yield put(activitiesActions.subscribeActivitiySuccess(item));
   } catch (e) {
     yield put(

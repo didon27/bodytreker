@@ -7,6 +7,8 @@ import {View, Text, Button} from 'components';
 import {images} from 'images';
 import {DEVICE_WIDTH} from 'constants';
 
+import styles from './styles';
+
 function Header({myActivities, translations, setTab, tab, user}) {
   const controlButton = (title, value) => {
     return (
@@ -50,15 +52,7 @@ function Header({myActivities, translations, setTab, tab, user}) {
           inactiveDotColor={'white'}
         />
       </View>
-      <View
-        style={{
-          backgroundColor: 'white',
-          width: '100%',
-          marginTop: -40,
-          paddingTop: 20,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-        }}>
+      <View style={styles.headerContainer}>
         <View
           style={{
             paddingHorizontal: 20,
@@ -73,29 +67,14 @@ function Header({myActivities, translations, setTab, tab, user}) {
             <Button
               onPress={setTab}
               text={translations.edit}
-              style={{
-                marginTop: 0,
-                width: null,
-                height: 32,
-                paddingHorizontal: 16,
-              }}
+              style={styles.headerBtn}
             />
           </View>
-          <Text size={14} style={{fontWeight: '500'}} color={'grey'}>
-            Ukraine, Lviv
+          <Text size={15} style={{fontWeight: '500'}} color={'grey'}>
+            @{user.username.toLocaleLowerCase()}
           </Text>
         </View>
-        <View
-          row
-          centered
-          sBetween
-          style={{
-            borderTopWidth: 0.5,
-            borderBottomWidth: 0.5,
-            borderColor: colors.lightGrey,
-            paddingVertical: 10,
-            paddingHorizontal: 40,
-          }}>
+        <View row centered sBetween style={styles.counterBlock}>
           <View centered>
             <Text size={22} color={colors.mainBlue} style={{fontWeight: '600'}}>
               {myActivities.length}

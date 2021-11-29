@@ -203,6 +203,7 @@ const Home = props => {
             <Text>К сожелению нету активити</Text>
           </View>
         )}
+        decelerationRate="fast"
         windowSize={10}
         maxToRenderPerBatch={5}
         ItemSeparatorComponent={itemSeperator}

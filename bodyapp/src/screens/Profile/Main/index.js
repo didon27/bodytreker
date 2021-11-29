@@ -1,9 +1,11 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Animated} from 'react-native';
+import {Animated, TouchableOpacity} from 'react-native';
 import StarRating from 'react-native-star-rating';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
+import {activitiesActions} from 'store/activities';
 import Header from './components/Header';
 import {colors} from 'colors';
 import {authActions} from 'store/auth';
@@ -11,12 +13,8 @@ import {View, Text} from 'components';
 import {storage} from 'services/storage';
 import {LocalizationContext} from 'services';
 import ActivitiesCard from 'screens/Home/components/ActivitiesCard';
-import {DEVICE_HEIGHT} from 'constants';
 
 import styles from './styles';
-import {activitiesActions} from 'store/activities';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const Profile = props => {
   const insets = useSafeAreaInsets();
@@ -87,31 +85,15 @@ const Profile = props => {
     <View flex style={{backgroundColor: colors.white}}>
       <Animated.View
         style={{
+          ...styles.headerContainer,
           backgroundColor: headerBackgroundColor,
-          height: 90,
-          width: '100%',
           paddingTop: insets.top,
-          zIndex: 9999,
-          position: 'absolute',
-          justifyContent: 'flex-end',
         }}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 20,
-            justifyContent: 'space-between',
-          }}>
+        <View style={styles.header}>
           <AnimatedTouchableOpacity
             style={{
+              ...styles.btnBack,
               backgroundColor: headerButtonBackgroundColor,
-              padding: 4,
-              borderRadius: 20,
-              width: 40,
-              height: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
             }}>
             <AnimatedIcon
               name="angle-left"
@@ -129,13 +111,8 @@ const Profile = props => {
           </Animated.Text>
           <AnimatedTouchableOpacity
             style={{
+              ...styles.secondHeaderBtn,
               backgroundColor: headerButtonBackgroundColor,
-              padding: 4,
-              borderRadius: 20,
-              width: 40,
-              height: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
             }}>
             <AnimatedIcon
               name={'gears'}
@@ -183,16 +160,7 @@ const Profile = props => {
                 {user.description}
               </Text>
             </View>
-            <View
-              mTop={22}
-              row
-              style={{
-                width: '100%',
-                height: 160,
-                backgroundColor: '#f8f8f8',
-                borderRadius: 14,
-                padding: 20,
-              }}>
+            <View mTop={22} row style={styles.ratingContainer}>
               <View jCenter>
                 <Text size={34} style={{fontWeight: '700'}}>
                   {user.rating}
