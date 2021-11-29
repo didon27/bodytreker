@@ -1,4 +1,6 @@
-import {StyleSheet} from 'react-native';
+import {DEVICE_WIDTH} from 'constants';
+import {Dimensions, StyleSheet} from 'react-native';
+import {colors} from 'colors';
 
 export default StyleSheet.create({
   container: {
@@ -20,10 +22,10 @@ export default StyleSheet.create({
   },
   tabBar: {
     backgroundColor: '#f4f4f4',
-    height: 36,
+    height: 32,
     borderRadius: 10,
-    padding: 4,
-    marginBottom: 20,
+    marginBottom: 12,
+    marginHorizontal: 20,
   },
   tab: {
     flex: 1,
@@ -36,7 +38,7 @@ export default StyleSheet.create({
     marginHorizontal: 20,
     backgroundColor: '#f4f4f4',
     height: 46,
-    marginBottom: 20,
+    marginBottom: 12,
     borderRadius: 14,
     paddingHorizontal: 16,
     fontSize: 16,

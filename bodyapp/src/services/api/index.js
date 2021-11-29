@@ -36,8 +36,15 @@ export const api = {
   activities: {
     getActivitiesCategories: params =>
       request.post('/activities/get-categories', params),
+    subscribeActivity: params =>
+      request.post('/activities/subscribe-activity', params),
+    unsubscribeActivity: params =>
+      request.post('/activities/unsubscribe-activity', params),
+
     createNewActivities: params =>
       request.post('/activities/create-new-activities', params),
     getActivities: params => request.post('/activities/get-activities', params),
+    getMyActivities: params =>
+      request.post('/activities/get-my-activities', params),
   },
 };

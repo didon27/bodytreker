@@ -15,6 +15,8 @@ const ContinueRegister = props => {
   const {translations} = useContext(LocalizationContext);
   const {email} = props.route.params;
   const [username, setUresname] = useState('');
+  const [first_name, setFirstName] = useState('');
+  const [last_name, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const {loading, errorContinueRegister} = useSelector(state => state.auth);
@@ -64,6 +66,8 @@ const ContinueRegister = props => {
         email,
         username,
         password,
+        first_name,
+        last_name,
       }),
     );
   };
@@ -92,6 +96,18 @@ const ContinueRegister = props => {
             placeholderTextColor={'#adadad'}
             placeholder="Email"
             disabled
+          />
+          <TextInput
+            value={first_name}
+            placeholderTextColor={'#adadad'}
+            placeholder="Email"
+            onChangeText={setFirstName}
+          />
+          <TextInput
+            value={last_name}
+            placeholderTextColor={'#adadad'}
+            placeholder="Email"
+            onChangeText={setLastName}
           />
           <TextInput
             value={username}

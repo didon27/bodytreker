@@ -35,13 +35,19 @@ exports.getUser = (req, res) => {
   });
 
   // Fetch the user by id
-  User.findOne({ where: { id: userId } }).then(function (user) {
+  User.findOne({
+    where: { id: userId },
+    attributes: [
+      "id",
+      "first_name",
+      "last_name",
+      "username",
+      "email",
+      "rating",
+      "description"
+    ],
+  }).then(function (user) {
     // Do something with the user
-    return res.status(200).send({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      hello: "432423",
-    });
+    return res.status(200).send(user);
   });
 };

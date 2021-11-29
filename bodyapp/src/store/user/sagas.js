@@ -14,7 +14,6 @@ function* fetch(data) {
     yield put(userActions.fetchSuccess(response.data));
     yield put(authActions.setTokenSuccess(data.payload));
   } catch (e) {
-    console.log('safsadfasd', data.payload, e.response.data);
     yield put(userActions.fetchFailure(e.response.data.error));
   }
 }

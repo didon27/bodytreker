@@ -14,6 +14,7 @@ const View = props => {
         props.sBetween && styles.sBetween,
         props.sAround && styles.sAround,
         props.fEnd && styles.fEnd,
+        props.jCenter && styles.jCenter,
         props.mLeft && {marginLeft: props.mLeft},
         props.mTop && {marginTop: props.mTop},
         props.mBottom && {marginBottom: props.mBottom},

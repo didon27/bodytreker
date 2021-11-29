@@ -1,5 +1,6 @@
-import React from 'react';
-import {TouchableOpacity, Image} from 'react-native';
+import React, {useState} from 'react';
+import {TouchableOpacity} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import StarRating from 'react-native-star-rating';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
@@ -7,22 +8,29 @@ import moment from 'moment';
 import {colors} from 'colors';
 import {View, Text, Button, ItemCategory} from 'components';
 import {images} from 'images';
-import {API} from 'constants';
 
 import styles from './styles';
 import {routeNames} from 'enums';
 
-const ActivitiesCard = ({item, index, user_id, translations, navigation}) => {
-  let {user, title, createdAt, activities_categories, activities_images} = item;
+function ActivitiesCard({
+  item,
+  user_id,
+  translations,
+  navigation,
+  subscribeControl,
+  btnLoading,
+}) {
+  let {user, title, createdAt, activities_categories, id, subscribe} = item;
 
+  const [loading, seLoading] = useState(false);
   return (
     <TouchableOpacity
-      key={index}
       style={styles.container}
-      onPress={() => navigation.navigate(routeNames.dateils)}>
+      // onPress={() => navigation.navigate(routeNames.dateils)}
+    >
       <View row centered sBetween>
         <View row>
-          <Image source={images.startBackground} style={styles.avatar} />
+          <FastImage source={images.startBackground} style={styles.avatar} />
           <View mLeft={10}>
             <Text size={15} style={{fontWeight: '500'}}>
               {user.username}
@@ -47,13 +55,13 @@ const ActivitiesCard = ({item, index, user_id, translations, navigation}) => {
       <Text size={18} mTop={8} style={{fontWeight: '500'}}>
         {title}
       </Text>
-      {activities_images[0]?.filename && (
-        <Image
+      {/* {activities_images[0]?.filename && (
+        <FastImage
           source={{uri: API + '/images/' + activities_images[0]?.filename}}
           style={styles.image}
-          resizeMode="cover"
+          resizeMode={FastImage.resizeMode.cover}
         />
-      )}
+      )} */}
       <View row centered style={{flexWrap: 'wrap'}}>
         {activities_categories.map((e, i) => (
           <ItemCategory key={i} item={e} />
@@ -61,11 +69,22 @@ const ActivitiesCard = ({item, index, user_id, translations, navigation}) => {
       </View>
       <Text color={'grey'}>{moment(createdAt).startOf('hour').fromNow()}</Text>
       <Button
-        text={user_id === user.id ? translations.edit : 'Подписаться'}
+        onPress={() => {
+          seLoading(true);
+          subscribeControl({user_id, activity_id: id}, subscribe, item);
+        }}
+        text={
+          user_id === user.id
+            ? translations.edit
+            : subscribe
+            ? 'Отписаться'
+            : 'Подписаться'
+        }
         style={styles.button}
+        loading={loading}
       />
     </TouchableOpacity>
   );
-};
+}
 
 export default React.memo(ActivitiesCard);

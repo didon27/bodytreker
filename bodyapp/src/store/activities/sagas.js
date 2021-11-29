@@ -7,17 +7,44 @@ import {api} from 'services/api';
 import {navigate} from '../../navigation';
 
 function* getActivities(data) {
-  const {payload} = data;
+  const {payload, refresh} = data;
 
   try {
     const response = yield call(api.activities.getActivities, payload);
-    if (payload.actual) {
-      yield put(activitiesActions.getActivitiesSuccess(response.data));
-    } else {
-      yield put(activitiesActions.getMyActivitiesSuccess(response.data));
-    }
+    yield put(activitiesActions.getActivitiesSuccess(response.data, refresh));
   } catch (e) {
     yield put(activitiesActions.getActivitiesFailure(e.response.data.error));
+  }
+}
+
+function* getSubscriptionsActivities(data) {
+  const {payload, refresh} = data;
+
+  try {
+    const response = yield call(api.activities.getActivities, payload);
+    yield put(
+      activitiesActions.getSubscriptionsActivitiesSuccess(
+        response.data,
+        refresh,
+      ),
+    );
+  } catch (e) {
+    yield put(
+      activitiesActions.getSubscriptionsActivitiesFailure(
+        e.response.data.error,
+      ),
+    );
+  }
+}
+
+function* getMyActivities(data) {
+  const {payload} = data;
+
+  try {
+    const response = yield call(api.activities.getMyActivities, payload);
+    yield put(activitiesActions.getMyActivitiesSuccess(response.data));
+  } catch (e) {
+    yield put(activitiesActions.getMyActivitiesFailure(e.response.data.error));
   }
 }
 
@@ -41,7 +68,6 @@ function* createNewActivities(data) {
   try {
     const response = yield call(api.activities.createNewActivities, payload);
 
-    console.log(response.data);
     yield put(activitiesActions.createNewActivitiesSuccess(response.data));
     if (route) {
       yield call(navigate, route.route, route.params);
@@ -53,12 +79,50 @@ function* createNewActivities(data) {
   }
 }
 
+function* subscribeActivity(data) {
+  const {payload, item} = data;
+
+  try {
+    const response = yield call(api.activities.subscribeActivity, payload);
+
+    console.log(item);
+    yield put(activitiesActions.subscribeActivitiySuccess(item));
+  } catch (e) {
+    yield put(
+      activitiesActions.subscribeActivitiyFailure(e.response.data.error),
+    );
+  }
+}
+
+function* unsubscribeActivity(data) {
+  const {payload} = data;
+
+  try {
+    const response = yield call(api.activities.unsubscribeActivity, payload);
+    yield put(activitiesActions.unsubscribeActivitySuccess(payload));
+  } catch (e) {
+    yield put(
+      activitiesActions.unsubscribeActivityFailure(e.response.data.error),
+    );
+  }
+}
+
 export function* activitiesSaga() {
   yield takeLatest(
     activitiesConstants.GET_ACTIVITIES_CATEGORIES,
     getActivitiesCategories,
   );
+  yield takeLatest(
+    activitiesConstants.GET_SUBSCRIPTIONS_ACTIVITIES,
+    getSubscriptionsActivities,
+  );
   yield takeLatest(activitiesConstants.GET_ACTIVITIES, getActivities);
+  yield takeLatest(activitiesConstants.GET_MY_ACTIVITIES, getMyActivities);
+  yield takeLatest(activitiesConstants.SUBSCRIBE_ACTIVITY, subscribeActivity);
+  yield takeLatest(
+    activitiesConstants.UNSUBSCRIBE_ACTIVITY,
+    unsubscribeActivity,
+  );
   yield takeLatest(
     activitiesConstants.CREATE_NEW_ACTIVITIES,
     createNewActivities,

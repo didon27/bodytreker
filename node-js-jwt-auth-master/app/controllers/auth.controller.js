@@ -59,13 +59,15 @@ exports.signUp = (req, res) => {
 };
 
 exports.signUpContinue = (req, res) => {
-  let { username, password, email } = req.body;
+  let { username, password, email, first_name, last_name } = req.body;
   let lang = req.headers["accept-language"] || 'en';
 
   User.findOne({ where: { email } })
     .then(async (user) => {
       user.password = bcrypt.hashSync(password, 8);
       user.username = username;
+      user.first_name = first_name;
+      user.last_name = last_name;
       user.registration_completed = true;
       user.save();
 

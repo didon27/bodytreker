@@ -19,4 +19,7 @@ export const styles = StyleSheet.create({
   fEnd: {
     alignItems: 'flex-end'
   },
+  jCenter: {
+    justifyContent: 'center'
+  }
 });

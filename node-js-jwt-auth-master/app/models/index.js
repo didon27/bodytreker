@@ -32,6 +32,7 @@ db.ids_activities_categories = require("./ids_activities_categories.model")(sequ
 db.activities_images = require("./activities_images.model")(sequelize, Sequelize);
 db.refreshToken = require("../models/refreshToken.model.js")(sequelize, Sequelize);
 
+db.activities_subscribers = require("../models/activities_subscribers.model")(sequelize, Sequelize);
 db.ids_activities_images = require("../models/ids_activities_images.model")(sequelize, Sequelize);
 
 

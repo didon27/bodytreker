@@ -111,7 +111,7 @@ function AppNavigation(props) {
       // }}
     >
       <Tab.Screen
-        name="Home"
+        name="HomeStack"
         component={HomeStack}
         options={({route}) => ({
           tabBarStyle: getTabBarVisibility(route, 'homeStack', props),

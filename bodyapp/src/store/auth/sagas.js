@@ -24,7 +24,6 @@ function* create(data) {
         ),
       );
     } else {
-      console.log('fdsgsdfg', e)
       yield put(authActions.loginFailure(e.response.data));
     }
   }

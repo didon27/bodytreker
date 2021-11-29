@@ -1,21 +1,50 @@
 import {activitiesConstants} from './constants';
 
 export const activitiesActions = {
-  getActivities: payload => ({
+  getActivities: (payload, refresh) => ({
     type: activitiesConstants.GET_ACTIVITIES,
     payload,
+    refresh,
   }),
-  getActivitiesSuccess: payload => ({
+  getActivitiesSuccess: (payload, refresh) => ({
     type: activitiesConstants.GET_ACTIVITIES_SUCCESS,
+    payload,
+    refresh,
+  }),
+
+  getActivitiesFailure: error => ({
+    type: activitiesConstants.GET_ACTIVITIES_FAILURE,
+    error,
+  }),
+
+  getSubscriptionsActivities: (payload, refresh) => ({
+    type: activitiesConstants.GET_SUBSCRIPTIONS_ACTIVITIES,
+    payload,
+    refresh,
+  }),
+  getSubscriptionsActivitiesSuccess: (payload, refresh) => ({
+    type: activitiesConstants.GET_SUBSCRIPTIONS_ACTIVITIES_SUCCESS,
+    payload,
+    refresh,
+  }),
+
+  getSubscriptionsActivitiesFailure: error => ({
+    type: activitiesConstants.GET_SUBSCRIPTIONS_ACTIVITIES_FAILURE,
+    error,
+  }),
+
+  getMyActivities: payload => ({
+    type: activitiesConstants.GET_MY_ACTIVITIES,
     payload,
   }),
   getMyActivitiesSuccess: payload => ({
     type: activitiesConstants.GET_MY_ACTIVITIES_SUCCESS,
     payload,
   }),
-  getActivitiesFailure: error => ({
-    type: activitiesConstants.GET_ACTIVITIES_FAILURE,
-    error,
+
+  getMyActivitiesFailure: payload => ({
+    type: activitiesConstants.GET_MY_ACTIVITIES_FAILURE,
+    payload,
   }),
 
   getActivitiesCategories: payload => ({
@@ -28,6 +57,33 @@ export const activitiesActions = {
   }),
   getActivitiesCategoriesFailure: error => ({
     type: activitiesConstants.GET_ACTIVITIES_CATEGORIES_FAILURE,
+    error,
+  }),
+
+  subscribeActivitiy: (payload, item) => ({
+    type: activitiesConstants.SUBSCRIBE_ACTIVITY,
+    payload,
+    item,
+  }),
+  subscribeActivitiySuccess: payload => ({
+    type: activitiesConstants.SUBSCRIBE_ACTIVITY_SUCCESS,
+    payload,
+  }),
+  subscribeActivitiyFailure: error => ({
+    type: activitiesConstants.SUBSCRIBE_ACTIVITY_FAILURE,
+    error,
+  }),
+
+  unsubscribeActivity: payload => ({
+    type: activitiesConstants.UNSUBSCRIBE_ACTIVITY,
+    payload,
+  }),
+  unsubscribeActivitySuccess: payload => ({
+    type: activitiesConstants.UNSUBSCRIBE_ACTIVITY_SUCCESS,
+    payload,
+  }),
+  unsubscribeActivityFailure: error => ({
+    type: activitiesConstants.UNSUBSCRIBE_ACTIVITY_FAILURE,
     error,
   }),
 

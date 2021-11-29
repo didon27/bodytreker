@@ -11,6 +11,7 @@ export const en = {
   add: 'Add',
   edit: 'Edit',
   actual: 'Actual',
+  filters: 'Filters',
   my: 'My',
   password: 'Password',
   tagline: 'We do not build boundaries between people, we bring them together.',

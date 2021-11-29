@@ -11,7 +11,7 @@ const ItemCategory = ({changeSelected, item}) => {
       onPress={() => changeSelected(item.id)}
       style={{
         marginRight: 8,
-        height: 30,
+        height: 26,
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
@@ -28,7 +28,7 @@ const ItemCategory = ({changeSelected, item}) => {
           right: 0,
           zIndex: -1,
           borderRadius: 12,
-          backgroundColor: item.color,
+          backgroundColor: item?.color,
         }}
       />
       <View row centered>
@@ -41,7 +41,7 @@ const ItemCategory = ({changeSelected, item}) => {
           {item.title}
         </Text>
         {changeSelected && (
-          <Icon name="ios-close" size={16} color={item.color} />
+          <Icon name="ios-close" size={16} color={item?.color} />
         )}
       </View>
     </TouchableOpacity>

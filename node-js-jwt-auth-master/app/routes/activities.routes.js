@@ -17,6 +17,25 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.getActivities
   );
+
+  app.post(
+    "/api/activities/get-my-activities",
+    [authJwt.verifyToken],
+    controller.getMyActivities
+  );
+
+  app.post(
+    "/api/activities/subscribe-activity",
+    [authJwt.verifyToken],
+    controller.subscribeActivity
+  );
+
+  app.post(
+    "/api/activities/unsubscribe-activity",
+    [authJwt.verifyToken],
+    controller.unsubscribeActivity
+  );
+
   app.post(
     "/api/activities/get-categories",
     [authJwt.verifyToken],
