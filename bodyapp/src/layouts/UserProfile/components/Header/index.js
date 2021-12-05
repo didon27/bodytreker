@@ -8,8 +8,10 @@ import {images} from 'images';
 import {DEVICE_WIDTH} from 'constants';
 
 import styles from './styles';
+import {routeNames} from 'enums';
+import {API} from 'constants';
 
-function Header({myActivities, translations, setTab, tab, user}) {
+function Header({myActivities, translations, setTab, tab, user, navigation}) {
   const controlButton = (title, value) => {
     return (
       <TouchableOpacity
@@ -33,7 +35,10 @@ function Header({myActivities, translations, setTab, tab, user}) {
 
   return (
     <Fragment>
-      <View>
+      <View
+        style={
+          !user.images.length && {height: 160, backgroundColor: colors.mainBlue}
+        }>
         <SliderBox
           sliderBoxHeight={360}
           circleLoop
@@ -41,12 +46,8 @@ function Header({myActivities, translations, setTab, tab, user}) {
           inactiveSlideScale={1}
           paginationBoxVerticalPadding={0}
           enableMomentum
-          images={[
-            images.startBackground,
-            images.startBackground,
-            images.startBackground,
-          ]}
-          dotStyle={{width: 50, height: 4}}
+          images={user.images.map(item => API + '/images/' + item.filename)}
+          dotStyle={{width: DEVICE_WIDTH / user.images.length - 20, height: 4, maxWidth: 50}}
           paginationBoxStyle={{marginBottom: 40}}
           dotColor={colors.mainBlue}
           inactiveDotColor={'white'}
@@ -65,7 +66,7 @@ function Header({myActivities, translations, setTab, tab, user}) {
               {user.first_name + ' ' + user.last_name}
             </Text>
             <Button
-              onPress={setTab}
+              onPress={() => navigation.navigate(routeNames.editProfile)}
               text={translations.edit}
               style={styles.headerBtn}
             />
@@ -103,10 +104,10 @@ function Header({myActivities, translations, setTab, tab, user}) {
           </View>
         </View>
       </View>
-      <View row style={{paddingBottom: 20}}>
+      {/* <View row style={{paddingBottom: 20}}>
         {controlButton('Информация', true)}
         {controlButton('Активити', false)}
-      </View>
+      </View> */}
     </Fragment>
   );
 }

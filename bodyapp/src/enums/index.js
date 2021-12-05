@@ -8,6 +8,10 @@ export const routeNames = Object.freeze({
   forgotPassword: 'ForgotPassword',
   verificationPasswordCode: 'VerificationPasswordCode',
   passwordRecovery: 'PasswordRecovery',
+  settings: 'Settings',
+  activityDetails: 'ActivityDetails',
+  myProfile: 'MyProfile',
+  editProfile: 'EditProfile',
 });
 
 export const keys = Object.freeze({

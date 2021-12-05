@@ -37,16 +37,16 @@ function* create(data) {
   }
 }
 
-function* update(data) {
+function* updateUser(data) {
   const {route} = data;
   try {
-    const response = yield call(api.user.update, data.payload);
-    yield put(userActions.updateSuccess(response.data));
+    const response = yield call(api.user.updateUser, data.payload);
+    yield put(userActions.updateUserSuccess(response.data));
     if (route) {
       yield call(navigate, route.route, route.params);
     }
   } catch (e) {
-    yield put(userActions.updateFailure(e.response.data.error));
+    yield put(userActions.updateUserFailure(e.response.data.error));
   }
 }
 
@@ -64,7 +64,7 @@ function* checkVerificationCode(data) {
 export function* userSaga() {
   yield takeLatest(userConstants.FETCH_USER_REQUEST, fetch);
   yield takeLatest(userConstants.CREATE_USER_REQUEST, create);
-  yield takeLatest(userConstants.UPDATE_USER_REQUEST, update);
+  yield takeLatest(userConstants.UPDATE_USER_REQUEST, updateUser);
   yield takeLatest(
     userConstants.CHECK_VERIFICATION_CODE_REQUEST,
     checkVerificationCode,

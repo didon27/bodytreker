@@ -100,13 +100,13 @@ const ContinueRegister = props => {
           <TextInput
             value={first_name}
             placeholderTextColor={'#adadad'}
-            placeholder="Email"
+            placeholder={translations.first_name}
             onChangeText={setFirstName}
           />
           <TextInput
             value={last_name}
             placeholderTextColor={'#adadad'}
-            placeholder="Email"
+            placeholder={translations.last_name}
             onChangeText={setLastName}
           />
           <TextInput

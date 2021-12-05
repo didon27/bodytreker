@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 4,
     paddingLeft: 10,
-    justifyContent: 'center'
+    // justifyContent: 'center'
   },
   textBoxBtnHolder: {
     position: 'relative',

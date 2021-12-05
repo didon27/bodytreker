@@ -6,11 +6,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 
 import {colors} from 'colors';
-import {View, Text, Button, ItemCategory} from 'components';
+import {View, Text, Button, ItemCategory, Avatar} from 'components';
 import {images} from 'images';
 
 import styles from './styles';
 import {routeNames} from 'enums';
+import {API} from 'constants';
 
 function ActivitiesCard({
   item,
@@ -26,11 +27,19 @@ function ActivitiesCard({
   return (
     <TouchableOpacity
       style={styles.container}
-      // onPress={() => navigation.navigate(routeNames.dateils)}
-    >
+      onPress={
+        () =>
+          navigation.navigate(routeNames.dateils, {
+            screen: routeNames.activityDetails,
+            params: {
+              activity: item,
+            },
+          })
+        // navigation.navigate(routeNames.dateils, {activity: item})
+      }>
       <View row centered sBetween>
         <View row>
-          <FastImage source={images.startBackground} style={styles.avatar} />
+          <Avatar user={user} />
           <View mLeft={10}>
             <Text size={15} style={{fontWeight: '500'}}>
               {user.username}

@@ -10,15 +10,21 @@ import {styles} from './styles';
 
 const CustomTextInput = props => {
   const [hidePassword, setHidePassword] = useState(true);
-  const {error, disabled} = props;
+  const {error, disabled, label, labelStyle} = props;
   return (
     <View
       style={[
         styles.container,
         disabled && {backgroundColor: colors.lightGrey},
+        label && {height: 60},
         props.containerStyle,
         error && {borderColor: colors.pink, borderWidth: 2},
       ]}>
+      {props.label && (
+        <Text size={16} mLeft={8} style={labelStyle}>
+          {label}
+        </Text>
+      )}
       <View style={styles.textBoxBtnHolder}>
         <TextInput
           editable={!disabled}
@@ -27,6 +33,7 @@ const CustomTextInput = props => {
           underlineColorAndroid="transparent"
           secureTextEntry={props.isPassword && hidePassword}
           value={props.value}
+          multiline={props.multiline}
           style={[
             styles.textBox,
             props.textInputStyle,

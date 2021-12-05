@@ -7,10 +7,10 @@ import {styles} from './styles';
 const EN = {
   normal: 'Arial',
   medium: 'Arial',
-  bold: 'Arial'
+  bold: 'Arial',
 };
 
-const getFont = (type) => {
+const getFont = type => {
   return type ? EN[type] : EN.normal;
 };
 
@@ -19,13 +19,13 @@ const Text = ({style, ...props}) => {
     <RNText
       {...props}
       style={[
-        // {fontFamily: getFont('normal'), fontWeight: '400'},
+        {fontWeight: '400'},
         props.center && styles.center,
         props.left && styles.left,
         props.color && {color: props.color},
         props.right && styles.right,
-        // props.medium && {fontFamily: getFont('medium'), fontWeight: '500'},
-        // props.bold && {fontFamily: getFont('bold'), fontWeight: 'bold'},
+        props.medium && {fontWeight: '500'},
+        props.bold && {fontWeight: 'bold'},
         props.uppercase && styles.uppercase,
         props.capitalize && styles.capitalize,
         props.underline && styles.underline,
@@ -51,7 +51,7 @@ const Text = ({style, ...props}) => {
         props.selectLabelColor && styles.selectLabelColor,
         props.mTop && {marginTop: props.mTop},
         props.mBottom && {marginBottom: props.mBottom},
-        style
+        style,
       ]}
     />
   );
@@ -87,7 +87,7 @@ Text.propTypes = {
   selectLabelColor: PropTypes.bool,
   mTop: PropTypes.number,
   mBottom: PropTypes.number,
-  grey: PropTypes.bool
+  grey: PropTypes.bool,
 };
 
 Text.defaultProps = {
@@ -119,7 +119,7 @@ Text.defaultProps = {
   selectLabelColor: null,
   mTop: null,
   mBottom: null,
-  grey: false
+  grey: false,
 };
 
 export default Text;

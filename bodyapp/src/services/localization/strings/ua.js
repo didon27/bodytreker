@@ -8,7 +8,13 @@ export const ua = {
   tagline: "Ми не будуємо кордонів між людьми, ми об'єднуємо їх.",
   edit: 'Редагувати',
   actual: 'Актуальні',
+  last_name: 'Фамілія',
+  first_name: 'Ім`я',
   filters: 'Фільтри',
+  settings: 'Налаштування',
+  change_password: 'Змінити пароль',
+  logout: 'Вийти',
+  language: 'Мова',
   my: 'Мої',
   enter_your_email:
     'Введіть вашу електронну пошту, на який має прийти лист із кодом підтвердження',
@@ -37,4 +43,6 @@ export const ua = {
   select_categories: 'Виберіть категорії',
   category_search: 'Пошук категорії',
   add_categories_maximum: 'Додати категорії, максимально 3',
+  edit_profile: 'Редагувати профіль',
+  save: 'Зберегти',
 };

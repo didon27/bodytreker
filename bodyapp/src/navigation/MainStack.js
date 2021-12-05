@@ -6,10 +6,10 @@ import {images} from 'images';
 import {colors} from 'colors';
 import {Text, View} from '../components/';
 import Home from '../screens/Home';
-import Profile from 'screens/Profile/Main';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AddActivities from 'screens/AddActivities';
 import HomeStack from './HomeStack';
+import ProfileStack from './ProfileStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -126,14 +126,14 @@ function AppNavigation(props) {
       />
       <Tab.Screen
         name="Message"
-        component={Profile}
+        component={ProfileStack}
         options={({route}) => ({
           tabBarStyle: getTabBarVisibility(route),
         })}
       />
       <Tab.Screen
         name="Profile"
-        component={Profile}
+        component={ProfileStack}
         options={({route}) => ({
           tabBarStyle: getTabBarVisibility(route),
         })}

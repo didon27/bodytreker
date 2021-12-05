@@ -1,0 +1,221 @@
+import {colors} from 'colors';
+import {
+  Button,
+  CustomSafeAreaView,
+  TextInput,
+  View,
+  Text,
+  Avatar,
+} from 'components';
+import {images} from 'images';
+import React, {Fragment, useContext, useState} from 'react';
+import {
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  Alert,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {useSelector, useDispatch} from 'react-redux';
+import {LocalizationContext} from 'services';
+import {userActions} from 'store/user';
+import styles from './styles';
+import {
+  request,
+  check,
+  PERMISSIONS,
+  RESULTS,
+  openSettings,
+  openLimitedPhotoLibraryPicker,
+} from 'react-native-permissions';
+import ImagePicker from 'react-native-image-crop-picker';
+import axios from 'axios';
+import {API_URL} from 'constants';
+import {API} from 'constants';
+import {routeNames} from 'enums';
+
+const EditProfile = props => {
+  const {translations} = useContext(LocalizationContext);
+  const [updateUserLoading, setUpdateUserLoading] = useState(false);
+  const [currentPhoto, setCurrentPhoto] = useState(null);
+  const {token} = useSelector(state => state.auth);
+  const [user, setUser] = useState(useSelector(state => state.user.user));
+  const dispatch = useDispatch();
+
+  const changeUserField = (key, value) => {
+    setUser(prevState => ({...prevState, [key]: value}));
+  };
+
+  const updateUser = () => {
+    const data = new FormData();
+    setUpdateUserLoading(true);
+
+    if (currentPhoto) {
+      data.append('image', {
+        uri:
+          Platform.OS === 'android'
+            ? currentPhoto.path
+            : currentPhoto.sourceURL?.replace('file://', ''),
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      });
+    }
+
+    data.append('id', user.id);
+    data.append('last_name', user.last_name);
+    data.append('first_name', user.first_name);
+    data.append('username', user.username);
+    data.append('description', user.description);
+
+    axios({
+      method: 'post',
+      url: `${API_URL}/user/update-user`,
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: token,
+      },
+    })
+      .then(response => {
+        console.log(response.data);
+        setUpdateUserLoading(false);
+        setCurrentPhoto(null);
+        dispatch(userActions.updateUserSuccess(response.data));
+        props.navigation.navigate(routeNames.myProfile);
+      })
+      .catch(err => {
+        setUpdateUserLoading(false);
+        console.log('error', err.response.data);
+      });
+  };
+
+  const openCamera = async index => {
+    let galleryPerm = null;
+
+    if (Platform.OS === 'ios') {
+      galleryPerm = await check(PERMISSIONS.IOS.PHOTO_LIBRARY);
+    } else if (Platform.OS === 'android') {
+      galleryPerm = await check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    }
+
+    switch (galleryPerm) {
+      case RESULTS.GRANTED: {
+        const result = await ImagePicker.openPicker({
+          mediaType: 'photo',
+          includeBase64: false,
+          compressImageQuality: 0.5,
+          multiple: false,
+        });
+        setCurrentPhoto(result);
+        break;
+      }
+      case RESULTS.BLOCKED:
+        Alert.alert('Permission blocked', 'Please allow access if you want', [
+          {
+            text: 'Go To Settings',
+            onPress: () => openSettings(),
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ]);
+        break;
+      case RESULTS.LIMITED:
+        openLimitedPhotoLibraryPicker();
+        break;
+      default:
+        if (Platform.OS === 'ios') {
+          request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+        } else if (Platform.OS === 'android') {
+          request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+        }
+        break;
+    }
+  };
+
+  return (
+    <Fragment>
+      <CustomSafeAreaView
+        style={{paddingHorizontal: 20, backgroundColor: colors.white}}>
+        <View row centered sBetween>
+          <TouchableOpacity onPress={() => props.navigation.goBack()}>
+            <Icon name="angle-left" size={30} color={'#585858'} />
+          </TouchableOpacity>
+          <Button
+            text={translations.save}
+            loading={updateUserLoading}
+            textStyle={{fontSize: 14}}
+            onPress={updateUser}
+            style={{
+              marginTop: 0,
+              height: 31,
+              width: null,
+              paddingHorizontal: 12,
+            }}
+          />
+        </View>
+      </CustomSafeAreaView>
+      <ScrollView style={{backgroundColor: colors.white}}>
+        <View style={{width: '100%', alignItems: 'center', marginVertical: 20}}>
+          <View>
+            <Avatar
+              edit
+              style={{width: 110, height: 110, borderRadius: 55, zIndex: 0}}
+              letterStyle={{fontSize: 40}}
+              user={{
+                first_name: user.first_name,
+                avatar: currentPhoto
+                  ? Platform.OS === 'ios'
+                    ? currentPhoto.path
+                    : currentPhoto
+                  : user.avatar
+                  ? API + '/images/' + user.avatar
+                  : null,
+              }}
+            />
+            <TouchableOpacity style={styles.camera} onPress={openCamera}>
+              <Icon name={'camera'} size={16} color={colors.white} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{paddingHorizontal: 20}}>
+          <TextInput
+            label={translations.first_name}
+            value={user.first_name}
+            containerStyle={styles.input}
+            labelStyle={{color: 'grey'}}
+            onChangeText={value => changeUserField('first_name', value)}
+          />
+          <TextInput
+            label={translations.last_name}
+            value={user.last_name}
+            containerStyle={styles.input}
+            labelStyle={{color: 'grey'}}
+            onChangeText={value => changeUserField('last_name', value)}
+          />
+          <TextInput
+            label={'Username'}
+            value={user.username}
+            containerStyle={styles.input}
+            labelStyle={{color: 'grey'}}
+            onChangeText={value => changeUserField('username', value)}
+          />
+          <TextInput
+            label={translations.description}
+            placeholder={translations.description}
+            value={user.description}
+            containerStyle={{...styles.input, height: 170}}
+            textInputStyle={{height: 130, paddingTop: 0}}
+            labelStyle={{color: 'grey', marginBottom: 10}}
+            multiline
+            onChangeText={value => changeUserField('description', value)}
+          />
+        </View>
+      </ScrollView>
+    </Fragment>
+  );
+};
+
+export default EditProfile;

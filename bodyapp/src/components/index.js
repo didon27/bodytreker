@@ -9,3 +9,4 @@ export {default as KeyboardAvoidWrapper} from './KeyboardAvoidWrapper';
 export {default as CheckBox} from './CheckBox';
 export {default as CustomSafeAreaView} from './CustomSafeAreaView';
 export {default as ItemCategory} from './ItemCategory';
+export {default as Avatar} from './Avatar';

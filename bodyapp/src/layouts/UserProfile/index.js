@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Animated, TouchableOpacity} from 'react-native';
+import {Animated, StatusBar, TouchableOpacity} from 'react-native';
 import StarRating from 'react-native-star-rating';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
@@ -15,11 +15,11 @@ import {LocalizationContext} from 'services';
 import ActivitiesCard from 'screens/Home/components/ActivitiesCard';
 
 import styles from './styles';
+import {routeNames} from 'enums';
 
-const Profile = props => {
+const UserProfile = ({user, navigation}) => {
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
-  const {user} = useSelector(state => state.user);
   const dispatch = useDispatch();
   const AnimatedIcon = Animated.createAnimatedComponent(Icon);
   const AnimatedTouchableOpacity =
@@ -29,6 +29,7 @@ const Profile = props => {
   const [tab, setTab] = useState(true);
 
   useEffect(() => {
+    StatusBar.setHidden(true);
     dispatch(activitiesActions.getMyActivities({user_id: user.id}));
   }, [appLanguage]);
 
@@ -37,32 +38,38 @@ const Profile = props => {
     dispatch(authActions.removeTokenSuccess());
   };
 
+  let inputRageHeader = user.images.length
+    ? [0, 100, 220, 340]
+    : [0, 20, 30, 60];
+
+  let inputRageHeaderButton = user.images.length ? [0, 100, 340] : [0, 30, 60];
+
   const headerBackgroundColor = scrollY.interpolate({
-    inputRange: [0, 100, 220, 340],
+    inputRange: inputRageHeader,
     outputRange: ['transparent', 'transparent', 'transparent', 'white'],
     extrapolate: 'clamp',
   });
 
   const headerBorderColor = scrollY.interpolate({
-    inputRange: [0, 100, 220, 340],
+    inputRange: inputRageHeader,
     outputRange: ['transparent', 'transparent', 'transparent', '#dddcdc'],
     extrapolate: 'clamp',
   });
 
   const headerButtonBackgroundColor = scrollY.interpolate({
-    inputRange: [0, 100, 340],
+    inputRange: inputRageHeaderButton,
     outputRange: ['#0000005c', '#0000005c', 'transparent'],
     extrapolate: 'clamp',
   });
 
   const headerButtonColor = scrollY.interpolate({
-    inputRange: [0, 100, 220, 340],
+    inputRange: inputRageHeader,
     outputRange: ['white', 'white', 'white', colors.mainBlue],
     extrapolate: 'clamp',
   });
 
   const headerUsernameColor = scrollY.interpolate({
-    inputRange: [0, 100, 220, 340],
+    inputRange: inputRageHeader,
     outputRange: ['transparent', 'transparent', 'transparent', 'black'],
     extrapolate: 'clamp',
   });
@@ -71,7 +78,7 @@ const Profile = props => {
     return (
       <View style={{paddingHorizontal: 20}}>
         <ActivitiesCard
-          navigation={props.navigation}
+          navigation={navigation}
           item={item}
           index={index}
           user_id={user.id}
@@ -110,6 +117,7 @@ const Profile = props => {
             {user.username.toLocaleLowerCase()}
           </Animated.Text>
           <AnimatedTouchableOpacity
+            onPress={() => navigation.navigate(routeNames.settings, {user})}
             style={{
               ...styles.secondHeaderBtn,
               backgroundColor: headerButtonBackgroundColor,
@@ -129,7 +137,8 @@ const Profile = props => {
           }}
         />
       </Animated.View>
-      <Animated.FlatList
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
         bounces={false}
         onScroll={Animated.event(
           [
@@ -138,17 +147,18 @@ const Profile = props => {
             },
           ],
           {useNativeDriver: false},
-        )}
-        initialNumToRender={2}
-        snapToAlignment="start"
-        decelerationRate="fast"
-        maxToRenderPerBatch={1}
-        windowSize={5}
-        onEndReachedThreshold={0.9}
-        removeClippedSubviews
-        ListEmptyComponent={() => (
-          <View style={{paddingHorizontal: 20, paddingBottom: 20}}>
-            <View>
+        )}>
+        <Header
+          translations={translations}
+          myActivities={myActivities}
+          tab={tab}
+          navigation={navigation}
+          user={user}
+          setTab={setTab}
+        />
+        <View style={{padding: 20}}>
+          {user.description ? (
+            <View mBottom={22}>
               <Text size={18} style={{fontWeight: '600'}}>
                 About me
               </Text>
@@ -160,59 +170,34 @@ const Profile = props => {
                 {user.description}
               </Text>
             </View>
-            <View mTop={22} row style={styles.ratingContainer}>
-              <View jCenter>
-                <Text size={34} style={{fontWeight: '700'}}>
-                  {user.rating}
-                  <Text size={20}> /5</Text>
-                </Text>
-                <Text mTop={4} size={16} color={'#bbbbbb'}>
-                  Based on 120 Reviews
-                </Text>
-                <View mTop={10}>
-                  <StarRating
-                    rating={user.rating}
-                    starStyle={{marginHorizontal: 1, marginTop: 2}}
-                    disabled={false}
-                    maxStars={5}
-                    starSize={26}
-                    emptyStarColor="#A2A3A5"
-                    fullStarColor={'#fbbf2d'}
-                  />
-                </View>
+          ) : null}
+          <View row style={styles.ratingContainer}>
+            <View jCenter>
+              <Text size={34} style={{fontWeight: '700'}}>
+                {user.rating}
+                <Text size={20}> /5</Text>
+              </Text>
+              <Text mTop={4} size={16} color={'#bbbbbb'}>
+                Based on 120 Reviews
+              </Text>
+              <View mTop={10}>
+                <StarRating
+                  rating={user.rating}
+                  starStyle={{marginHorizontal: 1, marginTop: 2}}
+                  disabled={false}
+                  maxStars={5}
+                  starSize={26}
+                  emptyStarColor="#A2A3A5"
+                  fullStarColor={'#fbbf2d'}
+                />
               </View>
-              <View flex></View>
             </View>
+            <View flex></View>
           </View>
-          // <View
-          //   style={{
-          //     width: '100%',
-          //     height: DEVICE_HEIGHT * 0.7,
-          //     alignItems: 'center',
-          //     justifyContent: 'center',
-          //   }}>
-          //   <Text>К сожелению нету активити</Text>
-          // </View>
-        )}
-        removeClippedSubviews={true}
-        ItemSeparatorComponent={() => <View style={{height: 16}} />}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <Header
-            translations={translations}
-            myActivities={myActivities}
-            tab={tab}
-            user={user}
-            setTab={setTab}
-          />
-        }
-        contentContainerStyle={styles.flatList}
-        data={tab ? [] : myActivities}
-        keyExtractor={(_, index) => index.toString()}
-      />
+        </View>
+      </Animated.ScrollView>
     </View>
   );
 };
 
-export default Profile;
+export default UserProfile;

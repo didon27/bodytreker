@@ -6,6 +6,8 @@ const initialState = {
   createUserLoading: false,
   createUserError: null,
   codeLoading: false,
+  updateUserLoading: false,
+  updateUserError: false,
   isCodeValid: false,
   codeError: null,
   user: {},

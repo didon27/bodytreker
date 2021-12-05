@@ -7,8 +7,14 @@ export const ru = {
   password: 'Пароль',
   edit: 'Редактировать',
   actual: 'Актуальные',
+  last_name: 'Фамилия',
+  first_name: 'Имя',
   my: 'Мои',
   filters: 'Фильтры',
+  settings: 'Настройки',
+  change_password: 'Изменить пароль',
+  logout: 'Выйти',
+  language: 'Язык',
   tagline: 'Мы не строим границ между людьми, мы объединяем их.',
   enter_your_email:
     'Введите вашу электронную почту на которое должно прийти письмо с кодом подтверждения',
@@ -37,4 +43,6 @@ export const ru = {
   select_categories: 'Выберете категории',
   category_search: 'Поиск категории',
   add_categories_maximum: 'Добавьте категории, максимально 3',
+  edit_profile: 'Редактировать профиль',
+  save: 'Сохранить',
 };

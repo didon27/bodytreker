@@ -13,18 +13,18 @@ export const userActions = {
   createSuccess: () => ({type: userConstants.CREATE_USER_SUCCESS}),
   createFailure: error => ({type: userConstants.CREATE_USER_FAILURE, error}),
 
-  update: (payload, route) => ({
+  updateUser: (payload, route) => ({
     type: userConstants.UPDATE_USER_REQUEST,
     payload,
     route,
   }),
-  updateSuccess: payload => ({
+  updateUserSuccess: payload => ({
     type: userConstants.UPDATE_USER_SUCCESS,
     payload,
   }),
-  updateFailure: error => ({type: userConstants.UPDATE_USER_FAILURE, error}),
+  updateUserFailure: error => ({type: userConstants.UPDATE_USER_FAILURE, error}),
 
-  updateUser: payload => ({type: userConstants.UPDATE_USER, payload}),
+  // updateUser: payload => ({type: userConstants.UPDATE_USER, payload}),
 
   checkVerificationCode: payload => ({
     type: userConstants.CHECK_VERIFICATION_CODE_REQUEST,

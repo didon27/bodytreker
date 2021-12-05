@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {routeNames} from 'enums';
 import Home from 'screens/Home';
 import Details from 'screens/Home/Details';
+import ActivityStack from './ActivityStack';
 
 const HomeStack = createStackNavigator();
 
@@ -18,10 +19,7 @@ export default props => {
         },
       })}>
       <HomeStack.Screen name={routeNames.home} component={Home} />
-      <HomeStack.Screen
-        name={routeNames.dateils}
-        component={Details}
-      />
+      <HomeStack.Screen name={routeNames.dateils} component={ActivityStack} />
     </HomeStack.Navigator>
   );
 };
