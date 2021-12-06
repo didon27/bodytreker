@@ -6605,6 +6605,11 @@
   "resolved" "https://registry.npmjs.org/react-native-date-picker/-/react-native-date-picker-3.3.2.tgz"
   "version" "3.3.2"
 
+"react-native-dropdown-picker@^5.2.3":
+  "integrity" "sha512-nT2p/3pzydi6CAUPbC7WR1Yo2/FDX6napouAQ1ueuCGD48afYiWERh2J+mAUes/v4MKl68oriEz9C7GM6aAILg=="
+  "resolved" "https://registry.npmjs.org/react-native-dropdown-picker/-/react-native-dropdown-picker-5.2.3.tgz"
+  "version" "5.2.3"
+
 "react-native-elements@^3.3.2":
   "integrity" "sha512-m0eAWOn7JuR1wNTNY0WHuaqst4LI/gFE4N5Bbyfsc4DiryWsMST7aAg5w/Gos4IexWIzhLKCIkPxthND1m/8Xg=="
   "resolved" "https://registry.npmjs.org/react-native-elements/-/react-native-elements-3.4.2.tgz"

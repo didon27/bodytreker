@@ -12,27 +12,6 @@ import {routeNames} from 'enums';
 import {API} from 'constants';
 
 function Header({myActivities, translations, setTab, tab, user, navigation}) {
-  const controlButton = (title, value) => {
-    return (
-      <TouchableOpacity
-        onPress={() => setTab(value)}
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          paddingVertical: 10,
-          borderBottomWidth: value === tab ? 2 : 1,
-          borderColor: value === tab ? colors.mainBlue : colors.grey,
-        }}>
-        <Text
-          size={16}
-          color={value === tab ? colors.mainBlue : colors.grey}
-          style={{fontWeight: value === tab ? '600' : '500'}}>
-          {title}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <Fragment>
       <View
@@ -47,7 +26,11 @@ function Header({myActivities, translations, setTab, tab, user, navigation}) {
           paginationBoxVerticalPadding={0}
           enableMomentum
           images={user.images.map(item => API + '/images/' + item.filename)}
-          dotStyle={{width: DEVICE_WIDTH / user.images.length - 20, height: 4, maxWidth: 50}}
+          dotStyle={{
+            width: DEVICE_WIDTH / user.images.length - 20,
+            height: 4,
+            maxWidth: 50,
+          }}
           paginationBoxStyle={{marginBottom: 40}}
           dotColor={colors.mainBlue}
           inactiveDotColor={'white'}
@@ -60,30 +43,34 @@ function Header({myActivities, translations, setTab, tab, user, navigation}) {
             paddingBottom: 20,
           }}>
           <View row sBetween centered>
-            <Text
-              size={20}
-              style={{fontWeight: '700', width: DEVICE_WIDTH * 0.5}}>
+            <Text size={20} style={{fontWeight: '700'}}>
               {user.first_name + ' ' + user.last_name}
+              {'  '}
+              <Text size={20} color={'grey'}>
+                {user.age}
+              </Text>
             </Text>
-            <Button
+            {/* <Button
               onPress={() => navigation.navigate(routeNames.editProfile)}
               text={translations.edit}
               style={styles.headerBtn}
-            />
+            /> */}
           </View>
           <Text size={15} style={{fontWeight: '500'}} color={'grey'}>
             @{user.username.toLocaleLowerCase()}
           </Text>
         </View>
         <View row centered sBetween style={styles.counterBlock}>
-          <View centered>
+          <TouchableOpacity
+            style={{alignItems: 'center'}}
+            onPress={() => navigation.navigate(routeNames.myActivities)}>
             <Text size={22} color={colors.mainBlue} style={{fontWeight: '600'}}>
               {myActivities.length}
             </Text>
             <Text mTop={4} color={'grey'} style={{fontWeight: '500'}}>
               Activities
             </Text>
-          </View>
+          </TouchableOpacity>
 
           <View centered>
             <Text size={22} color={colors.mainBlue} style={{fontWeight: '600'}}>
@@ -104,10 +91,6 @@ function Header({myActivities, translations, setTab, tab, user, navigation}) {
           </View>
         </View>
       </View>
-      {/* <View row style={{paddingBottom: 20}}>
-        {controlButton('Информация', true)}
-        {controlButton('Активити', false)}
-      </View> */}
     </Fragment>
   );
 }

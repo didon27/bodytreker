@@ -12,6 +12,7 @@ export const routeNames = Object.freeze({
   activityDetails: 'ActivityDetails',
   myProfile: 'MyProfile',
   editProfile: 'EditProfile',
+  myActivities: 'MyActivities',
 });
 
 export const keys = Object.freeze({

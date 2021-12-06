@@ -6,15 +6,17 @@ import {
   View,
   Text,
   Avatar,
+  CheckBox,
 } from 'components';
 import {images} from 'images';
-import React, {Fragment, useContext, useState} from 'react';
+import React, {Fragment, useContext, useEffect, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
   TouchableOpacity,
   Platform,
   Alert,
+  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useSelector, useDispatch} from 'react-redux';
@@ -35,13 +37,50 @@ import {API_URL} from 'constants';
 import {API} from 'constants';
 import {routeNames} from 'enums';
 
+import DropDownPicker from 'react-native-dropdown-picker';
+
 const EditProfile = props => {
   const {translations} = useContext(LocalizationContext);
   const [updateUserLoading, setUpdateUserLoading] = useState(false);
   const [currentPhoto, setCurrentPhoto] = useState(null);
   const {token} = useSelector(state => state.auth);
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [user, setUser] = useState(useSelector(state => state.user.user));
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    {label: 'Не женат', value: 1},
+    {label: 'Встречаюсь', value: 2},
+    {label: 'Помолвлен', value: 3},
+    {label: 'Женат', value: 4},
+    {label: 'Влюблен', value: 5},
+    {label: 'Все сложно', value: 6},
+    {label: 'В активном поиске', value: 7},
+  ]);
+
+  useEffect(() => {
+    if (user.gender === 1) {
+      setItems([
+        {label: translations.unmarried, value: 1},
+        {label: translations.dating, value: 2},
+        {label: 'Помолвлен', value: 3},
+        {label: 'Женат', value: 4},
+        {label: 'Влюблен', value: 5},
+        {label: 'Все сложно', value: 6},
+        {label: 'В активном поиске', value: 7},
+      ]);
+    } else {
+      setItems([
+        {label: 'Не замужем', value: 1},
+        {label: 'Встречаюсь', value: 2},
+        {label: 'Помолвлена', value: 3},
+        {label: 'Замужем', value: 4},
+        {label: 'Влюблена', value: 5},
+        {label: 'Все сложно', value: 6},
+        {label: 'В активном поиске', value: 7},
+      ]);
+    }
+  }, [user.gender]);
 
   const changeUserField = (key, value) => {
     setUser(prevState => ({...prevState, [key]: value}));
@@ -63,9 +102,11 @@ const EditProfile = props => {
     }
 
     data.append('id', user.id);
+    data.append('status', user.status);
     data.append('last_name', user.last_name);
     data.append('first_name', user.first_name);
     data.append('username', user.username);
+    data.append('gender', user.gender);
     data.append('description', user.description);
 
     axios({
@@ -135,11 +176,36 @@ const EditProfile = props => {
     }
   };
 
+  const genderButton = (title, value) => {
+    return (
+      <TouchableOpacity
+        style={{flexDirection: 'row'}}
+        onPress={() => changeUserField('gender', value)}>
+        <CheckBox
+          selected={user.gender === value}
+          changeSelect={() => changeUserField('gender', value)}
+        />
+        <Text size={16} mLeft={8}>
+          {title}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const headerBorderColor = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['transparent', '#dddcdc'],
+    extrapolate: 'clamp',
+  });
+
   return (
     <Fragment>
-      <CustomSafeAreaView
-        style={{paddingHorizontal: 20, backgroundColor: colors.white}}>
-        <View row centered sBetween>
+      <CustomSafeAreaView style={{backgroundColor: colors.white}}>
+        <View
+          row
+          centered
+          sBetween
+          style={{paddingHorizontal: 20, paddingBottom: 16}}>
           <TouchableOpacity onPress={() => props.navigation.goBack()}>
             <Icon name="angle-left" size={30} color={'#585858'} />
           </TouchableOpacity>
@@ -156,9 +222,28 @@ const EditProfile = props => {
             }}
           />
         </View>
+        <Animated.View
+          style={{
+            width: '100%',
+            height: 0.5,
+            backgroundColor: headerBorderColor,
+          }}
+        />
       </CustomSafeAreaView>
-      <ScrollView style={{backgroundColor: colors.white}}>
-        <View style={{width: '100%', alignItems: 'center', marginVertical: 20}}>
+      <Animated.ScrollView
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {contentOffset: {y: scrollY}},
+            },
+          ],
+          {useNativeDriver: false},
+        )}
+        style={{backgroundColor: colors.white}}
+        bounces={false}
+        contentContainerStyle={{paddingBottom: 40}}
+        showsVerticalScrollIndicator={false}>
+        <View style={{width: '100%', alignItems: 'center', marginVertical: 10}}>
           <View>
             <Avatar
               edit
@@ -202,6 +287,56 @@ const EditProfile = props => {
             labelStyle={{color: 'grey'}}
             onChangeText={value => changeUserField('username', value)}
           />
+          <Text mLeft={8} size={16} color={'grey'} mTop={16}>
+            Пол
+          </Text>
+          <View
+            row
+            style={{
+              borderBottomWidth: 0.5,
+              borderColor: colors.lightGrey,
+              paddingVertical: 16,
+              paddingLeft: 8,
+              justifyContent: 'space-around',
+            }}>
+            {genderButton('Мужчина', 1)}
+            {genderButton('Женщина', 2)}
+            {genderButton('Другое', 3)}
+          </View>
+          <Text mLeft={8} size={16} color={'grey'} mTop={16}>
+            Симейное положение
+          </Text>
+          <DropDownPicker
+            open={open}
+            placeholder="Ничего не выбрано"
+            placeholderStyle={{color: 'grey'}}
+            value={user.status}
+            items={items}
+            setOpen={setOpen}
+            setValue={value => changeUserField('status', value())}
+            setItems={setItems}
+            // containerStyle={{
+            //   paddingHorizontal: 8
+            // }}
+            style={{
+              borderBottomWidth: 1,
+              borderTopWidth: 0,
+              borderRadius: 0,
+              borderLeftWidth: 0,
+              borderRightWidth: 0,
+              borderColor: colors.lightGrey,
+            }}
+            textStyle={{
+              fontSize: 18,
+            }}
+            dropDownContainerStyle={{
+              borderColor: colors.lightGrey,
+              borderRadius: 0,
+            }}
+            listMode="SCROLLVIEW"
+            dropDownDirection="BOTTOM"
+            bottomOffset={200}
+          />
           <TextInput
             label={translations.description}
             placeholder={translations.description}
@@ -213,7 +348,7 @@ const EditProfile = props => {
             onChangeText={value => changeUserField('description', value)}
           />
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </Fragment>
   );
 };

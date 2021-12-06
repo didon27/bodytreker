@@ -45,4 +45,8 @@ export const en = {
   category_search: 'Category search',
   add_categories_maximum: 'Add categories, maximum 3',
   edit_profile: 'Edit profile',
+
+  age: 'Age',
+  unmarried: 'Unmarried',
+  dating: 'Dating',
 };

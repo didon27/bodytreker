@@ -26,17 +26,13 @@ const UserProfile = ({user, navigation}) => {
     Animated.createAnimatedComponent(TouchableOpacity);
   const {translations, appLanguage} = useContext(LocalizationContext);
   const {myActivities} = useSelector(state => state.activities);
+  const myUser = useSelector(state => state.user.user);
   const [tab, setTab] = useState(true);
 
   useEffect(() => {
     StatusBar.setHidden(true);
     dispatch(activitiesActions.getMyActivities({user_id: user.id}));
   }, [appLanguage]);
-
-  const logout = async () => {
-    await storage.delete('UserToken');
-    dispatch(authActions.removeTokenSuccess());
-  };
 
   let inputRageHeader = user.images.length
     ? [0, 100, 220, 340]
@@ -74,20 +70,6 @@ const UserProfile = ({user, navigation}) => {
     extrapolate: 'clamp',
   });
 
-  function renderItem({item, index}) {
-    return (
-      <View style={{paddingHorizontal: 20}}>
-        <ActivitiesCard
-          navigation={navigation}
-          item={item}
-          index={index}
-          user_id={user.id}
-          translations={translations}
-        />
-      </View>
-    );
-  }
-
   return (
     <View flex style={{backgroundColor: colors.white}}>
       <Animated.View
@@ -97,17 +79,19 @@ const UserProfile = ({user, navigation}) => {
           paddingTop: insets.top,
         }}>
         <View style={styles.header}>
-          <AnimatedTouchableOpacity
-            style={{
-              ...styles.btnBack,
-              backgroundColor: headerButtonBackgroundColor,
-            }}>
-            <AnimatedIcon
-              name="angle-left"
-              size={30}
-              style={{color: headerButtonColor}}
-            />
-          </AnimatedTouchableOpacity>
+          {user.id !== myUser.id && (
+            <AnimatedTouchableOpacity
+              style={{
+                ...styles.btnBack,
+                backgroundColor: headerButtonBackgroundColor,
+              }}>
+              <AnimatedIcon
+                name="angle-left"
+                size={30}
+                style={{color: headerButtonColor}}
+              />
+            </AnimatedTouchableOpacity>
+          )}
           <Animated.Text
             style={{
               color: headerUsernameColor,

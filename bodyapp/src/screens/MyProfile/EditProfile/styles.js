@@ -5,6 +5,7 @@ import {colors} from 'colors';
 export default StyleSheet.create({
   input: {
     marginTop: 16,
+    borderRadius: 0,
     borderBottomWidth: 1,
     paddingLeft: 0,
     borderBottomColor: colors.lightGrey,

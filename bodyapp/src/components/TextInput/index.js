@@ -37,6 +37,7 @@ const CustomTextInput = props => {
           style={[
             styles.textBox,
             props.textInputStyle,
+            !props.isPassword && {paddingRight: 0},
             disabled && {color: 'grey'},
           ]}
           onChangeText={text => props.onChangeText(text)}

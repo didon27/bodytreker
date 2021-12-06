@@ -45,4 +45,5 @@ export const ua = {
   add_categories_maximum: 'Додати категорії, максимально 3',
   edit_profile: 'Редагувати профіль',
   save: 'Зберегти',
+  age: 'Вік',
 };

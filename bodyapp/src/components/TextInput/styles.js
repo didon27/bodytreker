@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   textBoxBtnHolder: {
     position: 'relative',
     alignSelf: 'stretch',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   textBox: {
     fontSize: 18,
@@ -27,15 +27,16 @@ export const styles = StyleSheet.create({
     paddingLeft: 8,
     // borderBottomWidth: 2,
     paddingVertical: 0,
-    // borderBottomColor: colors.turquoise
+    padding: 0,
+    // borderBottomColor: 'red'
   },
   errorMsg: {
-    color: colors.errorColor
+    color: colors.errorColor,
   },
   errorContainer: {
     position: 'absolute',
     bottom: -20,
-    width: '100%'
+    width: '100%',
   },
   visibilityBtn: {
     position: 'absolute',
@@ -45,6 +46,6 @@ export const styles = StyleSheet.create({
   },
   btnImage: {
     height: '100%',
-    width: '100%'
-  }
+    width: '100%',
+  },
 });

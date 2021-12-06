@@ -45,4 +45,5 @@ export const ru = {
   add_categories_maximum: 'Добавьте категории, максимально 3',
   edit_profile: 'Редактировать профиль',
   save: 'Сохранить',
+  age: 'Возраст',
 };
