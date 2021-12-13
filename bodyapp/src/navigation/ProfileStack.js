@@ -5,7 +5,8 @@ import {routeNames} from 'enums';
 import MyProfile from 'screens/MyProfile/Main';
 import Settings from 'screens/MyProfile/Settings';
 import EditProfile from 'screens/MyProfile/EditProfile';
-import MyActivities from 'screens/MyProfile/MyActivities';
+import Activities from 'screens/Activities';
+import ActivityStack from './ActivityStack';
 
 const ProfileStack = createStackNavigator();
 
@@ -26,8 +27,12 @@ export default props => {
       />
       <ProfileStack.Screen name={routeNames.settings} component={Settings} />
       <ProfileStack.Screen
-        name={routeNames.myActivities}
-        component={MyActivities}
+        name={routeNames.activities}
+        component={Activities}
+      />
+      <ProfileStack.Screen
+        name={routeNames.dateils}
+        component={ActivityStack}
       />
     </ProfileStack.Navigator>
   );

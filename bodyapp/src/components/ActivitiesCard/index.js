@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 
 import {colors} from 'colors';
-import {View, Text, Button, ItemCategory, Avatar} from 'components';
+import {View, Text, Button, ItemCategory, Avatar, UserBlock} from 'components';
 import {images} from 'images';
 
 import styles from './styles';
@@ -28,7 +28,7 @@ function ActivitiesCard({
       style={styles.container}
       onPress={
         () =>
-          navigation.navigate(routeNames.dateils, {
+          navigation.push(routeNames.dateils, {
             screen: routeNames.activityDetails,
             params: {
               activity: item,
@@ -37,7 +37,8 @@ function ActivitiesCard({
         // navigation.navigate(routeNames.dateils, {activity: item})
       }>
       <View row centered sBetween>
-        <View row>
+        <UserBlock user={user} navigation={navigation} />
+        {/* <View row>
           <Avatar user={user} />
           <View mLeft={10}>
             <Text size={15} style={{fontWeight: '500'}}>
@@ -55,7 +56,7 @@ function ActivitiesCard({
               />
             </View>
           </View>
-        </View>
+        </View> */}
         <TouchableOpacity>
           <Icon name="ellipsis-vertical" size={18} color={'grey'} />
         </TouchableOpacity>

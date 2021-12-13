@@ -11,3 +11,4 @@ export {default as CustomSafeAreaView} from './CustomSafeAreaView';
 export {default as ItemCategory} from './ItemCategory';
 export {default as Avatar} from './Avatar';
 export {default as ActivitiesCard} from './ActivitiesCard';
+export {default as UserBlock} from './UserBlock';

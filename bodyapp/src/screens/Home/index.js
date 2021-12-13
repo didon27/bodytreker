@@ -12,8 +12,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 
 import {activitiesActions} from 'store/activities';
-import {View, Text, CustomSafeAreaView, CheckBox} from 'components';
-import ActivitiesCard from './components/ActivitiesCard';
+import {
+  View,
+  Text,
+  CustomSafeAreaView,
+  CheckBox,
+  ActivitiesCard,
+} from 'components';
 import {DefaultBackDrop} from 'components/BackDrop';
 import {DEVICE_HEIGHT} from 'constants';
 import {LocalizationContext} from 'services';

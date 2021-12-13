@@ -1,5 +1,6 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/user.controller");
+const uploadController = require("../controllers/upload.controller");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -10,5 +11,29 @@ module.exports = function (app) {
     next();
   });
 
-  app.get("/api/get-user", [authJwt.verifyToken], controller.getUser);
+  app.post(
+    "/api/user/update-user",
+    [authJwt.verifyToken],
+    controller.updateUser
+  );
+
+  app.get("/api/get-my-user", [authJwt.verifyToken], controller.getMyUser);
+  app.post("/api/user/get-user", [authJwt.verifyToken], controller.getUser);
+
+  app.post(
+    "/api/user/subscribe-user",
+    [authJwt.verifyToken],
+    controller.subscribeUser
+  );
+  app.post(
+    "/api/user/unsubscribe-user",
+    [authJwt.verifyToken],
+    controller.unsubscribeUser
+  );
+
+  app.post(
+    "/api/user/get-user-followers-and-followings",
+    [authJwt.verifyToken],
+    controller.getFollowersAndFollowings
+  );
 };

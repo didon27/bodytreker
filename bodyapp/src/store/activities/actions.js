@@ -33,18 +33,20 @@ export const activitiesActions = {
     error,
   }),
 
-  getMyActivities: payload => ({
+  getMyActivities: (payload, refresh) => ({
     type: activitiesConstants.GET_MY_ACTIVITIES,
     payload,
+    refresh,
   }),
-  getMyActivitiesSuccess: payload => ({
+  getMyActivitiesSuccess: (payload, refresh) => ({
     type: activitiesConstants.GET_MY_ACTIVITIES_SUCCESS,
     payload,
+    refresh,
   }),
 
-  getMyActivitiesFailure: payload => ({
+  getMyActivitiesFailure: error => ({
     type: activitiesConstants.GET_MY_ACTIVITIES_FAILURE,
-    payload,
+    error,
   }),
 
   getActivitiesCategories: payload => ({
@@ -60,10 +62,11 @@ export const activitiesActions = {
     error,
   }),
 
-  subscribeActivitiy: (payload, item) => ({
+  subscribeActivitiy: (payload, item, callback) => ({
     type: activitiesConstants.SUBSCRIBE_ACTIVITY,
     payload,
     item,
+    callback,
   }),
   subscribeActivitiySuccess: payload => ({
     type: activitiesConstants.SUBSCRIBE_ACTIVITY_SUCCESS,
@@ -74,9 +77,10 @@ export const activitiesActions = {
     error,
   }),
 
-  unsubscribeActivity: payload => ({
+  unsubscribeActivity: (payload, callback) => ({
     type: activitiesConstants.UNSUBSCRIBE_ACTIVITY,
     payload,
+    callback,
   }),
   unsubscribeActivitySuccess: payload => ({
     type: activitiesConstants.UNSUBSCRIBE_ACTIVITY_SUCCESS,

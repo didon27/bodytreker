@@ -22,8 +22,6 @@ function Header({
 }) {
   const {user} = activity;
 
-  console.log(user);
-
   return (
     <Fragment>
       <View
@@ -57,13 +55,11 @@ function Header({
         <View row>
           <Avatar user={user} style={{width: 60, height: 60}} />
           <View mLeft={10}>
-            <Text
-              size={20}
-              style={{fontWeight: '700', width: DEVICE_WIDTH * 0.5}}>
+            <Text size={20} style={{fontWeight: '700'}}>
               {user.first_name + ' ' + user.last_name}
             </Text>
             <Text size={15} style={{fontWeight: '500'}} color={'grey'}>
-              {user.username}
+              @{user.username.toLowerCase()}
             </Text>
             <View style={{width: 10}}>
               <StarRating
@@ -79,10 +75,6 @@ function Header({
           </View>
         </View>
       </View>
-      {/* <View row style={{paddingBottom: 20}}>
-        {controlButton('Информация', true)}
-        {controlButton('Активити', false)}
-      </View> */}
     </Fragment>
   );
 }

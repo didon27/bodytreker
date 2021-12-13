@@ -22,9 +22,40 @@ export const userActions = {
     type: userConstants.UPDATE_USER_SUCCESS,
     payload,
   }),
-  updateUserFailure: error => ({type: userConstants.UPDATE_USER_FAILURE, error}),
+  updateUserFailure: error => ({
+    type: userConstants.UPDATE_USER_FAILURE,
+    error,
+  }),
 
   // updateUser: payload => ({type: userConstants.UPDATE_USER, payload}),
+
+  subscribeUser: (payload, refreshUser) => ({
+    type: userConstants.SUBSCRIBE_USER_REQUEST,
+    payload,
+    refreshUser,
+  }),
+  subscribeUserSuccess: payload => ({
+    type: userConstants.SUBSCRIBE_USER_SUCCESS,
+    payload,
+  }),
+  subscribeUserFailure: error => ({
+    type: userConstants.SUBSCRIBE_USER_FAILURE,
+    error,
+  }),
+
+  unsubscribeUser: (payload, refreshUser) => ({
+    type: userConstants.UNSUBSCRIBE_USER_REQUEST,
+    payload,
+    refreshUser,
+  }),
+  unsubscribeUserSuccess: payload => ({
+    type: userConstants.UNSUBSCRIBE_USER_SUCCESS,
+    payload,
+  }),
+  unsubscribeUserFailure: error => ({
+    type: userConstants.UNSUBSCRIBE_USER_FAILURE,
+    error,
+  }),
 
   checkVerificationCode: payload => ({
     type: userConstants.CHECK_VERIFICATION_CODE_REQUEST,

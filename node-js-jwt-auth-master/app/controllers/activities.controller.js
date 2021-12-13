@@ -8,8 +8,13 @@ const ActivitiesImages = db.activities_images;
 const strings = require("../strings");
 const IdsActivitiesImages = db.ids_activities_images;
 const ActivitiesSubscribers = db.activities_subscribers;
+const IdsUsersImages = db.ids_users_images;
+const UsersImages = db.users_images;
+const jwt = require("jsonwebtoken");
+const config = require("../config/auth.config.js");
 
 const upload = require("../middleware/upload");
+const e = require("express");
 
 exports.createNewActivities = async (req, res) => {
   try {
@@ -124,15 +129,39 @@ const getPagingData = (data, page, limit) => {
   return { totalItems, activities, totalPages, currentPage };
 };
 
+const getUserId = (req, res) => {
+  let userId;
+  let token = req.headers.authorization.replace("Bearer ", "");
+
+  jwt.verify(token, config.secret, (err, decoded) => {
+    console.log(decoded, config.secret);
+    if (err) {
+      return res.status(401).send({
+        message: "Unauthorized!",
+      });
+    }
+    userId = decoded.id;
+    console.log("\n", userId, "\n");
+  });
+
+  console.log('USSSSEEEEERRRRRIDDDDD', userId)
+  return userId;
+};
+
 exports.getActivities = (req, res) => {
-  let { user_id, title, partner, subscriptions, page, size } = req.body;
+  let { user_id, title, partner, subscriptions, page, size, userActivities } =
+    req.body;
   let lang = req.headers["accept-language"] || "en";
 
   const { limit, offset } = getPagination(page, size);
 
   let dataActivities = {};
 
-  dataActivities.user_id = { [Sequelize.Op.not]: user_id };
+  if (userActivities) {
+    dataActivities.user_id = user_id;
+  } else {
+    dataActivities.user_id = { [Sequelize.Op.not]: user_id };
+  }
 
   if (partner) {
     dataActivities.partner = partner;
@@ -141,6 +170,10 @@ exports.getActivities = (req, res) => {
   if (title) {
     dataActivities.title = { [Sequelize.Op.like]: `%${title}%` };
   }
+
+  // if (subscriptions) {
+  //   dataActivities.where = { [Sequelize.Op.like]: user_id };
+  // }
 
   if (!Activities.hasAlias("subscribers")) {
     Activities.belongsToMany(User, {
@@ -160,29 +193,58 @@ exports.getActivities = (req, res) => {
     through: IdsActivitiesImages,
   });
 
+  if (!User.hasAlias("avatar")) {
+    User.belongsToMany(UsersImages, {
+      as: "avatar",
+      foreignKey: "user_id",
+      otherKey: "image_id",
+      through: IdsUsersImages,
+    });
+  }
+
   let subscribers = {
     as: "subscribers",
     model: User,
+    include: [
+      {
+        as: "avatar",
+        model: UsersImages,
+        through: { attributes: [] },
+      },
+    ],
+    order: [["avatar", "createdAt", "DESC"]],
     through: { attributes: [] },
-    attributes: ["id", "username", "rating"],
+    attributes: ["id", "username", "rating", "first_name", "last_name"],
   };
 
-  if (subscriptions) {
-    subscribers.where = { id: user_id };
+  if (!Activities.hasAlias("avatar")) {
+    Activities.belongsToMany(UsersImages, {
+      as: "avatar",
+      foreignKey: "user_id",
+      otherKey: "image_id",
+      through: IdsUsersImages,
+    });
   }
 
   Activities.findAndCountAll({
     where: dataActivities,
     limit,
     offset,
-    attributes: ["id", "title", "description", "createdAt"],
+    attributes: ["id", "title", "description", "createdAt", "partner"],
     order: [["createdAt", "DESC"]],
     distinct: true,
     include: [
       {
         as: "user",
         model: User,
-        attributes: ["id", "username", "rating"],
+        include: [
+          {
+            as: "avatar",
+            model: UsersImages,
+            through: { attributes: [] },
+          },
+        ],
+        attributes: ["id", "username", "rating", "first_name", "last_name"],
       },
       {
         as: "activities_categories",
@@ -194,45 +256,79 @@ exports.getActivities = (req, res) => {
         as: "activities_images",
         model: ActivitiesImages,
         through: { attributes: [] },
-        attributes: ["filename"],
+        attributes: ["filename", "createdAt"],
       },
       subscribers,
     ],
   })
-    .then((response) => {
+    .then(async (response) => {
       let activities = response.rows.map((item) => {
+        let data = item.dataValues;
+        let user = {
+          id: data.user.id,
+          username: data.user.username,
+          rating: data.user.rating,
+          first_name: data.user.first_name,
+          last_name: data.user.last_name,
+          avatar:
+            data.user.avatar.sort(function (a, b) {
+              return new Date(b.createdAt) - new Date(a.createdAt);
+            })[0]?.filename || null,
+        };
+
+        let subscribers = data.subscribers.map((item) => {
+          return item.dataValues.avatar.length
+            ? {
+                ...item.dataValues,
+                avatar: item.dataValues.avatar.sort(function (a, b) {
+                  return new Date(b.createdAt) - new Date(a.createdAt);
+                })[0].filename,
+              }
+            : { ...item.dataValues, avatar: null };
+        });
+
         return {
-          ...item.dataValues,
+          ...data,
+          user,
+          subscribers,
           subscribe: !!item.subscribers?.find((item) => item.id === user_id),
         };
       });
+      let count = response.count;
 
       if (!subscriptions) {
         activities = activities.filter((item) => !item.subscribe);
+      } else {
+        activities = activities.filter((item) => item.subscribe);
+        count = await ActivitiesSubscribers.count({ where: { user_id } });
       }
 
       res
         .status(200)
-        .send(getPagingData({ ...response, rows: activities }, page, limit));
+        .send(
+          getPagingData({ ...response, count, rows: activities }, page, limit)
+        );
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
     });
 };
 
-exports.getMyActivities = (req, res) => {
-  let { user_id, title } = req.body;
+exports.getActivity = (req, res) => {
+  let { activity_id } = req.body;
   let lang = req.headers["accept-language"] || "en";
+  let user_id = getUserId(req, res);
+  let dataActivities = { id: activity_id };
 
-  let dataUser = { id: user_id };
-  let dataActivities = {};
-
-  if (title) {
-    dataActivities.title = { [Sequelize.Op.like]: `%${title}%` };
+  if (!Activities.hasAlias("subscribers")) {
+    Activities.belongsToMany(User, {
+      as: "subscribers",
+      foreignKey: "activity_id",
+      otherKey: "user_id",
+      through: ActivitiesSubscribers,
+    });
   }
-
   Activities.belongsTo(User, { foreignKey: "user_id" });
-  // Activities.belongsTo(ActivitiesCategories, { foreignKey: "category_id" });
 
   Activities.belongsToMany(ActivitiesCategories, {
     through: IdsActivitiesCategories,
@@ -242,16 +338,56 @@ exports.getMyActivities = (req, res) => {
     through: IdsActivitiesImages,
   });
 
-  Activities.findAll({
+  if (!User.hasAlias("avatar")) {
+    User.belongsToMany(UsersImages, {
+      as: "avatar",
+      foreignKey: "user_id",
+      otherKey: "image_id",
+      through: IdsUsersImages,
+    });
+  }
+
+  let subscribers = {
+    as: "subscribers",
+    model: User,
+    include: [
+      {
+        as: "avatar",
+        model: UsersImages,
+        through: { attributes: [] },
+      },
+    ],
+    order: [["avatar", "createdAt", "DESC"]],
+    through: { attributes: [] },
+    attributes: ["id", "username", "rating", "first_name", "last_name"],
+  };
+
+  if (!Activities.hasAlias("avatar")) {
+    Activities.belongsToMany(UsersImages, {
+      as: "avatar",
+      foreignKey: "user_id",
+      otherKey: "image_id",
+      through: IdsUsersImages,
+    });
+  }
+
+  Activities.findOne({
     where: dataActivities,
+    attributes: ["id", "title", "description", "createdAt", "partner"],
     order: [["createdAt", "DESC"]],
-    attributes: ["id", "title", "description"],
+    distinct: true,
     include: [
       {
         as: "user",
         model: User,
-        where: dataUser,
-        attributes: ["id", "username", "rating"],
+        include: [
+          {
+            as: "avatar",
+            model: UsersImages,
+            through: { attributes: [] },
+          },
+        ],
+        attributes: ["id", "username", "rating", "first_name", "last_name"],
       },
       {
         as: "activities_categories",
@@ -263,15 +399,250 @@ exports.getMyActivities = (req, res) => {
         as: "activities_images",
         model: ActivitiesImages,
         through: { attributes: [] },
-        attributes: ["filename"],
-        // through: { attributes: [] },
+        attributes: ["filename", "createdAt"],
       },
+      subscribers,
     ],
   })
-    .then((activities) => {
+    .then(async (response) => {
+      let data = response.dataValues;
+      let user = {
+        id: data.user.id,
+        username: data.user.username,
+        rating: data.user.rating,
+        first_name: data.user.first_name,
+        last_name: data.user.last_name,
+        avatar:
+          data.user.avatar.sort(function (a, b) {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          })[0]?.filename || null,
+      };
+
+      let subscribers = data.subscribers.map((item) => {
+        return item.dataValues.avatar.length
+          ? {
+              ...item.dataValues,
+              avatar: item.dataValues.avatar.sort(function (a, b) {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+              })[0].filename,
+            }
+          : { ...item.dataValues, avatar: null };
+      });
+
+      let activities = {
+        ...data,
+        user,
+        subscribers,
+        subscribe: !!response.subscribers?.find((item) => item.id === user_id),
+      };
+
       res.status(200).send(activities);
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
     });
 };
+
+// exports.getMyActivities = (req, res) => {
+//   let { user_id, title, partner, subscriptions, page, size, userActivities } =
+//     req.body;
+//   let lang = req.headers["accept-language"] || "en";
+
+//   const { limit, offset } = getPagination(page, size);
+
+//   let dataActivities = {};
+
+//   if (userActivities) {
+//     dataActivities.user_id = user_id;
+//   } else {
+//     dataActivities.user_id = { [Sequelize.Op.not]: user_id };
+//   }
+//   if (partner) {
+//     dataActivities.partner = partner;
+//   }
+
+//   if (title) {
+//     dataActivities.title = { [Sequelize.Op.like]: `%${title}%` };
+//   }
+
+//   if (!Activities.hasAlias("subscribers")) {
+//     Activities.belongsToMany(User, {
+//       as: "subscribers",
+//       foreignKey: "activity_id",
+//       otherKey: "user_id",
+//       through: ActivitiesSubscribers,
+//     });
+//   }
+//   Activities.belongsTo(User, { foreignKey: "user_id" });
+
+//   Activities.belongsToMany(ActivitiesCategories, {
+//     through: IdsActivitiesCategories,
+//   });
+
+//   Activities.belongsToMany(ActivitiesImages, {
+//     through: IdsActivitiesImages,
+//   });
+
+//   if (!User.hasAlias("avatar")) {
+//     User.belongsToMany(UsersImages, {
+//       as: "avatar",
+//       foreignKey: "user_id",
+//       otherKey: "image_id",
+//       through: IdsUsersImages,
+//     });
+//   }
+
+//   let subscribers = {
+//     as: "subscribers",
+//     model: User,
+//     include: [
+//       {
+//         as: "avatar",
+//         model: UsersImages,
+//         through: { attributes: [] },
+//       },
+//     ],
+//     order: [["avatar", "createdAt", "DESC"]],
+//     through: { attributes: [] },
+//     attributes: ["id", "username", "rating", "first_name", "last_name"],
+//   };
+
+//   if (!Activities.hasAlias("avatar")) {
+//     Activities.belongsTo(UsersImages, {
+//       as: "avatar",
+//       foreignKey: "user_id",
+//       otherKey: "image_id",
+//       through: Activities,
+//     });
+//   }
+
+//   if (subscriptions) {
+//     subscribers.where = { id: user_id };
+//   }
+
+//   Activities.findAndCountAll({
+//     where: dataActivities,
+//     limit,
+//     offset,
+//     attributes: ["id", "title", "description", "createdAt", "partner"],
+//     order: [["createdAt", "DESC"]],
+//     distinct: true,
+//     include: [
+//       {
+//         as: "user",
+//         model: User,
+//         attributes: ["id", "username", "rating", "first_name", "last_name"],
+//       },
+//       {
+//         as: "avatar",
+//         model: UsersImages,
+//         // attributes: ["id", "username", "rating"],
+//       },
+//       {
+//         as: "activities_categories",
+//         model: ActivitiesCategories,
+//         attributes: [[lang, "title"], "color"],
+//         through: { attributes: [] },
+//       },
+//       {
+//         as: "activities_images",
+//         model: ActivitiesImages,
+//         through: { attributes: [] },
+//         attributes: ["filename"],
+//       },
+//       subscribers,
+//     ],
+//   })
+//     .then((response) => {
+//       let activities = response.rows.map((item) => {
+//         let data = item.dataValues;
+//         let user = {
+//           id: data.user.id,
+//           username: data.user.username,
+//           rating: data.user.rating,
+//           first_name: data.user.first_name,
+//           last_name: data.user.last_name,
+//           avatar: data.avatar?.filename || null,
+//         };
+
+//         let subscribers = data.subscribers.map((item) => {
+//           return item.dataValues.avatar.length
+//             ? { ...item.dataValues, avatar: item.dataValues.avatar[0].filename }
+//             : item;
+//         });
+
+//         delete data.avatar;
+
+//         return {
+//           ...data,
+//           user,
+//           subscribers,
+//           subscribe: !!item.subscribers?.find((item) => item.id === user_id),
+//         };
+//       });
+
+//       if (!subscriptions) {
+//         activities = activities.filter((item) => !item.subscribe);
+//       }
+
+//       res
+//         .status(200)
+//         .send(getPagingData({ ...response, rows: activities }, page, limit));
+//     })
+//     .catch((err) => {
+//       res.status(500).send({ message: err.message });
+//     });
+//   // let { user_id, title } = req.body;
+//   // let lang = req.headers["accept-language"] || "en";
+
+//   // let dataUser = { id: user_id };
+//   // let dataActivities = {};
+
+//   // if (title) {
+//   //   dataActivities.title = { [Sequelize.Op.like]: `%${title}%` };
+//   // }
+
+//   // Activities.belongsTo(User, { foreignKey: "user_id" });
+//   // // Activities.belongsTo(ActivitiesCategories, { foreignKey: "category_id" });
+
+//   // Activities.belongsToMany(ActivitiesCategories, {
+//   //   through: IdsActivitiesCategories,
+//   // });
+
+//   // Activities.belongsToMany(ActivitiesImages, {
+//   //   through: IdsActivitiesImages,
+//   // });
+
+//   // Activities.findAll({
+//   //   where: dataActivities,
+//   //   order: [["createdAt", "DESC"]],
+//   //   attributes: ["id", "title", "description"],
+//   //   include: [
+//   //     {
+//   //       as: "user",
+//   //       model: User,
+//   //       where: dataUser,
+//   //       attributes: ["id", "username", "rating"],
+//   //     },
+//   //     {
+//   //       as: "activities_categories",
+//   //       model: ActivitiesCategories,
+//   //       attributes: [[lang, "title"], "color"],
+//   //       through: { attributes: [] },
+//   //     },
+//   //     {
+//   //       as: "activities_images",
+//   //       model: ActivitiesImages,
+//   //       through: { attributes: [] },
+//   //       attributes: ["filename"],
+//   //       // through: { attributes: [] },
+//   //     },
+//   //   ],
+//   // })
+//   //   .then((activities) => {
+//   //     res.status(200).send(activities);
+//   //   })
+//   //   .catch((err) => {
+//   //     res.status(500).send({ message: err.message });
+//   //   });
+// };

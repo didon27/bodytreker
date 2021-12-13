@@ -21,7 +21,7 @@ module.exports = function (app) {
   app.post(
     "/api/activities/get-my-activities",
     [authJwt.verifyToken],
-    controller.getMyActivities
+    controller.getActivities
   );
 
   app.post(
@@ -46,5 +46,11 @@ module.exports = function (app) {
   app.post(
     "/api/activities/create-new-activities",
     controller.createNewActivities
+  );
+
+  app.post(
+    "/api/activities/get-activity",
+    [authJwt.verifyToken],
+    controller.getActivity
   );
 };

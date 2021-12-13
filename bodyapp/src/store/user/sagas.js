@@ -50,6 +50,26 @@ function* updateUser(data) {
   }
 }
 
+function* subscribeUser(data) {
+  const {payload} = data;
+  try {
+    const response = yield call(api.user.subscribeUser, payload);
+    yield put(userActions.subscribeUserSuccess(response.data));
+  } catch (e) {
+    yield put(userActions.subscribeUserFailure(e.response.data.error));
+  }
+}
+
+function* unsubscribeUser(data) {
+  const {payload} = data;
+  try {
+    const response = yield call(api.user.unsubscribeUser, payload);
+    yield put(userActions.unsubscribeUserSuccess(response.data));
+  } catch (e) {
+    yield put(userActions.unsubscribeUserFailure(e.response.data.error));
+  }
+}
+
 function* checkVerificationCode(data) {
   try {
     const response = yield call(api.user.checkVerificationCode, data.payload);
@@ -64,6 +84,8 @@ function* checkVerificationCode(data) {
 export function* userSaga() {
   yield takeLatest(userConstants.FETCH_USER_REQUEST, fetch);
   yield takeLatest(userConstants.CREATE_USER_REQUEST, create);
+  yield takeLatest(userConstants.SUBSCRIBE_USER_REQUEST, subscribeUser);
+  yield takeLatest(userConstants.UNSUBSCRIBE_USER_REQUEST, unsubscribeUser);
   yield takeLatest(userConstants.UPDATE_USER_REQUEST, updateUser);
   yield takeLatest(
     userConstants.CHECK_VERIFICATION_CODE_REQUEST,

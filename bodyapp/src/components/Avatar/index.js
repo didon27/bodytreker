@@ -2,7 +2,8 @@ import {colors} from 'colors';
 import {Text, View} from 'components';
 import {API} from 'constants';
 import React from 'react';
-import {Image, StyleSheet} from 'react-native';
+import { StyleSheet} from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 const Avatar = ({user, style, edit, letterStyle}) => {
   const styles = StyleSheet.create({
@@ -17,7 +18,7 @@ const Avatar = ({user, style, edit, letterStyle}) => {
 
   if (user.avatar) {
     return (
-      <Image
+      <FastImage
         source={{uri: edit ? user.avatar : API + '/images/' + user.avatar}}
         style={[styles.avatar, style && style]}
       />

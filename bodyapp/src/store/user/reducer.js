@@ -8,6 +8,7 @@ const initialState = {
   codeLoading: false,
   updateUserLoading: false,
   updateUserError: false,
+  subscribeUserLoading: false,
   isCodeValid: false,
   codeError: null,
   user: {},
@@ -34,9 +35,31 @@ export const userReducer = (state = initialState, action) => {
     case userConstants.UPDATE_USER_REQUEST:
       return {...state, updateUserLoading: true, updateUserError: null};
     case userConstants.UPDATE_USER_SUCCESS:
-      return {...state, updateUserLoading: false, user: payload};
+      return {...state, updateUserLoading: false};
     case userConstants.UPDATE_USER_FAILURE:
       return {...state, updateUserLoading: false, updateUserError: error};
+
+    case userConstants.SUBSCRIBE_USER_REQUEST:
+      return {...state, subscribeUserLoading: true, error: null};
+    case userConstants.SUBSCRIBE_USER_SUCCESS:
+      return {
+        ...state,
+        subscribeUserLoading: false,
+        user: {...state.user, followings: state.user.followings + 1},
+      };
+    case userConstants.SUBSCRIBE_USER_FAILURE:
+      return {...state, subscribeUserLoading: false, error: error};
+
+    case userConstants.UNSUBSCRIBE_USER_REQUEST:
+      return {...state, subscribeUserLoading: true, error: null};
+    case userConstants.UNSUBSCRIBE_USER_SUCCESS:
+      return {
+        ...state,
+        subscribeUserLoading: false,
+        user: {...state.user, followings: state.user.followings - 1},
+      };
+    case userConstants.UNSUBSCRIBE_USER_FAILURE:
+      return {...state, subscribeUserLoading: false, error: error};
 
     case userConstants.UPDATE_USER:
       return {...state, updateUserLoading: false, user: payload};

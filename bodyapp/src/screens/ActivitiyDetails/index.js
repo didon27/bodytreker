@@ -1,12 +1,5 @@
-import React, {
-  useContext,
-  useEffect,
-  activityef,
-  useState,
-  useRef,
-} from 'react';
+import React, {useContext, useEffect, useState, useRef} from 'react';
 import {Animated, StatusBar, TouchableOpacity} from 'react-native';
-import StarRating from 'react-native-star-rating';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,17 +9,17 @@ import {activitiesActions} from 'store/activities';
 import Header from './components/Header';
 import {colors} from 'colors';
 import {authActions} from 'store/auth';
-import {View, Text, ItemCategory, Button, Avatar} from 'components';
+import {View, Text, ItemCategory, Button, UserBlock} from 'components';
 import {storage} from 'services/storage';
 import {LocalizationContext} from 'services';
-import ActivitiesCard from 'screens/Home/components/ActivitiesCard';
 
 import styles from './styles';
 import {routeNames} from 'enums';
+import moment from 'moment';
+import axios from 'axios';
+import {API_URL} from 'constants';
 
 const ActivityDetails = ({navigation, route}) => {
-  console.log('FSDFSDFSDFSDF', route.params);
-  const {activity} = route.params;
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
@@ -36,23 +29,44 @@ const ActivityDetails = ({navigation, route}) => {
     Animated.createAnimatedComponent(TouchableOpacity);
   const {translations, appLanguage} = useContext(LocalizationContext);
   const {myActivities} = useSelector(state => state.activities);
+  const {user} = useSelector(state => state.user);
+  const {token} = useSelector(state => state.auth);
   const [tab, setTab] = useState(true);
+
+  const [activity, setActivity] = useState(route.params.activity);
+
+  const fetchData = () => {
+    axios({
+      method: 'post',
+      url: `${API_URL}/activities/get-activity`,
+      data: {activity_id: route.params.activity.id},
+      headers: {
+        'accept-language': appLanguage,
+        Authorization: token,
+      },
+    })
+      .then(response => {
+        setActivity(response.data);
+      })
+      .catch(err => {
+        console.log('error', err.response.data);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   useEffect(() => {
     StatusBar.setHidden(true);
     dispatch(activitiesActions.getMyActivities({activity_id: activity.id}));
   }, [appLanguage]);
 
-  const logout = async () => {
-    await storage.delete('activityToken');
-    dispatch(authActions.removeTokenSuccess());
-  };
-
-  let inputRageHeader = activity.activities_images.length
+  let inputRageHeader = activity?.activities_images.length
     ? [0, 100, 220, 340]
     : [0, 20, 30, 60];
 
-  let inputRageHeaderButton = activity.activities_images.length
+  let inputRageHeaderButton = activity?.activities_images.length
     ? [0, 100, 340]
     : [0, 30, 60];
 
@@ -95,6 +109,14 @@ const ActivityDetails = ({navigation, route}) => {
       return translations.by_the_company;
     } else {
       return translations.all_the_same;
+    }
+  };
+
+  const subscribeControl = (data, subscribe, item) => {
+    if (subscribe) {
+      dispatch(activitiesActions.unsubscribeActivity(data, fetchData));
+    } else {
+      dispatch(activitiesActions.subscribeActivitiy(data, item, fetchData));
     }
   };
 
@@ -168,49 +190,44 @@ const ActivityDetails = ({navigation, route}) => {
           setTab={setTab}
         />
         <View style={{padding: 20}}>
-          <Text size={20} bold mBottom={20}>
+          <Text size={20} bold mBottom={8}>
             {activity.title}
           </Text>
-          <Text>{returnPartner(activity?.partner)}</Text>
           {activity.description ? (
-            <View mBottom={16}>
-              <Text size={18} style={{fontWeight: '600'}}>
-                {translations.description}
-              </Text>
-              <Text
-                mTop={8}
-                size={16}
-                style={{fontWeight: '500'}}
-                color={'#afafaf'}>
-                {activity.description}
-              </Text>
+            <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
+              {activity.description}
+            </Text>
+          ) : null}
+          <Text size={16} mTop={4} medium>
+            {moment(activity.createdAt).startOf('hour').fromNow()}
+          </Text>
+          <View mTop={16} row>
+            <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
+              Хочу выполнить это с{' '}
+            </Text>
+            <Text size={16} medium>
+              {returnPartner(activity?.partner).toUpperCase()}
+            </Text>
+          </View>
+          {activity.activities_categories.length ? (
+            <View row centered style={{flexWrap: 'wrap', marginTop: 8}}>
+              {activity.activities_categories.map((e, i) => (
+                <ItemCategory key={i} item={e} />
+              ))}
             </View>
           ) : null}
-          <View>
+          <View mTop={16}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
               Подписчики
             </Text>
             {activity.subscribers.length ? (
               activity.subscribers.map((subscriber, index) => (
-                <View row>
-                  <Avatar user={subscriber} />
-                  <View mLeft={10}>
-                    <Text size={15} style={{fontWeight: '500'}}>
-                      {subscriber.username}
-                    </Text>
-                    <View style={{width: 10}}>
-                      <StarRating
-                        starStyle={{marginHorizontal: 1, marginTop: 2}}
-                        disabled={false}
-                        maxStars={5}
-                        starSize={10}
-                        rating={subscriber.rating}
-                        emptyStarColor="#A2A3A5"
-                        fullStarColor={'#F5B942'}
-                      />
-                    </View>
-                  </View>
-                </View>
+                <UserBlock
+                  navigation={navigation}
+                  user={subscriber}
+                  key={index}
+                  containerStyle={{marginBottom: 8}}
+                />
               ))
             ) : (
               <View>
@@ -220,12 +237,14 @@ const ActivityDetails = ({navigation, route}) => {
               </View>
             )}
           </View>
-          <View row centered style={{flexWrap: 'wrap', marginTop: 16}}>
-            {activity.activities_categories.map((e, i) => (
-              <ItemCategory key={i} item={e} />
-            ))}
-          </View>
           <Button
+            onPress={() =>
+              subscribeControl(
+                {user_id: user.id, activity_id: activity.id},
+                activity.subscribe,
+                activity,
+              )
+            }
             text={!activity.subscribe ? 'Подписаться' : 'Отписаться'}
             style={{height: 40}}
           />

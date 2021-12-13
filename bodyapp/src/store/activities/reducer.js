@@ -2,8 +2,9 @@ import {activitiesConstants} from './constants';
 
 const initialState = {
   activities: {activities: []},
-  myActivities: {},
-  subscriptionActivities: [],
+  myActivities: {activities: [], totalItems: 0},
+  myActivitiesLoading: false,
+  subscriptionActivities: {totalItems: 0},
   activities_categories: [],
   activitiesLoading: false,
   subscriptionActivitiesLoading: false,
@@ -34,8 +35,24 @@ export const activitiesReducer = (state = initialState, action) => {
     case activitiesConstants.GET_ACTIVITIES_FAILURE:
       return {...state, activitiesLoading: false, error: error};
 
+    case activitiesConstants.GET_MY_ACTIVITIES:
+      return {...state, myActivitiesLoading: false, error: null};
     case activitiesConstants.GET_MY_ACTIVITIES_SUCCESS:
-      return {...state, loading: false, myActivities: payload};
+      return {
+        ...state,
+        myActivitiesLoading: false,
+        myActivities: !refresh
+          ? {
+              ...state.myActivities,
+              activities: [
+                ...state.myActivities.activities,
+                ...payload.activities,
+              ],
+            }
+          : payload,
+      };
+    case activitiesConstants.GET_MY_ACTIVITIES_FAILURE:
+      return {...state, myActivitiesLoading: false, error: error};
 
     case activitiesConstants.GET_SUBSCRIPTIONS_ACTIVITIES:
       return {...state, subscriptionActivitiesLoading: false, error: null};

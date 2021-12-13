@@ -27,6 +27,15 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING,
     },
+    status: {
+      type: Sequelize.INTEGER,
+    },
+    gender: {
+      type: Sequelize.INTEGER,
+    },
+    age: {
+      type: Sequelize.INTEGER,
+    },
     rating: {
       type: Sequelize.FLOAT,
     },

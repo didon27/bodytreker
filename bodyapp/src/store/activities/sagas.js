@@ -38,11 +38,15 @@ function* getSubscriptionsActivities(data) {
 }
 
 function* getMyActivities(data) {
-  const {payload} = data;
+  const {payload, refresh} = data;
 
+  console.log(payload);
   try {
-    const response = yield call(api.activities.getMyActivities, payload);
-    yield put(activitiesActions.getMyActivitiesSuccess(response.data));
+    const response = yield call(api.activities.getMyActivities, {
+      ...payload,
+      userActivities: true,
+    });
+    yield put(activitiesActions.getMyActivitiesSuccess(response.data, refresh));
   } catch (e) {
     yield put(activitiesActions.getMyActivitiesFailure(e.response.data.error));
   }
@@ -80,13 +84,17 @@ function* createNewActivities(data) {
 }
 
 function* subscribeActivity(data) {
-  const {payload, item} = data;
+  const {payload, item, callback} = data;
 
   try {
     const response = yield call(api.activities.subscribeActivity, payload);
 
     yield put(activitiesActions.subscribeActivitiySuccess(item));
+    if (callback) {
+      callback();
+    }
   } catch (e) {
+    console.log('ERRROORRR', e.response.data);
     yield put(
       activitiesActions.subscribeActivitiyFailure(e.response.data.error),
     );
@@ -94,12 +102,17 @@ function* subscribeActivity(data) {
 }
 
 function* unsubscribeActivity(data) {
-  const {payload} = data;
+  const {payload, callback} = data;
 
+  console.log('UNSUBSCRIBE', payload);
   try {
     const response = yield call(api.activities.unsubscribeActivity, payload);
     yield put(activitiesActions.unsubscribeActivitySuccess(payload));
+    if (callback) {
+      callback();
+    }
   } catch (e) {
+    console.log('ERRROORRR', e.response.data);
     yield put(
       activitiesActions.unsubscribeActivityFailure(e.response.data.error),
     );
