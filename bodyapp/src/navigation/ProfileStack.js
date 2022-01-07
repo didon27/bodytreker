@@ -7,6 +7,8 @@ import Settings from 'screens/MyProfile/Settings';
 import EditProfile from 'screens/MyProfile/EditProfile';
 import Activities from 'screens/Activities';
 import ActivityStack from './ActivityStack';
+import FollowersAndFollowings from 'screens/FollowersAndFollowings';
+import UserProfile from 'screens/UserProfile';
 
 const ProfileStack = createStackNavigator();
 
@@ -22,6 +24,10 @@ export default props => {
       })}>
       <ProfileStack.Screen name={routeNames.myProfile} component={MyProfile} />
       <ProfileStack.Screen
+        name={routeNames.userProfile}
+        component={UserProfile}
+      />
+      <ProfileStack.Screen
         name={routeNames.editProfile}
         component={EditProfile}
       />
@@ -29,6 +35,10 @@ export default props => {
       <ProfileStack.Screen
         name={routeNames.activities}
         component={Activities}
+      />
+      <ProfileStack.Screen
+        name={routeNames.followersAndFollowings}
+        component={FollowersAndFollowings}
       />
       <ProfileStack.Screen
         name={routeNames.dateils}

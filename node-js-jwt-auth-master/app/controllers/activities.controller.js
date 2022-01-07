@@ -70,7 +70,8 @@ exports.createNewActivities = async (req, res) => {
 };
 
 exports.subscribeActivity = (req, res) => {
-  const { user_id, activity_id } = req.body;
+  const user_id = getUserId(req, res);
+  const { activity_id } = req.body;
 
   ActivitiesSubscribers.create({ user_id, activity_id })
     .then((activity) => {
@@ -82,7 +83,8 @@ exports.subscribeActivity = (req, res) => {
 };
 
 exports.unsubscribeActivity = (req, res) => {
-  const { user_id, activity_id } = req.body;
+  const user_id = getUserId(req, res);
+  const { activity_id } = req.body;
 
   ActivitiesSubscribers.destroy({ where: { user_id, activity_id } })
     .then((activity) => {
@@ -144,7 +146,7 @@ const getUserId = (req, res) => {
     console.log("\n", userId, "\n");
   });
 
-  console.log('USSSSEEEEERRRRRIDDDDD', userId)
+  console.log("USSSSEEEEERRRRRIDDDDD", userId);
   return userId;
 };
 
@@ -152,7 +154,7 @@ exports.getActivities = (req, res) => {
   let { user_id, title, partner, subscriptions, page, size, userActivities } =
     req.body;
   let lang = req.headers["accept-language"] || "en";
-
+  const myUserId = getUserId(req, res);
   const { limit, offset } = getPagination(page, size);
 
   let dataActivities = {};
@@ -291,14 +293,14 @@ exports.getActivities = (req, res) => {
           ...data,
           user,
           subscribers,
-          subscribe: !!item.subscribers?.find((item) => item.id === user_id),
+          subscribe: !!item.subscribers?.find((item) => item.id === myUserId),
         };
       });
       let count = response.count;
 
-      if (!subscriptions) {
+      if (!subscriptions && subscriptions !== undefined) {
         activities = activities.filter((item) => !item.subscribe);
-      } else {
+      } else if (subscriptions) {
         activities = activities.filter((item) => item.subscribe);
         count = await ActivitiesSubscribers.count({ where: { user_id } });
       }

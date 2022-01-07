@@ -13,6 +13,7 @@ export const routeNames = Object.freeze({
   myProfile: 'MyProfile',
   editProfile: 'EditProfile',
   activities: 'Activities',
+  followersAndFollowings: 'FollowersAndFollowings',
   userProfile: 'UserProfile',
 });
 

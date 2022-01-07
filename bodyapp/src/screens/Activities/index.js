@@ -12,7 +12,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 
-import {activitiesActions} from 'store/activities';
 import {
   View,
   Text,
@@ -26,6 +25,8 @@ import {LocalizationContext} from 'services';
 import {colors} from 'colors';
 
 import styles from './styles';
+import {API_URL} from 'constants';
+import axios from 'axios';
 
 const Activities = props => {
   const scrollYActivities = useRef(new Animated.Value(0)).current;
@@ -33,18 +34,17 @@ const Activities = props => {
 
   const {appLanguage, translations} = useContext(LocalizationContext);
 
-  const {user_id} = props.route.params;
+  const {user_id, username} = props.route.params;
   const [partner, setPartner] = useState(null);
   const [pageActivities, setPageActivities] = useState(0);
   const [search, setSearch] = useState('');
   const [hideSearch, setHideSearch] = useState(true);
+  const {user} = useSelector(state => state.user);
+  const {token} = useSelector(state => state.auth);
 
-  const {
-    activities,
-    myActivities,
-    activitiesLoading,
-    subscribeActivityLoading,
-  } = useSelector(state => state.activities);
+  const [loading, setLoading] = useState(false);
+  const [subscribeLoading, setSubscribeLoading] = useState(false);
+  const [activities, setActivities] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -66,17 +66,42 @@ const Activities = props => {
     return data;
   };
 
+  const fetchData = (data, refresh) => {
+    setLoading(true);
+
+    axios({
+      method: 'post',
+      url: `${API_URL}/activities/get-my-activities`,
+      data: {...data, userActivities: true},
+      headers: {
+        'accept-language': appLanguage,
+        Authorization: token,
+      },
+    })
+      .then(response => {
+        if (refresh) {
+          setActivities(response.data.activities);
+        } else {
+          setActivities(prevState => [
+            ...prevState,
+            ...response.data.activities,
+          ]);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log('error', err.response.data);
+      });
+  };
+
   useEffect(() => {
-    let data = returnData();
-
-    dispatch(activitiesActions.getMyActivities(data, true));
-
-    // setRefresh(false);
+    fetchData(returnData(), true);
   }, [search, appLanguage, partner, user_id]);
 
   const handleRefreshListActivities = () => {
     setPageActivities(0);
-    dispatch(activitiesActions.getMyActivities(returnData(), true));
+    fetchData(returnData(), true);
   };
 
   const handleSheetChanges = useCallback(index => {
@@ -105,30 +130,59 @@ const Activities = props => {
     extrapolate: 'clamp',
   });
 
+  const subscribeControl = (data, subscribe, item) => {
+    setSubscribeLoading(true);
+    axios({
+      method: 'post',
+      url: `${API_URL}/activities/${
+        !subscribe ? 'subscribe' : 'unsubscribe'
+      }-activity`,
+      data,
+      headers: {
+        'accept-language': appLanguage,
+        Authorization: token,
+      },
+    })
+      .then(() => {
+        setActivities(prevState =>
+          prevState.map(el =>
+            el.id === data.activity_id ? {...el, subscribe: !el.subscribe} : el,
+          ),
+        );
+        setSubscribeLoading(false);
+      })
+      .catch(err => {
+        setSubscribeLoading(false);
+        console.log('error', err.response.data);
+      });
+  };
+
   const renderItem = useCallback(
-    ({item}) => (
+    ({item, index}) => (
       <ActivitiesCard
         navigation={props.navigation}
         item={item}
-        btnLoading={subscribeActivityLoading}
-        user_id={user_id}
+        key={index}
+        subscribeControl={subscribeControl}
+        loading={subscribeLoading}
+        user_id={user.id}
         translations={translations}
       />
     ),
-    [],
+    [subscribeLoading],
   );
 
   const keyExtractor = useCallback(item => item.id.toString(), []);
 
   const itemSeperator = useCallback(() => <View style={{height: 16}} />, []);
 
-  const renderList = (data, handleRefreshList, loading, scrollY) => {
+  const renderList = () => {
     return (
       <Animated.FlatList
         onScroll={Animated.event(
           [
             {
-              nativeEvent: {contentOffset: {y: scrollY}},
+              nativeEvent: {contentOffset: {y: scrollYActivities}},
             },
           ],
           {useNativeDriver: false},
@@ -149,13 +203,13 @@ const Activities = props => {
         maxToRenderPerBatch={5}
         ItemSeparatorComponent={itemSeperator}
         refreshing={loading}
-        onRefresh={handleRefreshList}
+        onRefresh={handleRefreshListActivities}
         renderItem={renderItem}
         onEndReachedThreshold={1}
         onEndReached={loadMoreData}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.flatList}
-        data={myActivities.activities}
+        data={activities}
         keyExtractor={keyExtractor}
       />
     );
@@ -163,12 +217,7 @@ const Activities = props => {
 
   const loadMoreData = () => {
     setPageActivities(pageActivities + 1);
-    dispatch(
-      activitiesActions.getMyActivities(
-        {...returnData(), page: pageActivities + 1},
-        false,
-      ),
-    );
+    fetchData({...returnData(), page: pageActivities + 1}, false);
   };
 
   return (
@@ -209,7 +258,12 @@ const Activities = props => {
           centered
           sBetween>
           <TouchableOpacity onPress={() => props.navigation.goBack()}>
-            <IconAwesome name="angle-left" size={30} color={'#585858'} />
+            <View row centered>
+              <IconAwesome name="angle-left" size={30} color={'#585858'} />
+              <Text size={18} mLeft={10} medium>
+                {username.toLocaleLowerCase()}
+              </Text>
+            </View>
           </TouchableOpacity>
           <View row centered>
             <TouchableOpacity
@@ -242,14 +296,7 @@ const Activities = props => {
           }}
         />
       </CustomSafeAreaView>
-      <View flex>
-        {renderList(
-          activities.activities,
-          handleRefreshListActivities,
-          activitiesLoading,
-          scrollYActivities,
-        )}
-      </View>
+      <View flex>{renderList()}</View>
     </View>
   );
 };

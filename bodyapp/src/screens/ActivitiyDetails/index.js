@@ -28,7 +28,9 @@ const ActivityDetails = ({navigation, route}) => {
   const AnimatedTouchableOpacity =
     Animated.createAnimatedComponent(TouchableOpacity);
   const {translations, appLanguage} = useContext(LocalizationContext);
-  const {myActivities} = useSelector(state => state.activities);
+  const {myActivities, subscribeActivityLoading} = useSelector(
+    state => state.activities,
+  );
   const {user} = useSelector(state => state.user);
   const {token} = useSelector(state => state.auth);
   const [tab, setTab] = useState(true);
@@ -181,14 +183,7 @@ const ActivityDetails = ({navigation, route}) => {
           ],
           {useNativeDriver: false},
         )}>
-        <Header
-          translations={translations}
-          myActivities={myActivities}
-          tab={tab}
-          navigation={navigation}
-          activity={activity}
-          setTab={setTab}
-        />
+        <Header navigation={navigation} activity={activity} />
         <View style={{padding: 20}}>
           <Text size={20} bold mBottom={8}>
             {activity.title}
@@ -245,6 +240,7 @@ const ActivityDetails = ({navigation, route}) => {
                 activity,
               )
             }
+            loading={subscribeActivityLoading}
             text={!activity.subscribe ? 'Подписаться' : 'Отписаться'}
             style={{height: 40}}
           />

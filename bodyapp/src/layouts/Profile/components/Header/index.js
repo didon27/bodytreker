@@ -13,11 +13,11 @@ import {API} from 'constants';
 import {WINDOW_WIDTH} from '@gorhom/bottom-sheet';
 
 function Header({
-  myActivities,
   translations,
   myAccount,
   user,
   navigation,
+  headerButtonLoading,
   headerButtonControl,
 }) {
   return (
@@ -59,6 +59,7 @@ function Header({
               </Text>
             </Text>
             <Button
+              loading={headerButtonLoading}
               onPress={headerButtonControl}
               text={
                 myAccount
@@ -67,7 +68,11 @@ function Header({
                   ? 'Отписаться'
                   : 'Подписаться'
               }
-              style={styles.headerBtn}
+              textStyle={{fontSize: 14}}
+              style={{
+                ...styles.headerBtn,
+                backgroundColor: !user.subscribe ? colors.mainBlue : 'grey',
+              }}
             />
           </View>
           <Text size={15} style={{fontWeight: '500'}} color={'grey'}>
@@ -78,33 +83,52 @@ function Header({
           <TouchableOpacity
             style={{alignItems: 'center'}}
             onPress={() =>
-              navigation.push(routeNames.activities, {user_id: user.id})
+              navigation.push(routeNames.activities, {
+                user_id: user.id,
+                username: user.username,
+              })
             }>
             <Text size={22} color={colors.mainBlue} style={{fontWeight: '600'}}>
-              {user.activities}
+              {user.activities ? user.activities : 0}
             </Text>
             <Text mTop={4} color={'grey'} style={{fontWeight: '500'}}>
               Activities
             </Text>
           </TouchableOpacity>
 
-          <View centered>
+          <TouchableOpacity
+            style={{alignItems: 'center'}}
+            onPress={() =>
+              navigation.push(routeNames.followersAndFollowings, {
+                type: 'followers',
+                user_id: user.id,
+                username: user.username,
+              })
+            }>
             <Text size={22} color={colors.mainBlue} style={{fontWeight: '600'}}>
-              {user.followers}
+              {user.followers ? user.followers : 0}
             </Text>
             <Text mTop={4} color={'grey'} style={{fontWeight: '500'}}>
               Followers
             </Text>
-          </View>
+          </TouchableOpacity>
 
-          <View centered>
+          <TouchableOpacity
+            style={{alignItems: 'center'}}
+            onPress={() =>
+              navigation.push(routeNames.followersAndFollowings, {
+                type: 'followings',
+                user_id: user.id,
+                username: user.username,
+              })
+            }>
             <Text size={22} color={colors.mainBlue} style={{fontWeight: '600'}}>
-              {user.followings}
+              {user.followings ? user.followings : 0}
             </Text>
             <Text mTop={4} color={'grey'} size={14} style={{fontWeight: '500'}}>
               Followings
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </Fragment>

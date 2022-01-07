@@ -51,20 +51,26 @@ function* updateUser(data) {
 }
 
 function* subscribeUser(data) {
-  const {payload} = data;
+  const {payload, refreshUser} = data;
   try {
     const response = yield call(api.user.subscribeUser, payload);
     yield put(userActions.subscribeUserSuccess(response.data));
+    if (refreshUser) {
+      refreshUser();
+    }
   } catch (e) {
     yield put(userActions.subscribeUserFailure(e.response.data.error));
   }
 }
 
 function* unsubscribeUser(data) {
-  const {payload} = data;
+  const {payload, refreshUser} = data;
   try {
     const response = yield call(api.user.unsubscribeUser, payload);
     yield put(userActions.unsubscribeUserSuccess(response.data));
+    if (refreshUser) {
+      refreshUser();
+    }
   } catch (e) {
     yield put(userActions.unsubscribeUserFailure(e.response.data.error));
   }

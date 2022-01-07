@@ -12,14 +12,7 @@ import {routeNames} from 'enums';
 import {API} from 'constants';
 import StarRating from 'react-native-star-rating';
 
-function Header({
-  myActivities,
-  translations,
-  setTab,
-  tab,
-  activity,
-  navigation,
-}) {
+function Header({activity, navigation}) {
   const {user} = activity;
 
   return (
@@ -52,7 +45,9 @@ function Header({
         />
       </View>
       <View style={styles.headerContainer}>
-        <View row>
+        <TouchableOpacity
+          style={{flexDirection: 'row'}}
+          onPress={() => navigation.push(routeNames.userProfile, {user})}>
           <Avatar user={user} style={{width: 60, height: 60}} />
           <View mLeft={10}>
             <Text size={20} style={{fontWeight: '700'}}>
@@ -73,7 +68,7 @@ function Header({
               />
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     </Fragment>
   );

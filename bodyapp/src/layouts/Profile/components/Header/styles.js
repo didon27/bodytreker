@@ -13,8 +13,11 @@ export default StyleSheet.create({
   headerBtn: {
     marginTop: 0,
     width: null,
+    justifyContent: 'center',
+    alignItems: 'center',
     height: 32,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
+    borderRadius: 10,
   },
   counterBlock: {
     borderTopWidth: 0.5,

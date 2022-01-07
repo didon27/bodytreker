@@ -4,7 +4,7 @@ import StarRating from 'react-native-star-rating';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {activitiesActions} from 'store/activities';
 import Header from './components/Header';
 import {colors} from 'colors';
@@ -21,6 +21,7 @@ const Profile = ({user, navigation, headerButtonControl, myAccount}) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
   const AnimatedIcon = Animated.createAnimatedComponent(Icon);
+  const AnimatedIonicons = Animated.createAnimatedComponent(Ionicons);
   const AnimatedTouchableOpacity =
     Animated.createAnimatedComponent(TouchableOpacity);
   const {translations, appLanguage} = useContext(LocalizationContext);
@@ -98,18 +99,33 @@ const Profile = ({user, navigation, headerButtonControl, myAccount}) => {
             }}>
             {user.username.toLocaleLowerCase()}
           </Animated.Text>
-          <AnimatedTouchableOpacity
-            onPress={() => navigation.navigate(routeNames.settings, {user})}
-            style={{
-              ...styles.secondHeaderBtn,
-              backgroundColor: headerButtonBackgroundColor,
-            }}>
-            <AnimatedIcon
-              name={'gears'}
-              size={24}
-              style={{color: headerButtonColor}}
-            />
-          </AnimatedTouchableOpacity>
+          {myAccount ? (
+            <AnimatedTouchableOpacity
+              onPress={() => navigation.navigate(routeNames.settings, {user})}
+              style={{
+                ...styles.secondHeaderBtn,
+                backgroundColor: headerButtonBackgroundColor,
+              }}>
+              <AnimatedIcon
+                name={'gears'}
+                size={24}
+                style={{color: headerButtonColor}}
+              />
+            </AnimatedTouchableOpacity>
+          ) : (
+            <AnimatedTouchableOpacity
+              onPress={() => navigation.navigate(routeNames.settings, {user})}
+              style={{
+                ...styles.secondHeaderBtn,
+                backgroundColor: headerButtonBackgroundColor,
+              }}>
+              <AnimatedIonicons
+                name={'ios-chatbubbles'}
+                size={24}
+                style={{color: headerButtonColor}}
+              />
+            </AnimatedTouchableOpacity>
+          )}
         </View>
         <Animated.View
           style={{

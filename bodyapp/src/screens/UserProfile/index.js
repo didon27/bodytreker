@@ -21,6 +21,7 @@ const UserProfile = props => {
   const {appLanguage} = useContext(LocalizationContext);
   const {myActivities} = useSelector(state => state.activities);
   const {token} = useSelector(state => state.auth);
+  const {subscribeUserLoading} = useSelector(state => state.user);
   const myUser = useSelector(state => state.user.user);
   const myAccount = user.id === myUser.id;
 
@@ -52,29 +53,36 @@ const UserProfile = props => {
 
   const headerButtonControl = () => {
     if (myAccount) {
+      console.log('fsdfsdf')
       props.navigation.navigate(routeNames.editProfile);
     } else if (user?.subscribe) {
       dispatch(
-        userActions.unsubscribeUser({
-          first_user_id: myUser.id,
-          second_user_id: user.id,
-        }),
+        userActions.unsubscribeUser(
+          {
+            first_user_id: myUser.id,
+            second_user_id: user.id,
+          },
+          fetchData,
+        ),
       );
     } else {
       dispatch(
-        userActions.subscribeUser({
-          first_user_id: myUser.id,
-          second_user_id: user.id,
-        }),
+        userActions.subscribeUser(
+          {
+            first_user_id: myUser.id,
+            second_user_id: user.id,
+          },
+          fetchData,
+        ),
       );
     }
-    fetchData();
   };
 
   return (
     <Profile
       myAccount={myAccount}
       user={user}
+      headerButtonLoading={subscribeUserLoading}
       headerButtonControl={headerButtonControl}
       activities={myActivities}
       navigation={props.navigation}

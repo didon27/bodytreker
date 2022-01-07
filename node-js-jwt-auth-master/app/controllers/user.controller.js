@@ -6,6 +6,7 @@ const IdsUsersImages = db.ids_users_images;
 const UsersImages = db.users_images;
 const UsersSubscribers = db.users_subscribers;
 const Activities = db.activities;
+const Sequelize = require("sequelize");
 
 const upload = require("../middleware/upload");
 
@@ -221,44 +222,116 @@ exports.getMyUser = (req, res) => {
   });
 };
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows: users } = data;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  return { totalItems, users, totalPages, currentPage };
+};
+
 exports.getFollowersAndFollowings = (req, res) => {
-  const { user_id, type } = req.body;
+  const { user_id, type, page, size, username } = req.body;
+  const { limit, offset } = getPagination(page, size);
+  const myId = getUserId(req, res);
   const userData = {};
+  const userDataFilter = {};
+
+  if (username) {
+    userDataFilter.username = { [Sequelize.Op.like]: `%${username}%` };
+  }
 
   if (type === "followings") {
     userData.first_user_id = user_id;
-    if (!UsersSubscribers.hasAlias("user")) {
+    if (!UsersSubscribers.hasAlias("followings")) {
       UsersSubscribers.belongsTo(User, {
+        as: "followings",
         foreignKey: "second_user_id",
         otherKey: "id",
       });
     }
   } else {
     userData.second_user_id = user_id;
-    if (!UsersSubscribers.hasAlias("user")) {
+    if (!UsersSubscribers.hasAlias("followers")) {
       UsersSubscribers.belongsTo(User, {
+        as: "followers",
         foreignKey: "first_user_id",
         otherKey: "id",
       });
     }
   }
 
+  if (!User.hasAlias("images")) {
+    User.belongsToMany(UsersImages, {
+      as: "images",
+      foreignKey: "user_id",
+      otherKey: "image_id",
+      through: IdsUsersImages,
+    });
+  }
+
   UsersSubscribers.findAndCountAll({
     where: userData,
+    limit,
+    offset,
     include: [
       {
+        as: type,
         model: User,
+        where: userDataFilter,
         distinct: true,
+        include: [
+          {
+            as: "images",
+            model: UsersImages,
+            through: { attributes: [] },
+            attributes: ["filename", "createdAt"],
+          },
+        ],
         // through: { attributes: [] },
         attributes: ["id", "first_name", "last_name", "username", "rating"],
       },
     ],
   })
-    .then((user) => {
-      return res.status(200).send(user);
+    .then((response) => {
+      return Promise.all(
+        response.rows.map(async(item) => {
+          let data = item.dataValues[type].dataValues;
+
+          const subscribe = await UsersSubscribers.findOne({
+            where: { first_user_id: myId,  second_user_id: data.id },
+          });
+
+          let user = {
+            id: data.id,
+            username: data.username,
+            rating: data.rating,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            subscribe: !!subscribe,
+            avatar:
+              data.images.sort(function (a, b) {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+              })[0]?.filename || null,
+          };
+
+          return user;
+        })
+      ).then((rows) => {
+        return res
+          .status(200)
+          .send(getPagingData({ ...response, rows }, page, limit));
+      });
     })
     .catch((error) => {
-      return res.status(400).send(error);
+      return res.status(400).send({ message: error.message });
     });
 };
 

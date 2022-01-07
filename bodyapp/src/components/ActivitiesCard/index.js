@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import StarRating from 'react-native-star-rating';
@@ -17,12 +17,20 @@ function ActivitiesCard({
   item,
   user_id,
   translations,
+  loading,
   navigation,
   subscribeControl,
 }) {
   let {user, title, createdAt, activities_categories, id, subscribe} = item;
 
-  const [loading, seLoading] = useState(false);
+  const [loadingBtn, setLoadingBtn] = useState(false);
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingBtn(false);
+    }
+  }, [loading]);
+
   return (
     <TouchableOpacity
       style={styles.container}
@@ -38,28 +46,9 @@ function ActivitiesCard({
       }>
       <View row centered sBetween>
         <UserBlock user={user} navigation={navigation} />
-        {/* <View row>
-          <Avatar user={user} />
-          <View mLeft={10}>
-            <Text size={15} style={{fontWeight: '500'}}>
-              {user.username}
-            </Text>
-            <View style={{width: 10}}>
-              <StarRating
-                starStyle={{marginHorizontal: 1, marginTop: 2}}
-                disabled={false}
-                maxStars={5}
-                starSize={10}
-                rating={user.rating}
-                emptyStarColor="#A2A3A5"
-                fullStarColor={'#F5B942'}
-              />
-            </View>
-          </View>
-        </View> */}
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Icon name="ellipsis-vertical" size={18} color={'grey'} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <Text size={18} mTop={8} style={{fontWeight: '500'}}>
         {title}
@@ -79,7 +68,7 @@ function ActivitiesCard({
       <Text color={'grey'}>{moment(createdAt).startOf('hour').fromNow()}</Text>
       <Button
         onPress={() => {
-          seLoading(true);
+          setLoadingBtn(true);
           subscribeControl({user_id, activity_id: id}, subscribe, item);
         }}
         text={
@@ -90,7 +79,7 @@ function ActivitiesCard({
             : 'Подписаться'
         }
         style={styles.button}
-        loading={loading}
+        loading={loadingBtn}
       />
     </TouchableOpacity>
   );
