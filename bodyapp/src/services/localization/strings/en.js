@@ -45,7 +45,12 @@ export const en = {
   category_search: 'Category search',
   add_categories_maximum: 'Add categories, maximum 3',
   edit_profile: 'Edit profile',
-
+  unfollow: 'Unfollow',
+  following: 'Following',
+  follow: 'Follow',
+  followers: 'Followers',
+  followings: 'Followings',
+  publications: 'Publications',
   age: 'Age',
   unmarried: 'Unmarried',
   dating: 'Dating',

@@ -12,23 +12,16 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 
-import {
-  View,
-  Text,
-  CustomSafeAreaView,
-  CheckBox,
-  ActivitiesCard,
-  UserBlock,
-} from 'components';
+import {View, Text, CustomSafeAreaView, CheckBox, UserBlock} from 'components';
 import {DefaultBackDrop} from 'components/BackDrop';
 import {DEVICE_HEIGHT} from 'constants';
 import {LocalizationContext} from 'services';
 import {colors} from 'colors';
+import {API_URL} from 'constants';
+import {userActions} from 'store/user';
+import {mamaAxios} from 'services/api';
 
 import styles from './styles';
-import {API_URL} from 'constants';
-import axios from 'axios';
-import {userActions} from 'store/user';
 
 const FollowersAndFollowings = props => {
   const scrollYActivities = useRef(new Animated.Value(0)).current;
@@ -42,8 +35,6 @@ const FollowersAndFollowings = props => {
   const [search, setSearch] = useState('');
   const myId = useSelector(state => state.user.user.id);
   const [hideSearch, setHideSearch] = useState(true);
-  const {user} = useSelector(state => state.user);
-  const {token} = useSelector(state => state.auth);
 
   const [loading, setLoading] = useState(false);
   const [subscribeLoading, setSubscribeLoading] = useState(false);
@@ -71,16 +62,11 @@ const FollowersAndFollowings = props => {
 
   const fetchData = (data, refresh) => {
     setLoading(true);
-
-    axios({
-      method: 'post',
-      url: `${API_URL}/user/get-user-followers-and-followings`,
-      data: {...data, type},
-      headers: {
-        'accept-language': appLanguage,
-        Authorization: token,
-      },
-    })
+    mamaAxios
+      .post(`${API_URL}/user/get-user-followers-and-followings`, {
+        ...data,
+        type,
+      })
       .then(response => {
         if (refresh) {
           setUsers(response.data.users);
@@ -169,6 +155,7 @@ const FollowersAndFollowings = props => {
       <UserBlock
         key={index}
         myId={myId}
+        translations={translations}
         navigation={props.navigation}
         user={item}
         buttonControl={buttonControl}

@@ -23,10 +23,10 @@ import {DefaultBackDrop} from 'components/BackDrop';
 import {DEVICE_HEIGHT} from 'constants';
 import {LocalizationContext} from 'services';
 import {colors} from 'colors';
+import {API_URL} from 'constants';
+import {mamaAxios} from 'services/api';
 
 import styles from './styles';
-import {API_URL} from 'constants';
-import axios from 'axios';
 
 const Activities = props => {
   const scrollYActivities = useRef(new Animated.Value(0)).current;
@@ -40,13 +40,10 @@ const Activities = props => {
   const [search, setSearch] = useState('');
   const [hideSearch, setHideSearch] = useState(true);
   const {user} = useSelector(state => state.user);
-  const {token} = useSelector(state => state.auth);
 
   const [loading, setLoading] = useState(false);
   const [subscribeLoading, setSubscribeLoading] = useState(false);
   const [activities, setActivities] = useState([]);
-
-  const dispatch = useDispatch();
 
   const snapPoints = useMemo(() => ['25%', '40%'], []);
 
@@ -68,16 +65,11 @@ const Activities = props => {
 
   const fetchData = (data, refresh) => {
     setLoading(true);
-
-    axios({
-      method: 'post',
-      url: `${API_URL}/activities/get-my-activities`,
-      data: {...data, userActivities: true},
-      headers: {
-        'accept-language': appLanguage,
-        Authorization: token,
-      },
-    })
+    mamaAxios
+      .post(`${API_URL}/activities/get-my-activities`, {
+        ...data,
+        userActivities: true,
+      })
       .then(response => {
         if (refresh) {
           setActivities(response.data.activities);
@@ -132,17 +124,14 @@ const Activities = props => {
 
   const subscribeControl = (data, subscribe, item) => {
     setSubscribeLoading(true);
-    axios({
-      method: 'post',
-      url: `${API_URL}/activities/${
-        !subscribe ? 'subscribe' : 'unsubscribe'
-      }-activity`,
-      data,
-      headers: {
-        'accept-language': appLanguage,
-        Authorization: token,
-      },
-    })
+
+    mamaAxios
+      .post(
+        `${API_URL}/activities/${
+          !subscribe ? 'subscribe' : 'unsubscribe'
+        }-activity`,
+        data,
+      )
       .then(() => {
         setActivities(prevState =>
           prevState.map(el =>

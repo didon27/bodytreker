@@ -35,7 +35,11 @@ export const userReducer = (state = initialState, action) => {
     case userConstants.UPDATE_USER_REQUEST:
       return {...state, updateUserLoading: true, updateUserError: null};
     case userConstants.UPDATE_USER_SUCCESS:
-      return {...state, updateUserLoading: false};
+      return {
+        ...state,
+        updateUserLoading: false,
+        user: {...state.user, ...payload},
+      };
     case userConstants.UPDATE_USER_FAILURE:
       return {...state, updateUserLoading: false, updateUserError: error};
 

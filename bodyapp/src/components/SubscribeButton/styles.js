@@ -5,16 +5,14 @@ import {colors} from 'colors';
 export const styles = StyleSheet.create({
   btnBlock: {
     backgroundColor: '#4285f4',
-    width: '100%',
     alignItems: 'center',
-    marginTop: 20,
-    height: 53,
+    height: 32,
     justifyContent: 'center',
     borderRadius: 8,
+    paddingHorizontal: 12,
   },
   btnTxt: {
-    color: colors.white,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
 });

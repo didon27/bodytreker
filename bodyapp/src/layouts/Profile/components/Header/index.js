@@ -3,14 +3,13 @@ import {TouchableOpacity} from 'react-native';
 import {SliderBox} from 'react-native-image-slider-box';
 
 import {colors} from 'colors';
-import {View, Text, Button} from 'components';
+import {View, Text, Button, SubscribeButton} from 'components';
 import {images} from 'images';
 import {DEVICE_WIDTH} from 'constants';
 
 import styles from './styles';
 import {routeNames} from 'enums';
 import {API} from 'constants';
-import {WINDOW_WIDTH} from '@gorhom/bottom-sheet';
 
 function Header({
   translations,
@@ -58,21 +57,17 @@ function Header({
                 {user.age}
               </Text>
             </Text>
-            <Button
+            <SubscribeButton
               loading={headerButtonLoading}
               onPress={headerButtonControl}
+              subscribe={user.subscribe}
               text={
                 myAccount
                   ? translations.edit
                   : user.subscribe
-                  ? 'Отписаться'
-                  : 'Подписаться'
+                  ? translations.following
+                  : translations.follow
               }
-              textStyle={{fontSize: 14}}
-              style={{
-                ...styles.headerBtn,
-                backgroundColor: !user.subscribe ? colors.mainBlue : 'grey',
-              }}
             />
           </View>
           <Text size={15} style={{fontWeight: '500'}} color={'grey'}>
@@ -92,7 +87,7 @@ function Header({
               {user.activities ? user.activities : 0}
             </Text>
             <Text mTop={4} color={'grey'} style={{fontWeight: '500'}}>
-              Activities
+              {translations.publications}
             </Text>
           </TouchableOpacity>
 
@@ -109,7 +104,7 @@ function Header({
               {user.followers ? user.followers : 0}
             </Text>
             <Text mTop={4} color={'grey'} style={{fontWeight: '500'}}>
-              Followers
+              {translations.followers}
             </Text>
           </TouchableOpacity>
 
@@ -126,7 +121,7 @@ function Header({
               {user.followings ? user.followings : 0}
             </Text>
             <Text mTop={4} color={'grey'} size={14} style={{fontWeight: '500'}}>
-              Followings
+              {translations.followings}
             </Text>
           </TouchableOpacity>
         </View>

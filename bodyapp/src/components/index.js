@@ -12,3 +12,4 @@ export {default as ItemCategory} from './ItemCategory';
 export {default as Avatar} from './Avatar';
 export {default as ActivitiesCard} from './ActivitiesCard';
 export {default as UserBlock} from './UserBlock';
+export {default as SubscribeButton} from './SubscribeButton';

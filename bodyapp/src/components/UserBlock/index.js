@@ -1,5 +1,5 @@
 import {colors} from 'colors';
-import {Avatar, Button, Text, View} from 'components';
+import {Avatar, Button, SubscribeButton, Text, View} from 'components';
 import {routeNames} from 'enums';
 import React from 'react';
 import {TouchableOpacity} from 'react-native';
@@ -12,6 +12,7 @@ const UserBlock = ({
   showButton,
   myId,
   buttonControl,
+  translations,
 }) => {
   return (
     <TouchableOpacity
@@ -36,17 +37,10 @@ const UserBlock = ({
           </View>
         </View>
         {showButton && myId !== user.id && (
-          <Button
+          <SubscribeButton
             onPress={() => buttonControl(user.id, user.subscribe)}
-            text={user.subscribe ? 'Отписаться' : 'Подписаться'}
-            textStyle={{fontSize: 14}}
-            style={{
-              marginTop: 0,
-              width: null,
-              backgroundColor: !user.subscribe ? colors.mainBlue : 'grey',
-              height: 32,
-              paddingHorizontal: 12,
-            }}
+            subscribe={user.subscribe}
+            text={user.subscribe ? translations.following : translations.follow}
           />
         )}
       </View>

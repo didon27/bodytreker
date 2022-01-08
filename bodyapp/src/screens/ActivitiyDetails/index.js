@@ -9,7 +9,14 @@ import {activitiesActions} from 'store/activities';
 import Header from './components/Header';
 import {colors} from 'colors';
 import {authActions} from 'store/auth';
-import {View, Text, ItemCategory, Button, UserBlock} from 'components';
+import {
+  View,
+  Text,
+  ItemCategory,
+  Button,
+  UserBlock,
+  SubscribeButton,
+} from 'components';
 import {storage} from 'services/storage';
 import {LocalizationContext} from 'services';
 
@@ -213,7 +220,8 @@ const ActivityDetails = ({navigation, route}) => {
           ) : null}
           <View mTop={16}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
-              Подписчики
+              {translations.followers}{' '}
+              <Text color={colors.grey}>({activity.subscribers.length})</Text>
             </Text>
             {activity.subscribers.length ? (
               activity.subscribers.map((subscriber, index) => (
@@ -232,7 +240,27 @@ const ActivityDetails = ({navigation, route}) => {
               </View>
             )}
           </View>
-          <Button
+          <SubscribeButton
+            loading={subscribeActivityLoading}
+            onPress={() =>
+              subscribeControl(
+                {user_id: user.id, activity_id: activity.id},
+                activity.subscribe,
+                activity,
+              )
+            }
+            textStyle={{fontSize: 15}}
+            style={{height: 36, marginTop: 20}}
+            subscribe={activity.subscribe}
+            text={
+              user.id === activity.user.id
+                ? translations.edit
+                : activity.subscribe
+                ? translations.following
+                : translations.follow
+            }
+          />
+          {/* <Button
             onPress={() =>
               subscribeControl(
                 {user_id: user.id, activity_id: activity.id},
@@ -243,7 +271,7 @@ const ActivityDetails = ({navigation, route}) => {
             loading={subscribeActivityLoading}
             text={!activity.subscribe ? 'Подписаться' : 'Отписаться'}
             style={{height: 40}}
-          />
+          /> */}
         </View>
       </Animated.ScrollView>
     </View>

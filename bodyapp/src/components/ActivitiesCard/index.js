@@ -6,7 +6,15 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 
 import {colors} from 'colors';
-import {View, Text, Button, ItemCategory, Avatar, UserBlock} from 'components';
+import {
+  View,
+  Text,
+  Button,
+  ItemCategory,
+  Avatar,
+  UserBlock,
+  SubscribeButton,
+} from 'components';
 import {images} from 'images';
 
 import styles from './styles';
@@ -66,20 +74,21 @@ function ActivitiesCard({
         ))}
       </View>
       <Text color={'grey'}>{moment(createdAt).startOf('hour').fromNow()}</Text>
-      <Button
+      <SubscribeButton
+        loading={loadingBtn}
         onPress={() => {
           setLoadingBtn(true);
           subscribeControl({user_id, activity_id: id}, subscribe, item);
         }}
+        style={{marginTop: 8}}
+        subscribe={subscribe}
         text={
           user_id === user.id
             ? translations.edit
             : subscribe
-            ? 'Отписаться'
-            : 'Подписаться'
+            ? translations.following
+            : translations.follow
         }
-        style={styles.button}
-        loading={loadingBtn}
       />
     </TouchableOpacity>
   );
