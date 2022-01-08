@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState, useRef} from 'react';
-import {Animated, StatusBar, TouchableOpacity} from 'react-native';
+import {Animated, StatusBar, TouchableOpacity, TextInput} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -26,7 +26,7 @@ import moment from 'moment';
 import axios from 'axios';
 import {API_URL} from 'constants';
 
-const ActivityDetails = ({navigation, route}) => {
+const ActivityEdit = ({navigation, route}) => {
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
@@ -40,9 +40,8 @@ const ActivityDetails = ({navigation, route}) => {
   );
   const {user} = useSelector(state => state.user);
   const {token} = useSelector(state => state.auth);
-  const [tab, setTab] = useState(true);
 
-  const [activity, setActivity] = useState(route.params.activity);
+  const [activity, setActivity] = useState(route.params.activity || {});
 
   const fetchData = () => {
     axios({
@@ -129,6 +128,10 @@ const ActivityDetails = ({navigation, route}) => {
     }
   };
 
+  const changeField = (key, value) => {
+    setActivity(prevState => ({...prevState, [key]: value}));
+  };
+
   return (
     <View flex style={{backgroundColor: colors.white}}>
       <Animated.View
@@ -192,14 +195,27 @@ const ActivityDetails = ({navigation, route}) => {
         )}>
         <Header navigation={navigation} activity={activity} />
         <View style={{padding: 20}}>
-          <Text size={20} bold mBottom={8}>
-            {activity.title}
-          </Text>
-          {activity.description ? (
+          <TextInput
+            multiline
+            maxLength={250}
+            style={{fontSize: 20, fontWeight: '700', marginBottom: 16}}
+            value={activity.title}
+            onChangeText={value => changeField('title', value)}
+            placeholder={translations.title}
+          />
+          <TextInput
+            multiline
+            maxLength={250}
+            style={{minHeight: 100, fontSize: 15}}
+            value={activity.description}
+            onChangeText={value => changeField('description', value)}
+            placeholder={translations.description}
+          />
+          {/* {activity.description ? (
             <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
               {activity.description}
             </Text>
-          ) : null}
+          ) : null} */}
           <Text size={16} mTop={4} medium>
             {moment(activity.createdAt).startOf('hour').fromNow()}
           </Text>
@@ -221,7 +237,9 @@ const ActivityDetails = ({navigation, route}) => {
           <View mTop={16}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
               {translations.followers}{' '}
-              <Text size={16} color={colors.grey}>({activity.subscribers.length})</Text>
+              <Text size={16} color={colors.grey}>
+                ({activity.subscribers.length})
+              </Text>
             </Text>
             {activity.subscribers.length ? (
               activity.subscribers.map((subscriber, index) => (
@@ -278,4 +296,4 @@ const ActivityDetails = ({navigation, route}) => {
   );
 };
 
-export default ActivityDetails;
+export default ActivityEdit;

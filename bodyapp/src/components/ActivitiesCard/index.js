@@ -77,8 +77,12 @@ function ActivitiesCard({
       <SubscribeButton
         loading={loadingBtn}
         onPress={() => {
-          setLoadingBtn(true);
-          subscribeControl({user_id, activity_id: id}, subscribe, item);
+          if (user_id === user.id) {
+            navigation.navigate(routeNames.activityEdit, {activity: item});
+          } else {
+            setLoadingBtn(true);
+            subscribeControl({user_id, activity_id: id}, subscribe, item);
+          }
         }}
         style={{marginTop: 8}}
         subscribe={subscribe}

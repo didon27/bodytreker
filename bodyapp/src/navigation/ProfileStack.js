@@ -9,6 +9,7 @@ import Activities from 'screens/Activities';
 import ActivityStack from './ActivityStack';
 import FollowersAndFollowings from 'screens/FollowersAndFollowings';
 import UserProfile from 'screens/UserProfile';
+import ActivityEdit from 'screens/ActivityEdit';
 
 const ProfileStack = createStackNavigator();
 
@@ -23,6 +24,10 @@ export default props => {
         },
       })}>
       <ProfileStack.Screen name={routeNames.myProfile} component={MyProfile} />
+      <ProfileStack.Screen
+        name={routeNames.activityEdit}
+        component={ActivityEdit}
+      />
       <ProfileStack.Screen
         name={routeNames.userProfile}
         component={UserProfile}
