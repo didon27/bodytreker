@@ -394,7 +394,7 @@ exports.getActivity = (req, res) => {
       {
         as: "activities_categories",
         model: ActivitiesCategories,
-        attributes: [[lang, "title"], "color"],
+        attributes: [[lang, "title"], "color", "id"],
         through: { attributes: [] },
       },
       {

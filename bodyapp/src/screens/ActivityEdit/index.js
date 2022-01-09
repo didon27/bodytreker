@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState, useRef} from 'react';
+import React, {useContext, useEffect, useState, useRef, useMemo} from 'react';
 import {Animated, StatusBar, TouchableOpacity, TextInput} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
@@ -25,8 +25,11 @@ import {routeNames} from 'enums';
 import moment from 'moment';
 import axios from 'axios';
 import {API_URL} from 'constants';
+import {DefaultBackDrop} from 'components/BackDrop';
+import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 
 const ActivityEdit = ({navigation, route}) => {
+  const [categoryTitle, setCategoryTitle] = useState('');
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
@@ -35,9 +38,12 @@ const ActivityEdit = ({navigation, route}) => {
   const AnimatedTouchableOpacity =
     Animated.createAnimatedComponent(TouchableOpacity);
   const {translations, appLanguage} = useContext(LocalizationContext);
-  const {myActivities, subscribeActivityLoading} = useSelector(
-    state => state.activities,
-  );
+  const {activities_categories, loading, subscribeActivityLoading} =
+    useSelector(state => state.activities);
+
+  const [currentCategories, setCurrentCategories] = useState([]);
+  const snapPoints = useMemo(() => ['25%', '70%'], []);
+  const bottomSheetRef = useRef();
   const {user} = useSelector(state => state.user);
   const {token} = useSelector(state => state.auth);
 
@@ -64,6 +70,22 @@ const ActivityEdit = ({navigation, route}) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    let data = {};
+
+    if (categoryTitle.length > 3) {
+      data.title = categoryTitle;
+    }
+
+    dispatch(activitiesActions.getActivitiesCategories(data));
+  }, [appLanguage, categoryTitle]);
+
+  useEffect(() => {
+    if (activity?.activities_categories) {
+      setCurrentCategories(activity.activities_categories.map(el => el.id));
+    }
+  }, [activity]);
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -131,6 +153,23 @@ const ActivityEdit = ({navigation, route}) => {
   const changeField = (key, value) => {
     setActivity(prevState => ({...prevState, [key]: value}));
   };
+
+  const changeSelected = id => {
+    let categories = [...currentCategories];
+
+    if (currentCategories.includes(id)) {
+      categories = currentCategories.filter(el => el !== id);
+    } else if (currentCategories.length < 3) {
+      categories.push(id);
+    } else {
+      return;
+    }
+
+    setCurrentCategories(categories);
+  };
+
+  console.log(activity.activities_categories);
+  console.log(currentCategories);
 
   return (
     <View flex style={{backgroundColor: colors.white}}>
@@ -227,13 +266,40 @@ const ActivityEdit = ({navigation, route}) => {
               {returnPartner(activity?.partner).toUpperCase()}
             </Text>
           </View>
-          {activity.activities_categories.length ? (
-            <View row centered style={{flexWrap: 'wrap', marginTop: 8}}>
-              {activity.activities_categories.map((e, i) => (
-                <ItemCategory key={i} item={e} />
-              ))}
+          <View style={styles.block} mTop={16}>
+            <View row centered sBetween>
+              <Text size={18} style={{fontWeight: '600'}}>
+                {translations.categories}
+              </Text>
+              <TouchableOpacity
+                onPress={() => bottomSheetRef.current.present()}>
+                <Text color={colors.mainBlue} style={{fontWeight: '600'}}>
+                  {translations.add}
+                </Text>
+              </TouchableOpacity>
             </View>
-          ) : null}
+            <View
+              style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 8}}>
+              {currentCategories.length ? (
+                currentCategories.map((el, index) => {
+                  let item = activities_categories[el - 1];
+                  return (
+                    <ItemCategory
+                      key={index}
+                      item={item}
+                      changeSelected={changeSelected}
+                    />
+                  );
+                })
+              ) : (
+                <View style={styles.messageAddCategories}>
+                  <Text size={16} color="grey">
+                    {translations.add_categories_maximum}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
           <View mTop={16}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
               {translations.followers}{' '}
@@ -292,6 +358,66 @@ const ActivityEdit = ({navigation, route}) => {
           /> */}
         </View>
       </Animated.ScrollView>
+      <BottomSheetModal
+        onDismiss={() => setCategoryTitle('')}
+        ref={bottomSheetRef}
+        index={1}
+        snapPoints={snapPoints}
+        backdropComponent={DefaultBackDrop}>
+        <View style={styles.sheet}>
+          <Text size={20}>{translations.select_categories}</Text>
+          <TextInput
+            placeholder={translations.category_search}
+            style={styles.categorySearch}
+            onChangeText={setCategoryTitle}
+          />
+        </View>
+        <BottomSheetScrollView
+          style={{paddingHorizontal: 20, paddingBottom: 20}}>
+          {activities_categories.map((item, index) => {
+            let selected = currentCategories.includes(item.id);
+            return (
+              <TouchableOpacity
+                disabled={
+                  currentCategories.length >= 3 &&
+                  !currentCategories.includes(item.id)
+                }
+                onPress={() => changeSelected(item.id)}
+                key={index}
+                style={{
+                  ...styles.categoryContainer,
+                  borderColor: selected ? '#EDF1F7' : colors.white,
+                }}>
+                <View
+                  style={{
+                    ...styles.categoryBlock,
+                    backgroundColor: selected ? colors.white : item?.color,
+                    borderColor: selected ? colors.blackLabel : colors.white,
+                  }}>
+                  <Text style={styles.fakeText}>{item.title}</Text>
+                </View>
+                <View row centered>
+                  <Text
+                    style={{
+                      ...styles.categoryText,
+                      color: selected ? colors.blackLabel : item?.color,
+                    }}>
+                    {item.title}
+                  </Text>
+                  {selected && (
+                    <Icon
+                      name="close"
+                      size={17}
+                      color={colors.blackLabel}
+                      style={{position: 'absolute', right: -20}}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </BottomSheetScrollView>
+      </BottomSheetModal>
     </View>
   );
 };
