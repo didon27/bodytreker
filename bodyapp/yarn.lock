@@ -6761,6 +6761,11 @@
   "resolved" "https://registry.npmjs.org/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz"
   "version" "3.2.0"
 
+"react-native-star-rating-widget@^1.2.0":
+  "integrity" "sha512-SfaUFaElJtTmNMn/kqYl2h/QTiDGikvE0K4XzrfNjndTMUdM/30+jt+HpaZpUufAKsCGRo9rP/Q+x1m6guYIBg=="
+  "resolved" "https://registry.npmjs.org/react-native-star-rating-widget/-/react-native-star-rating-widget-1.2.0.tgz"
+  "version" "1.2.0"
+
 "react-native-star-rating@^1.1.0":
   "integrity" "sha512-ocOYx+BKUvfruvXm45MBbQZtpkVO3PQieBDepB0FaLuxE3vUtDTPzHqXuBes3iCM5oRi5umrnmMUMsM0mEq5ZA=="
   "resolved" "https://registry.npmjs.org/react-native-star-rating/-/react-native-star-rating-1.1.0.tgz"
@@ -6771,7 +6776,7 @@
     "react-native-button" "^2.3.0"
     "react-native-vector-icons" "^4.5.0"
 
-"react-native-svg@^12.1.1":
+"react-native-svg@*", "react-native-svg@^12.1.1":
   "integrity" "sha512-NIAJ8jCnXGCqGWXkkJ1GTzO4a3Md5at5sagYV8Vh4MXYnL4z5Rh428Wahjhh+LIjx40EE5xM5YtwyJBqOIba2Q=="
   "resolved" "https://registry.npmjs.org/react-native-svg/-/react-native-svg-12.1.1.tgz"
   "version" "12.1.1"

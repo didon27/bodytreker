@@ -169,6 +169,9 @@ const Profile = ({user, navigation, headerButtonControl, myAccount}) => {
               </Text>
             </View>
           ) : null}
+          <View>
+            <Text>Интересы</Text>
+          </View>
           <View row style={styles.ratingContainer}>
             <View jCenter>
               <Text size={34} style={{fontWeight: '700'}}>

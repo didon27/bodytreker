@@ -13,6 +13,8 @@ const UserBlock = ({
   myId,
   buttonControl,
   translations,
+  statusBtn,
+  authorActivity,
 }) => {
   return (
     <TouchableOpacity
@@ -42,6 +44,22 @@ const UserBlock = ({
             subscribe={user.subscribe}
             text={user.subscribe ? translations.following : translations.follow}
           />
+        )}
+        {statusBtn && authorActivity === myId && (
+          <TouchableOpacity
+            onPress={() => buttonControl(user.id)}
+            style={{
+              backgroundColor: user.status ? colors.mainGreen : 'grey',
+              height: 30,
+              alignItems: 'center',
+              borderRadius: 8,
+              justifyContent: 'center',
+              paddingHorizontal: 10,
+            }}>
+            <Text color={colors.white}>
+              {user.status ? 'Оценить' : 'Пригласить'}
+            </Text>
+          </TouchableOpacity>
         )}
       </View>
     </TouchableOpacity>

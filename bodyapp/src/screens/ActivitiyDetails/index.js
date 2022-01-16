@@ -4,11 +4,12 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import StarRating from 'react-native-star-rating-widget';
 
 import {activitiesActions} from 'store/activities';
 import Header from './components/Header';
 import {colors} from 'colors';
-import {authActions} from 'store/auth';
+import Modal from 'react-native-modal';
 import {
   View,
   Text,
@@ -25,6 +26,7 @@ import {routeNames} from 'enums';
 import moment from 'moment';
 import axios from 'axios';
 import {API_URL} from 'constants';
+import {mamaAxios} from 'services/api';
 
 const ActivityDetails = ({navigation, route}) => {
   const insets = useSafeAreaInsets();
@@ -35,25 +37,19 @@ const ActivityDetails = ({navigation, route}) => {
   const AnimatedTouchableOpacity =
     Animated.createAnimatedComponent(TouchableOpacity);
   const {translations, appLanguage} = useContext(LocalizationContext);
-  const {myActivities, subscribeActivityLoading} = useSelector(
-    state => state.activities,
-  );
+  const {subscribeActivityLoading} = useSelector(state => state.activities);
   const {user} = useSelector(state => state.user);
-  const {token} = useSelector(state => state.auth);
-  const [tab, setTab] = useState(true);
-
+  const [hideRateModal, setHideRateModal] = useState(false);
   const [activity, setActivity] = useState(route.params.activity);
+  const [firstRating, setFirstRating] = useState(0);
+  const [secondRating, setSecondRating] = useState(0);
+  const [thirdRating, setThirdRating] = useState(0);
 
   const fetchData = () => {
-    axios({
-      method: 'post',
-      url: `${API_URL}/activities/get-activity`,
-      data: {activity_id: route.params.activity.id},
-      headers: {
-        'accept-language': appLanguage,
-        Authorization: token,
-      },
-    })
+    mamaAxios
+      .post(`${API_URL}/activities/get-activity`, {
+        activity_id: route.params.activity.id,
+      })
       .then(response => {
         setActivity(response.data);
       })
@@ -62,13 +58,42 @@ const ActivityDetails = ({navigation, route}) => {
       });
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const inviteUserActivity = user_id => {
+    mamaAxios
+      .post(`${API_URL}/activities/invite-user-activity`, {
+        activity_id: route.params.activity.id,
+        user_id: user_id,
+        status: 1,
+      })
+      .then(response => {
+        fetchData();
+      })
+      .catch(err => {
+        console.log('error', err.response.data);
+      });
+  };
+
+  const rateUser = () => {
+    mamaAxios
+      .post(`${API_URL}/user/rate-user`, {
+        user_id: activity.user.id,
+        activity_id: activity.id,
+        first_rating: firstRating,
+        second_rating: secondRating,
+        third_rating: thirdRating,
+      })
+      .then(response => {
+        setHideRateModal(false);
+        fetchData();
+      })
+      .catch(err => {
+        console.log('error', err.response.data);
+      });
+  };
 
   useEffect(() => {
     StatusBar.setHidden(true);
-    dispatch(activitiesActions.getMyActivities({activity_id: activity.id}));
+    fetchData();
   }, [appLanguage]);
 
   let inputRageHeader = activity?.activities_images.length
@@ -131,6 +156,45 @@ const ActivityDetails = ({navigation, route}) => {
 
   return (
     <View flex style={{backgroundColor: colors.white}}>
+      <Modal isVisible={hideRateModal}>
+        <View style={{backgroundColor: 'white', padding: 16, borderRadius: 12}}>
+          <TouchableOpacity
+            onPress={() => setHideRateModal(false)}
+            style={{alignItems: 'flex-end'}}>
+            <Icon name={'close'} size={24} color={'grey'} />
+          </TouchableOpacity>
+          <Text mBottom={24} medium size={18} center>
+            Для того что бы заверишить действие оцените пользователя
+          </Text>
+          <Text mBottom={4}>Приятность в общение</Text>
+          <StarRating
+            starSize={40}
+            rating={firstRating}
+            onChange={setFirstRating}
+          />
+          <Text mBottom={4} mTop={16}>
+            Соответствие профилю
+          </Text>
+          <StarRating
+            starSize={40}
+            rating={secondRating}
+            onChange={setSecondRating}
+          />
+          <Text mBottom={4} mTop={16}>
+            Осознаность
+          </Text>
+          <StarRating
+            starSize={40}
+            rating={thirdRating}
+            onChange={setThirdRating}
+          />
+          <Button
+            text={'Завершить'}
+            onPress={rateUser}
+            style={{marginTop: 24, height: 40}}
+          />
+        </View>
+      </Modal>
       <Animated.View
         style={{
           ...styles.headerContainer,
@@ -221,13 +285,19 @@ const ActivityDetails = ({navigation, route}) => {
           <View mTop={16}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
               {translations.followers}{' '}
-              <Text size={16} color={colors.grey}>({activity.subscribers.length})</Text>
+              <Text size={16} color={colors.grey}>
+                ({activity.subscribers.length})
+              </Text>
             </Text>
             {activity.subscribers.length ? (
               activity.subscribers.map((subscriber, index) => (
                 <UserBlock
                   navigation={navigation}
                   user={subscriber}
+                  statusBtn
+                  buttonControl={inviteUserActivity}
+                  myId={user.id}
+                  authorActivity={activity.user.id}
                   key={index}
                   containerStyle={{marginBottom: 8}}
                 />
@@ -240,38 +310,41 @@ const ActivityDetails = ({navigation, route}) => {
               </View>
             )}
           </View>
-          <SubscribeButton
-            loading={subscribeActivityLoading}
-            onPress={() =>
-              subscribeControl(
-                {user_id: user.id, activity_id: activity.id},
-                activity.subscribe,
-                activity,
-              )
-            }
-            textStyle={{fontSize: 15}}
-            style={{height: 36, marginTop: 20}}
-            subscribe={activity.subscribe}
-            text={
-              user.id === activity.user.id
-                ? translations.edit
-                : activity.subscribe
-                ? translations.following
-                : translations.follow
-            }
-          />
-          {/* <Button
-            onPress={() =>
-              subscribeControl(
-                {user_id: user.id, activity_id: activity.id},
-                activity.subscribe,
-                activity,
-              )
-            }
-            loading={subscribeActivityLoading}
-            text={!activity.subscribe ? 'Подписаться' : 'Отписаться'}
-            style={{height: 40}}
-          /> */}
+          {!activity?.your_status && (
+            <SubscribeButton
+              loading={subscribeActivityLoading}
+              onPress={() =>
+                subscribeControl(
+                  {user_id: user.id, activity_id: activity.id},
+                  activity.subscribe,
+                  activity,
+                )
+              }
+              textStyle={{fontSize: 15}}
+              style={{height: 40, marginTop: 20}}
+              subscribe={activity.subscribe}
+              text={
+                user.id === activity.user.id
+                  ? translations.edit
+                  : activity.subscribe
+                  ? translations.following
+                  : translations.follow
+              }
+            />
+          )}
+          {user.id !== activity.user.id &&
+            activity.subscribe &&
+            activity?.your_status && (
+              <Button
+                onPress={() => setHideRateModal(true)}
+                text={'Завершить'}
+                style={{height: 40, marginTop: 16, backgroundColor: 'grey'}}
+              />
+            )}
+          <Text mTop={16} color={colors.grey} center>
+            Перед завершения действия вы cможете оценить взаимодествие с
+            пользователем
+          </Text>
         </View>
       </Animated.ScrollView>
     </View>

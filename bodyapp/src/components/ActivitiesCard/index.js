@@ -29,7 +29,8 @@ function ActivitiesCard({
   navigation,
   subscribeControl,
 }) {
-  let {user, title, createdAt, activities_categories, id, subscribe} = item;
+  let {user, title, createdAt, activities_categories, id, subscribe, status} =
+    item;
 
   const [loadingBtn, setLoadingBtn] = useState(false);
 
@@ -52,6 +53,22 @@ function ActivitiesCard({
           })
         // navigation.navigate(routeNames.dateils, {activity: item})
       }>
+      {status?.text && (
+        <View
+          style={{
+            backgroundColor: status.color,
+            position: 'absolute',
+            right: 0,
+            paddingHorizontal: 12,
+            paddingVertical: 4,
+            borderBottomLeftRadius: 14,
+            borderTopRightRadius: 14,
+          }}>
+          <Text size={12} medium color={colors.white}>
+            {status.text}
+          </Text>
+        </View>
+      )}
       <View row centered sBetween>
         <UserBlock user={user} navigation={navigation} />
         {/* <TouchableOpacity>
@@ -74,26 +91,28 @@ function ActivitiesCard({
         ))}
       </View>
       <Text color={'grey'}>{moment(createdAt).startOf('hour').fromNow()}</Text>
-      <SubscribeButton
-        loading={loadingBtn}
-        onPress={() => {
-          if (user_id === user.id) {
-            navigation.navigate(routeNames.activityEdit, {activity: item});
-          } else {
-            setLoadingBtn(true);
-            subscribeControl({user_id, activity_id: id}, subscribe, item);
+      {!status?.status && (
+        <SubscribeButton
+          loading={loadingBtn}
+          onPress={() => {
+            if (user_id === user.id) {
+              navigation.navigate(routeNames.activityEdit, {activity: item});
+            } else {
+              setLoadingBtn(true);
+              subscribeControl({user_id, activity_id: id}, subscribe, item);
+            }
+          }}
+          style={{marginTop: 8}}
+          subscribe={subscribe}
+          text={
+            user_id === user.id
+              ? translations.edit
+              : subscribe
+              ? translations.following
+              : translations.follow
           }
-        }}
-        style={{marginTop: 8}}
-        subscribe={subscribe}
-        text={
-          user_id === user.id
-            ? translations.edit
-            : subscribe
-            ? translations.following
-            : translations.follow
-        }
-      />
+        />
+      )}
     </TouchableOpacity>
   );
 }

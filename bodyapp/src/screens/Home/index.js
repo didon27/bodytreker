@@ -341,7 +341,7 @@ const Home = props => {
         </View>
         <View row centered style={styles.tabBar}>
           {returnTabBatton(translations.actual, true)}
-          {returnTabBatton(translations.my, false)}
+          {returnTabBatton(translations.followings, false)}
         </View>
         {!hideSearch && (
           <TextInput
