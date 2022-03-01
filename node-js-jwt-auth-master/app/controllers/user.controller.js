@@ -5,8 +5,10 @@ const User = db.user;
 const IdsUsersImages = db.ids_users_images;
 const UsersImages = db.users_images;
 const UsersSubscribers = db.users_subscribers;
+const UsersRatings = db.users_ratings;
 const Activities = db.activities;
 const Sequelize = require("sequelize");
+const IdsActivitiesStatuses = db.ids_activities_statuses;
 
 const upload = require("../middleware/upload");
 
@@ -302,11 +304,11 @@ exports.getFollowersAndFollowings = (req, res) => {
   })
     .then((response) => {
       return Promise.all(
-        response.rows.map(async(item) => {
+        response.rows.map(async (item) => {
           let data = item.dataValues[type].dataValues;
 
           const subscribe = await UsersSubscribers.findOne({
-            where: { first_user_id: myId,  second_user_id: data.id },
+            where: { first_user_id: myId, second_user_id: data.id },
           });
 
           let user = {
@@ -333,6 +335,107 @@ exports.getFollowersAndFollowings = (req, res) => {
     .catch((error) => {
       return res.status(400).send({ message: error.message });
     });
+};
+
+exports.rateUser = (req, res) => {
+  const myId = getUserId(req, res);
+  const { user_id, activity_id, first_rating, second_rating, third_rating } =
+    req.body;
+
+  if (first_rating === null && second_rating === null && third_rating) {
+    IdsActivitiesStatuses.update(
+      { status: 2 },
+      {
+        where: { user_id: myId, activity_id },
+        returning: true,
+      }
+    )
+      .then(() => {
+        res.status(200).send({ message: "User rate!" });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
+  } else {
+    UsersRatings.create({
+      user_id,
+      valuer_id: myId,
+      activity_id,
+      first_rating,
+      second_rating,
+      third_rating,
+    })
+      .then(() => {
+        IdsActivitiesStatuses.update(
+          { status: 2 },
+          {
+            where: { user_id: myId, activity_id },
+            returning: true,
+          }
+        ).then(async () => {
+          UsersRatings.findAndCountAll({
+            where: { user_id },
+            attributes: [
+              // include the summed value here
+              [
+                Sequelize.fn(
+                  "SUM",
+                  Sequelize.col("users_ratings.first_rating")
+                ),
+                "first_rating_quantity_total",
+              ],
+              [
+                Sequelize.fn(
+                  "SUM",
+                  Sequelize.col("users_ratings.second_rating")
+                ),
+                "second_rating_quantity_total",
+              ],
+              [
+                Sequelize.fn(
+                  "SUM",
+                  Sequelize.col("users_ratings.third_rating")
+                ),
+                "third_rating_quantity_total",
+              ],
+            ],
+          })
+            .then((rating) => {
+              let rate = rating.rows[0].dataValues;
+
+              const user_rating =
+                (rate.first_rating_quantity_total +
+                  rate.second_rating_quantity_total +
+                  rate.third_rating_quantity_total) /
+                rating.count /
+                3;
+
+              User.findOne({ id: user_id })
+                .then(() => {
+                  User.update(
+                    { rating: user_rating },
+                    { where: { id: user_id } }
+                  )
+                    .then(() => {
+                      res.status(200).send({ message: "User rate!" });
+                    })
+                    .catch((err) => {
+                      res.status(500).send({ message: err.message });
+                    });
+                })
+                .catch((err) => {
+                  res.status(500).send({ message: err.message });
+                });
+            })
+            .catch((err) => {
+              res.status(500).send({ message: err.message });
+            });
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
+  }
 };
 
 exports.subscribeUser = (req, res) => {

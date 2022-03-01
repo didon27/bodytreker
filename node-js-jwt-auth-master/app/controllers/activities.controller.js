@@ -7,6 +7,7 @@ const IdsActivitiesCategories = db.ids_activities_categories;
 const ActivitiesImages = db.activities_images;
 const strings = require("../strings");
 const IdsActivitiesImages = db.ids_activities_images;
+const IdsActivitiesStatuses = db.ids_activities_statuses;
 const ActivitiesSubscribers = db.activities_subscribers;
 const IdsUsersImages = db.ids_users_images;
 const UsersImages = db.users_images;
@@ -150,6 +151,28 @@ const getUserId = (req, res) => {
   return userId;
 };
 
+const renderActivityStatus = (status, lang) => {
+  if (status === 1) {
+    return {
+      status,
+      color: "#3CBD0C",
+      text: strings[lang].in_progress,
+    };
+  } else if (status === 2) {
+    return {
+      status,
+      color: "#EB5757",
+      text: strings[lang].completed,
+    };
+  } else {
+    return {
+      status,
+      color: "#4285f4",
+      text: strings[lang].pending,
+    };
+  }
+};
+
 exports.getActivities = (req, res) => {
   let { user_id, title, partner, subscriptions, page, size, userActivities } =
     req.body;
@@ -185,6 +208,7 @@ exports.getActivities = (req, res) => {
       through: ActivitiesSubscribers,
     });
   }
+
   Activities.belongsTo(User, { foreignKey: "user_id" });
 
   Activities.belongsToMany(ActivitiesCategories, {
@@ -232,7 +256,7 @@ exports.getActivities = (req, res) => {
     where: dataActivities,
     limit,
     offset,
-    attributes: ["id", "title", "description", "createdAt", "partner"],
+    attributes: ["id", "title", "createdAt", "partner"],
     order: [["createdAt", "DESC"]],
     distinct: true,
     include: [
@@ -264,52 +288,66 @@ exports.getActivities = (req, res) => {
     ],
   })
     .then(async (response) => {
-      let activities = response.rows.map((item) => {
-        let data = item.dataValues;
-        let user = {
-          id: data.user.id,
-          username: data.user.username,
-          rating: data.user.rating,
-          first_name: data.user.first_name,
-          last_name: data.user.last_name,
-          avatar:
-            data.user.avatar.sort(function (a, b) {
-              return new Date(b.createdAt) - new Date(a.createdAt);
-            })[0]?.filename || null,
-        };
+      return Promise.all(
+        response.rows.map(async (item) => {
+          let data = item.dataValues;
+          let user = {
+            id: data.user.id,
+            username: data.user.username,
+            rating: data.user.rating,
+            first_name: data.user.first_name,
+            last_name: data.user.last_name,
+            avatar:
+              data.user.avatar.sort(function (a, b) {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+              })[0]?.filename || null,
+          };
 
-        let subscribers = data.subscribers.map((item) => {
-          return item.dataValues.avatar.length
-            ? {
-                ...item.dataValues,
-                avatar: item.dataValues.avatar.sort(function (a, b) {
-                  return new Date(b.createdAt) - new Date(a.createdAt);
-                })[0].filename,
-              }
-            : { ...item.dataValues, avatar: null };
-        });
+          let subscribers = data.subscribers.map((item) => {
+            return item.dataValues.avatar.length
+              ? {
+                  ...item.dataValues,
+                  avatar: item.dataValues.avatar.sort(function (a, b) {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                  })[0].filename,
+                }
+              : { ...item.dataValues, avatar: null };
+          });
 
-        return {
-          ...data,
-          user,
-          subscribers,
-          subscribe: !!item.subscribers?.find((item) => item.id === myUserId),
-        };
+          let finalResponse = {
+            ...data,
+            user,
+            subscribers,
+            subscribe: !!item.subscribers?.find((item) => item.id === myUserId),
+          };
+
+          if (subscriptions) {
+            const status = await IdsActivitiesStatuses.findOne({
+              where: { activity_id: data.id, user_id: myUserId },
+              attributes: ["status"],
+            });
+
+            finalResponse.status = renderActivityStatus(status?.status, lang);
+          }
+
+          return finalResponse;
+        })
+      ).then(async (activities) => {
+        let count = response.count;
+
+        if (!subscriptions && subscriptions !== undefined) {
+          activities = activities.filter((item) => !item.subscribe);
+        } else if (subscriptions) {
+          activities = activities.filter((item) => item.subscribe);
+          count = await ActivitiesSubscribers.count({ where: { user_id } });
+        }
+
+        res
+          .status(200)
+          .send(
+            getPagingData({ ...response, count, rows: activities }, page, limit)
+          );
       });
-      let count = response.count;
-
-      if (!subscriptions && subscriptions !== undefined) {
-        activities = activities.filter((item) => !item.subscribe);
-      } else if (subscriptions) {
-        activities = activities.filter((item) => item.subscribe);
-        count = await ActivitiesSubscribers.count({ where: { user_id } });
-      }
-
-      res
-        .status(200)
-        .send(
-          getPagingData({ ...response, count, rows: activities }, page, limit)
-        );
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
@@ -349,6 +387,10 @@ exports.getActivity = (req, res) => {
     });
   }
 
+  User.hasOne(IdsActivitiesStatuses, {
+    foreignKey: "user_id",
+  });
+
   let subscribers = {
     as: "subscribers",
     model: User,
@@ -358,9 +400,17 @@ exports.getActivity = (req, res) => {
         model: UsersImages,
         through: { attributes: [] },
       },
+      {
+        as: "ids_activities_status",
+        model: IdsActivitiesStatuses,
+        required: false,
+        where: { activity_id },
+        attributes: ["status"],
+        // through: { attributes: [] },
+      },
     ],
     order: [["avatar", "createdAt", "DESC"]],
-    through: { attributes: [] },
+    through: { attributes: ["user_id"] },
     attributes: ["id", "username", "rating", "first_name", "last_name"],
   };
 
@@ -375,7 +425,7 @@ exports.getActivity = (req, res) => {
 
   Activities.findOne({
     where: dataActivities,
-    attributes: ["id", "title", "description", "createdAt", "partner"],
+    attributes: ["id", "title", "createdAt", "partner"],
     order: [["createdAt", "DESC"]],
     distinct: true,
     include: [
@@ -420,27 +470,59 @@ exports.getActivity = (req, res) => {
           })[0]?.filename || null,
       };
 
+      let your_status = null;
       let subscribers = data.subscribers.map((item) => {
+        if (item.dataValues.id === user_id) {
+          your_status = item.dataValues.ids_activities_status?.status;
+        }
+
         return item.dataValues.avatar.length
           ? {
-              ...item.dataValues,
+              id: item.dataValues.id,
+              username: item.dataValues.username,
+              rating: item.dataValues.rating,
+              first_name: item.dataValues.first_name,
+              last_name: item.dataValues.last_name,
+              status: item.dataValues.ids_activities_status?.status,
               avatar: item.dataValues.avatar.sort(function (a, b) {
                 return new Date(b.createdAt) - new Date(a.createdAt);
               })[0].filename,
             }
-          : { ...item.dataValues, avatar: null };
+          : {
+              id: item.dataValues.id,
+              username: item.dataValues.username,
+              rating: item.dataValues.rating,
+              first_name: item.dataValues.first_name,
+              last_name: item.dataValues.last_name,
+              status: item.dataValues.ids_activities_status?.status,
+              avatar: null,
+            };
       });
 
       let activities = {
         ...data,
         user,
         subscribers,
+        your_status: your_status,
         subscribe: !!response.subscribers?.find((item) => item.id === user_id),
       };
 
       res.status(200).send(activities);
     })
     .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
+};
+
+exports.inviteUserActivity = (req, res) => {
+  let { user_id, status, activity_id } = req.body;
+  let lang = req.headers["accept-language"] || "en";
+
+  IdsActivitiesStatuses.create({ activity_id, user_id, status })
+    .then((invite) => {
+      res.status(200).send({ message: invite });
+    })
+    .catch(() => {
       res.status(500).send({ message: err.message });
     });
 };

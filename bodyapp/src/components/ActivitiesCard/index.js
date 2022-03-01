@@ -42,7 +42,10 @@ function ActivitiesCard({
 
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={{
+        ...styles.container,
+        ...(status?.color && {borderWidth: 1, borderColor: status?.color}),
+      }}
       onPress={
         () =>
           navigation.push(routeNames.dateils, {
@@ -53,7 +56,7 @@ function ActivitiesCard({
           })
         // navigation.navigate(routeNames.dateils, {activity: item})
       }>
-      {status?.text && (
+      {/* {status?.text && (
         <View
           style={{
             backgroundColor: status.color,
@@ -68,14 +71,21 @@ function ActivitiesCard({
             {status.text}
           </Text>
         </View>
-      )}
+      )} */}
       <View row centered sBetween>
-        <UserBlock user={user} navigation={navigation} />
+        <View row>
+          <View flex>
+            <UserBlock user={user} navigation={navigation} />
+          </View>
+          <Text color={colors.grey} medium>
+            {moment(createdAt).startOf('hour').fromNow()}
+          </Text>
+        </View>
         {/* <TouchableOpacity>
           <Icon name="ellipsis-vertical" size={18} color={'grey'} />
         </TouchableOpacity> */}
       </View>
-      <Text size={18} mTop={8} style={{fontWeight: '500'}}>
+      <Text size={16} mTop={8} style={{fontWeight: '500'}} numberOfLines={3}>
         {title}
       </Text>
       {/* {activities_images[0]?.filename && (
@@ -85,12 +95,18 @@ function ActivitiesCard({
           resizeMode={FastImage.resizeMode.cover}
         />
       )} */}
-      <View row centered style={{flexWrap: 'wrap'}}>
+      <View
+        row
+        centered
+        style={{
+          flexWrap: 'wrap',
+          marginTop: activities_categories.length ? 16 : 8,
+        }}>
         {activities_categories.map((e, i) => (
-          <ItemCategory key={i} item={e} />
+          <ItemCategory key={i} item={e} size={'small'} />
         ))}
       </View>
-      <Text color={'grey'}>{moment(createdAt).startOf('hour').fromNow()}</Text>
+
       {!status?.status && (
         <SubscribeButton
           loading={loadingBtn}

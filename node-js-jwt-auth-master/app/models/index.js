@@ -39,6 +39,10 @@ db.ids_users_images = require("../models/ids_users_images.model")(sequelize, Seq
 db.users_images = require("./users_images.model")(sequelize, Sequelize);
 db.users_subscribers = require("./users_subscribers.model")(sequelize, Sequelize);
 
+db.ids_activities_statuses = require("../models/ids_activities_statuses.model")(sequelize, Sequelize);
+
+db.users_ratings = require("../models/users_ratings.model")(sequelize, Sequelize);
+
 
 db.refreshToken.belongsTo(db.user, {
   foreignKey: 'userId', targetKey: 'id'

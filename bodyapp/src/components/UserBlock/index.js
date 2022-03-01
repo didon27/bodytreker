@@ -23,7 +23,7 @@ const UserBlock = ({
       <Avatar user={user} />
       <View row centered sBetween flex>
         <View mLeft={10}>
-          <Text size={15} style={{fontWeight: '500'}}>
+          <Text size={15} style={{fontWeight: '500'}} numberOfLines={1}>
             {user.username}
           </Text>
           <View style={{width: 10}}>

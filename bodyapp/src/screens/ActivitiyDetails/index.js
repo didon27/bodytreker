@@ -41,9 +41,9 @@ const ActivityDetails = ({navigation, route}) => {
   const {user} = useSelector(state => state.user);
   const [hideRateModal, setHideRateModal] = useState(false);
   const [activity, setActivity] = useState(route.params.activity);
-  const [firstRating, setFirstRating] = useState(0);
-  const [secondRating, setSecondRating] = useState(0);
-  const [thirdRating, setThirdRating] = useState(0);
+  const [firstRating, setFirstRating] = useState(null);
+  const [secondRating, setSecondRating] = useState(null);
+  const [thirdRating, setThirdRating] = useState(null);
 
   const fetchData = () => {
     mamaAxios
@@ -188,11 +188,23 @@ const ActivityDetails = ({navigation, route}) => {
             rating={thirdRating}
             onChange={setThirdRating}
           />
-          <Button
-            text={'Завершить'}
-            onPress={rateUser}
-            style={{marginTop: 24, height: 40}}
-          />
+          <View row centered mTop={24}>
+            <TouchableOpacity
+              style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+              <Text size={16}>Пропустить</Text>
+            </TouchableOpacity>
+            <Button
+              text={'Завершить'}
+              onPress={rateUser}
+              style={{
+                marginTop: 24,
+                height: 40,
+                width: null,
+                flex: 1,
+                marginTop: 0,
+              }}
+            />
+          </View>
         </View>
       </Modal>
       <Animated.View
@@ -256,14 +268,9 @@ const ActivityDetails = ({navigation, route}) => {
         )}>
         <Header navigation={navigation} activity={activity} />
         <View style={{padding: 20}}>
-          <Text size={20} bold mBottom={8}>
+          <Text size={18} mBottom={8}>
             {activity.title}
           </Text>
-          {activity.description ? (
-            <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
-              {activity.description}
-            </Text>
-          ) : null}
           <Text size={16} mTop={4} medium>
             {moment(activity.createdAt).startOf('hour').fromNow()}
           </Text>
@@ -282,7 +289,7 @@ const ActivityDetails = ({navigation, route}) => {
               ))}
             </View>
           ) : null}
-          <View mTop={16}>
+          <View mTop={24}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
               {translations.followers}{' '}
               <Text size={16} color={colors.grey}>

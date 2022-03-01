@@ -20,6 +20,7 @@ const Text = ({style, ...props}) => {
       {...props}
       style={[
         {fontWeight: '400'},
+        props.numberOfLines && props.numberOfLines,
         props.center && styles.center,
         props.left && styles.left,
         props.color && {color: props.color},

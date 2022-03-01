@@ -25,6 +25,13 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.subscribeUser
   );
+
+  app.post(
+    "/api/user/rate-user",
+    [authJwt.verifyToken],
+    controller.rateUser
+  );
+
   app.post(
     "/api/user/unsubscribe-user",
     [authJwt.verifyToken],

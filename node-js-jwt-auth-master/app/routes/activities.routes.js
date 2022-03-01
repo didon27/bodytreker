@@ -45,7 +45,14 @@ module.exports = function (app) {
 
   app.post(
     "/api/activities/create-new-activities",
+    [authJwt.verifyToken],
     controller.createNewActivities
+  );
+
+  app.post(
+    "/api/activities/invite-user-activity",
+    [authJwt.verifyToken],
+    controller.inviteUserActivity
   );
 
   app.post(
