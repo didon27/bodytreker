@@ -1,14 +1,23 @@
-import React, {useContext, useEffect, useState, useRef, useMemo} from 'react';
-import {Animated, StatusBar, TouchableOpacity, TextInput} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useSelector, useDispatch} from 'react-redux';
+import React, { useContext, useEffect, useState, useRef, useMemo } from 'react';
+import { Animated, StatusBar, TouchableOpacity, TextInput } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import ImagePicker from 'react-native-image-crop-picker';
+import {
+  request,
+  check,
+  PERMISSIONS,
+  RESULTS,
+  openSettings,
+  openLimitedPhotoLibraryPicker,
+} from 'react-native-permissions';
+import Modal from 'react-native-modal';
 
-import {activitiesActions} from 'store/activities';
-import Header from './components/Header';
-import {colors} from 'colors';
-import {authActions} from 'store/auth';
+import { activitiesActions } from 'store/activities';
+import { colors } from 'colors';
+import { authActions } from 'store/auth';
 import {
   View,
   Text,
@@ -16,19 +25,21 @@ import {
   Button,
   UserBlock,
   SubscribeButton,
+  ActivityHeader,
 } from 'components';
-import {storage} from 'services/storage';
-import {LocalizationContext} from 'services';
+import { storage } from 'services/storage';
+import { LocalizationContext } from 'services';
 
 import styles from './styles';
-import {routeNames} from 'enums';
+import { routeNames } from 'enums';
 import moment from 'moment';
 import axios from 'axios';
-import {API_URL} from 'constants';
-import {DefaultBackDrop} from 'components/BackDrop';
-import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import { API_URL } from 'constants';
+import { DefaultBackDrop } from 'components/BackDrop';
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { mamaAxios } from 'services/api';
 
-const ActivityEdit = ({navigation, route}) => {
+const ActivityEdit = ({ navigation, route }) => {
   const [categoryTitle, setCategoryTitle] = useState('');
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -37,23 +48,24 @@ const ActivityEdit = ({navigation, route}) => {
   const AnimatedIconIonicons = Animated.createAnimatedComponent(IconIonicons);
   const AnimatedTouchableOpacity =
     Animated.createAnimatedComponent(TouchableOpacity);
-  const {translations, appLanguage} = useContext(LocalizationContext);
-  const {activities_categories, loading, subscribeActivityLoading} =
+  const { translations, appLanguage } = useContext(LocalizationContext);
+  // const [editModa, setEditMode] = useState(false);
+  const { activities_categories, loading, subscribeActivityLoading } =
     useSelector(state => state.activities);
-
+  const [currentPhoto, setCurrentPhoto] = useState([]);
   const [currentCategories, setCurrentCategories] = useState([]);
   const snapPoints = useMemo(() => ['25%', '70%'], []);
   const bottomSheetRef = useRef();
-  const {user} = useSelector(state => state.user);
-  const {token} = useSelector(state => state.auth);
-
+  const { user } = useSelector(state => state.user);
+  const { token } = useSelector(state => state.auth);
+  const [deleteActivityModal, setDeleteActivityModal] = useState(false);
   const [activity, setActivity] = useState(route.params.activity || {});
 
   const fetchData = () => {
     axios({
       method: 'post',
       url: `${API_URL}/activities/get-activity`,
-      data: {activity_id: route.params.activity.id},
+      data: { activity_id: route.params.activity.id },
       headers: {
         'accept-language': appLanguage,
         Authorization: token,
@@ -66,6 +78,10 @@ const ActivityEdit = ({navigation, route}) => {
         console.log('error', err.response.data);
       });
   };
+
+  const activityUpdate = () => {
+    mamaAxios.post(`${API_URL}/activities/activity-update`, activity).then(response => console.log(response.data))
+  }
 
   useEffect(() => {
     fetchData();
@@ -89,7 +105,7 @@ const ActivityEdit = ({navigation, route}) => {
 
   useEffect(() => {
     StatusBar.setHidden(true);
-    dispatch(activitiesActions.getMyActivities({activity_id: activity.id}));
+    dispatch(activitiesActions.getMyActivities({ activity_id: activity.id }));
   }, [appLanguage]);
 
   let inputRageHeader = activity?.activities_images.length
@@ -151,7 +167,7 @@ const ActivityEdit = ({navigation, route}) => {
   };
 
   const changeField = (key, value) => {
-    setActivity(prevState => ({...prevState, [key]: value}));
+    setActivity(prevState => ({ ...prevState, [key]: value }));
   };
 
   const changeSelected = id => {
@@ -168,11 +184,79 @@ const ActivityEdit = ({navigation, route}) => {
     setCurrentCategories(categories);
   };
 
-  console.log(activity.activities_categories);
-  console.log(currentCategories);
+  const openCamera = async index => {
+    let galleryPerm = null;
+
+    if (Platform.OS === 'ios') {
+      galleryPerm = await check(PERMISSIONS.IOS.PHOTO_LIBRARY);
+    } else if (Platform.OS === 'android') {
+      galleryPerm = await check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    }
+
+    switch (galleryPerm) {
+      case RESULTS.GRANTED: {
+        const result = await ImagePicker.openPicker({
+          mediaType: 'photo',
+          includeBase64: false,
+          compressImageQuality: 0.5,
+          maxFiles: 4,
+          multiple: true,
+        });
+        setCurrentPhoto(result);
+        break;
+      }
+      case RESULTS.BLOCKED:
+        Alert.alert('Permission blocked', 'Please allow access if you want', [
+          {
+            text: 'Go To Settings',
+            onPress: () => openSettings(),
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ]);
+        break;
+      case RESULTS.LIMITED:
+        openLimitedPhotoLibraryPicker();
+        break;
+      default:
+        if (Platform.OS === 'ios') {
+          request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+        } else if (Platform.OS === 'android') {
+          request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+        }
+        break;
+    }
+  };
+
+
+  const deletePost = () => {
+    mamaAxios.post(`${API_URL}/activities/delete-activity`, { id: activity.id })
+      .then((response) => {
+
+        setDeleteActivityModal(false);
+        navigation.navigate(routeNames.activities, {
+          user_id: user.id,
+          username: user.username,
+        })
+      })
+  }
+
+  console.log(currentPhoto)
 
   return (
-    <View flex style={{backgroundColor: colors.white}}>
+    <View flex style={{ backgroundColor: colors.white }}>
+      <Modal isVisible={deleteActivityModal} style={{ margin: 0 }}>
+        <View flex style={{ justifyContent: 'flex-end', paddingBottom: insets.bottom || 16, paddingHorizontal: 16 }}>
+          <TouchableOpacity style={{ ...styles.modalControlButton, marginBottom: 10 }} onPress={deletePost}>
+            <Text medium size={16} color={colors.errorColor}>{translations.delete}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ ...styles.modalControlButton }} onPress={() => setDeleteActivityModal(false)}>
+            <Text medium size={16} color={colors.mainBlue}>{translations.cancel}</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
       <Animated.View
         style={{
           ...styles.headerContainer,
@@ -189,7 +273,7 @@ const ActivityEdit = ({navigation, route}) => {
             <AnimatedIcon
               name="angle-left"
               size={30}
-              style={{color: headerButtonColor}}
+              style={{ color: headerButtonColor }}
             />
           </AnimatedTouchableOpacity>
           <Animated.Text
@@ -200,18 +284,19 @@ const ActivityEdit = ({navigation, route}) => {
             }}>
             {/* {activity.activityname.toLocaleLowerCase()} */}
           </Animated.Text>
-          <AnimatedTouchableOpacity
-            onPress={() => navigation.navigate(routeNames.settings, {activity})}
-            style={{
-              ...styles.secondHeaderBtn,
-              backgroundColor: headerButtonBackgroundColor,
-            }}>
-            <AnimatedIconIonicons
-              name={'ellipsis-vertical'}
-              size={24}
-              style={{color: headerButtonColor}}
-            />
-          </AnimatedTouchableOpacity>
+          {activity.user.id === user.id &&
+            <AnimatedTouchableOpacity
+              onPress={openCamera}
+              style={{
+                ...styles.secondHeaderBtn,
+                backgroundColor: headerButtonBackgroundColor,
+              }}>
+              <AnimatedIconIonicons
+                name={'images-outline'}
+                size={24}
+                style={{ color: headerButtonColor }}
+              />
+            </AnimatedTouchableOpacity>}
         </View>
         <Animated.View
           style={{
@@ -227,59 +312,65 @@ const ActivityEdit = ({navigation, route}) => {
         onScroll={Animated.event(
           [
             {
-              nativeEvent: {contentOffset: {y: scrollY}},
+              nativeEvent: { contentOffset: { y: scrollY } },
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )}>
-        <Header navigation={navigation} activity={activity} />
-        <View style={{padding: 20}}>
-          <TextInput
+        <ActivityHeader fetchData={fetchData} navigation={navigation} activity={activity} userId={user.id} translations={translations} />
+        <View style={{ padding: 20 }}>
+          <View row flex centered style={{ backgroundColor: '#f4f4f4', height: 40, borderRadius: 14, paddingHorizontal: 16, }}>
+            <TextInput
+              value={activity.title}
+              maxLength={100}
+              onChangeText={value => changeField('title', value)}
+              placeholder={'dfsds'}
+              style={{ flex: 1, marginRight: 10, fontSize: 16, fontWeight: '600' }} />
+          </View>
+          <View mTop={16} mBottom={16} row flex centered style={{ backgroundColor: '#f4f4f4', paddingTop: 8, paddingBottom: 16, borderRadius: 14, paddingHorizontal: 16, }}>
+            <TextInput
+              maxLength={500}
+              multiline
+              value={activity.description}
+              onChangeText={value => changeField('description', value)}
+              placeholder={translations.description}
+              style={{ flex: 1, marginRight: 10, fontSize: 14, minHeight: 100, textAlignVertical: 'top' }} />
+          </View>
+          {/* <TextInput
             multiline
             maxLength={250}
-            style={{fontSize: 20, fontWeight: '700', marginBottom: 16}}
-            value={activity.title}
-            onChangeText={value => changeField('title', value)}
-            placeholder={translations.title}
-          />
-          <TextInput
-            multiline
-            maxLength={250}
-            style={{minHeight: 100, fontSize: 15}}
+            style={{ minHeight: 100, fontSize: 15 }}
             value={activity.description}
             onChangeText={value => changeField('description', value)}
             placeholder={translations.description}
-          />
+          /> */}
           {/* {activity.description ? (
             <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
               {activity.description}
             </Text>
           ) : null} */}
-          <Text size={16} mTop={4} medium>
-            {moment(activity.createdAt).startOf('hour').fromNow()}
-          </Text>
-          <View mTop={16} row>
-            <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
+          {/* <View mTop={16} row>
+            <Text size={16} style={{ fontWeight: '500' }} color={'#afafaf'}>
               Хочу выполнить это с{' '}
             </Text>
             <Text size={16} medium>
               {returnPartner(activity?.partner).toUpperCase()}
             </Text>
-          </View>
-          <View style={styles.block} mTop={16}>
+          </View> */}
+          <View style={styles.block}>
             <View row centered sBetween>
-              <Text size={18} style={{fontWeight: '600'}}>
+              <Text size={18} style={{ fontWeight: '600' }}>
                 {translations.categories}
               </Text>
               <TouchableOpacity
                 onPress={() => bottomSheetRef.current.present()}>
-                <Text color={colors.mainBlue} style={{fontWeight: '600'}}>
+                <Text color={colors.mainBlue} style={{ fontWeight: '600' }}>
                   {translations.add}
                 </Text>
               </TouchableOpacity>
             </View>
             <View
-              style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 8}}>
+              style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
               {currentCategories.length ? (
                 currentCategories.map((el, index) => {
                   let item = activities_categories[el - 1];
@@ -301,7 +392,7 @@ const ActivityEdit = ({navigation, route}) => {
             </View>
           </View>
           <View mTop={16}>
-            <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
+            <Text size={18} style={{ fontWeight: '600' }} mBottom={8}>
               {translations.followers}{' '}
               <Text size={16} color={colors.grey}>
                 ({activity.subscribers.length})
@@ -313,12 +404,12 @@ const ActivityEdit = ({navigation, route}) => {
                   navigation={navigation}
                   user={subscriber}
                   key={index}
-                  containerStyle={{marginBottom: 8}}
+                  containerStyle={{ marginBottom: 8 }}
                 />
               ))
             ) : (
               <View>
-                <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
+                <Text size={16} style={{ fontWeight: '500' }} color={'#afafaf'}>
                   Пока что нету участников, стань первым
                 </Text>
               </View>
@@ -327,23 +418,28 @@ const ActivityEdit = ({navigation, route}) => {
           <SubscribeButton
             loading={subscribeActivityLoading}
             onPress={() =>
-              subscribeControl(
-                {user_id: user.id, activity_id: activity.id},
-                activity.subscribe,
-                activity,
-              )
+              user.id === activity.user.id
+                ? activityUpdate() :
+                subscribeControl(
+                  { user_id: user.id, activity_id: activity.id },
+                  activity.subscribe,
+                  activity,
+                )
             }
-            textStyle={{fontSize: 15}}
-            style={{height: 36, marginTop: 20}}
+            textStyle={{ fontSize: 15 }}
+            style={{ height: 36, marginTop: 20 }}
             subscribe={activity.subscribe}
             text={
               user.id === activity.user.id
                 ? translations.edit
                 : activity.subscribe
-                ? translations.following
-                : translations.follow
+                  ? translations.following
+                  : translations.follow
             }
           />
+          <TouchableOpacity style={styles.deleteButton} onPress={() => setDeleteActivityModal(true)}>
+            <Text medium color={colors.errorColor}>{translations.delete}</Text>
+          </TouchableOpacity>
           {/* <Button
             onPress={() =>
               subscribeControl(
@@ -373,7 +469,7 @@ const ActivityEdit = ({navigation, route}) => {
           />
         </View>
         <BottomSheetScrollView
-          style={{paddingHorizontal: 20, paddingBottom: 20}}>
+          style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
           {activities_categories.map((item, index) => {
             let selected = currentCategories.includes(item.id);
             return (
@@ -409,7 +505,7 @@ const ActivityEdit = ({navigation, route}) => {
                       name="close"
                       size={17}
                       color={colors.blackLabel}
-                      style={{position: 'absolute', right: -20}}
+                      style={{ position: 'absolute', right: -20 }}
                     />
                   )}
                 </View>

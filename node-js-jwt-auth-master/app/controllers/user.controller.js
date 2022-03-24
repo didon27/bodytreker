@@ -75,6 +75,7 @@ exports.updateUser = async (req, res) => {
           "status",
           "gender",
           "age",
+          "verified_account"
         ],
         returning: true,
       }
@@ -122,6 +123,7 @@ exports.updateUser = async (req, res) => {
             "status",
             "gender",
             "age",
+            "verified_account"
           ],
           include: [
             {
@@ -187,6 +189,7 @@ exports.getMyUser = (req, res) => {
       "status",
       "gender",
       "age",
+      "verified_account"
     ],
     include: [
       {
@@ -296,7 +299,7 @@ exports.getFollowersAndFollowings = (req, res) => {
           },
         ],
         // through: { attributes: [] },
-        attributes: ["id", "first_name", "last_name", "username", "rating"],
+        attributes: ["id", "first_name", "last_name", "username", "rating", "verified_account"],
       },
     ],
   })
@@ -313,6 +316,7 @@ exports.getFollowersAndFollowings = (req, res) => {
             id: data.id,
             username: data.username,
             rating: data.rating,
+            verified_account: data.verified_account,
             first_name: data.first_name,
             last_name: data.last_name,
             subscribe: !!subscribe,
@@ -385,6 +389,7 @@ exports.getUser = (req, res) => {
       "description",
       "status",
       "gender",
+      "verified_account",
       "age",
     ],
     include: [

@@ -16,7 +16,7 @@ export default StyleSheet.create({
     borderBottomWidth: 0.2,
   },
   flatList: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingBottom: 40,
     paddingTop: 10,
   },
@@ -45,12 +45,12 @@ export default StyleSheet.create({
   },
   activeFilter: {
     backgroundColor: '#4285f4',
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     position: 'absolute',
     right: 2,
-    top: 16,
+    top: 15,
   },
   partnerItem: {
     alignItems: 'center',

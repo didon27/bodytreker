@@ -1,14 +1,13 @@
-import React, {useContext, useEffect, useState, useRef} from 'react';
-import {Animated, StatusBar, TouchableOpacity} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useSelector, useDispatch} from 'react-redux';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import { Animated, StatusBar, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import StarRating from 'react-native-star-rating-widget';
 
-import {activitiesActions} from 'store/activities';
-import Header from './components/Header';
-import {colors} from 'colors';
+import { activitiesActions } from 'store/activities';
+import { colors } from 'colors';
 import Modal from 'react-native-modal';
 import {
   View,
@@ -17,18 +16,19 @@ import {
   Button,
   UserBlock,
   SubscribeButton,
+  ActivityHeader,
 } from 'components';
-import {storage} from 'services/storage';
-import {LocalizationContext} from 'services';
+import { storage } from 'services/storage';
+import { LocalizationContext } from 'services';
 
 import styles from './styles';
-import {routeNames} from 'enums';
+import { routeNames } from 'enums';
 import moment from 'moment';
 import axios from 'axios';
-import {API_URL} from 'constants';
-import {mamaAxios} from 'services/api';
+import { API_URL } from 'constants';
+import { mamaAxios } from 'services/api';
 
-const ActivityDetails = ({navigation, route}) => {
+const ActivityDetails = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
@@ -36,9 +36,9 @@ const ActivityDetails = ({navigation, route}) => {
   const AnimatedIconIonicons = Animated.createAnimatedComponent(IconIonicons);
   const AnimatedTouchableOpacity =
     Animated.createAnimatedComponent(TouchableOpacity);
-  const {translations, appLanguage} = useContext(LocalizationContext);
-  const {subscribeActivityLoading} = useSelector(state => state.activities);
-  const {user} = useSelector(state => state.user);
+  const { translations, appLanguage } = useContext(LocalizationContext);
+  const { subscribeActivityLoading } = useSelector(state => state.activities);
+  const { user } = useSelector(state => state.user);
   const [hideRateModal, setHideRateModal] = useState(false);
   const [activity, setActivity] = useState(route.params.activity);
   const [firstRating, setFirstRating] = useState(0);
@@ -155,12 +155,12 @@ const ActivityDetails = ({navigation, route}) => {
   };
 
   return (
-    <View flex style={{backgroundColor: colors.white}}>
+    <View flex style={{ backgroundColor: colors.white }}>
       <Modal isVisible={hideRateModal}>
-        <View style={{backgroundColor: 'white', padding: 16, borderRadius: 12}}>
+        <View style={{ backgroundColor: 'white', padding: 16, borderRadius: 12 }}>
           <TouchableOpacity
             onPress={() => setHideRateModal(false)}
-            style={{alignItems: 'flex-end'}}>
+            style={{ alignItems: 'flex-end' }}>
             <Icon name={'close'} size={24} color={'grey'} />
           </TouchableOpacity>
           <Text mBottom={24} medium size={18} center>
@@ -191,7 +191,7 @@ const ActivityDetails = ({navigation, route}) => {
           <Button
             text={'Завершить'}
             onPress={rateUser}
-            style={{marginTop: 24, height: 40}}
+            style={{ marginTop: 24, height: 40 }}
           />
         </View>
       </Modal>
@@ -211,7 +211,7 @@ const ActivityDetails = ({navigation, route}) => {
             <AnimatedIcon
               name="angle-left"
               size={30}
-              style={{color: headerButtonColor}}
+              style={{ color: headerButtonColor }}
             />
           </AnimatedTouchableOpacity>
           <Animated.Text
@@ -222,8 +222,8 @@ const ActivityDetails = ({navigation, route}) => {
             }}>
             {/* {activity.activityname.toLocaleLowerCase()} */}
           </Animated.Text>
-          <AnimatedTouchableOpacity
-            onPress={() => navigation.navigate(routeNames.settings, {activity})}
+          {/* <AnimatedTouchableOpacity
+            onPress={() => navigation.navigate(routeNames.settings, { activity })}
             style={{
               ...styles.secondHeaderBtn,
               backgroundColor: headerButtonBackgroundColor,
@@ -231,9 +231,9 @@ const ActivityDetails = ({navigation, route}) => {
             <AnimatedIconIonicons
               name={'ellipsis-vertical'}
               size={24}
-              style={{color: headerButtonColor}}
+              style={{ color: headerButtonColor }}
             />
-          </AnimatedTouchableOpacity>
+          </AnimatedTouchableOpacity> */}
         </View>
         <Animated.View
           style={{
@@ -249,41 +249,38 @@ const ActivityDetails = ({navigation, route}) => {
         onScroll={Animated.event(
           [
             {
-              nativeEvent: {contentOffset: {y: scrollY}},
+              nativeEvent: { contentOffset: { y: scrollY } },
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )}>
-        <Header navigation={navigation} activity={activity} />
-        <View style={{padding: 20}}>
-          <Text size={20} bold mBottom={8}>
+        <ActivityHeader navigation={navigation} activity={activity} translations={translations} />
+        <View style={{ padding: 20 }}>
+          <Text size={20} bold style={{ flex: 1 }}>
             {activity.title}
           </Text>
           {activity.description ? (
-            <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
+            <Text mTop={16} size={16} style={{ fontWeight: '500' }} color={'#afafaf'}>
               {activity.description}
             </Text>
           ) : null}
-          <Text size={16} mTop={4} medium>
-            {moment(activity.createdAt).startOf('hour').fromNow()}
-          </Text>
-          <View mTop={16} row>
+          {/* <View mTop={16} row>
             <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
               Хочу выполнить это с{' '}
             </Text>
             <Text size={16} medium>
               {returnPartner(activity?.partner).toUpperCase()}
             </Text>
-          </View>
+          </View> */}
           {activity.activities_categories.length ? (
-            <View row centered style={{flexWrap: 'wrap', marginTop: 8}}>
+            <View row centered style={{ flexWrap: 'wrap', marginTop: 8 }}>
               {activity.activities_categories.map((e, i) => (
                 <ItemCategory key={i} item={e} />
               ))}
             </View>
           ) : null}
-          <View mTop={16}>
-            <Text size={18} style={{fontWeight: '600'}} mBottom={8}>
+          <View mTop={24}>
+            <Text size={18} style={{ fontWeight: '600' }} mBottom={8}>
               {translations.followers}{' '}
               <Text size={16} color={colors.grey}>
                 ({activity.subscribers.length})
@@ -299,12 +296,12 @@ const ActivityDetails = ({navigation, route}) => {
                   myId={user.id}
                   authorActivity={activity.user.id}
                   key={index}
-                  containerStyle={{marginBottom: 8}}
+                  containerStyle={{ marginBottom: 8 }}
                 />
               ))
             ) : (
               <View>
-                <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
+                <Text size={16} style={{ fontWeight: '500' }} color={'#afafaf'}>
                   Пока что нету участников, стань первым
                 </Text>
               </View>
@@ -315,20 +312,20 @@ const ActivityDetails = ({navigation, route}) => {
               loading={subscribeActivityLoading}
               onPress={() =>
                 subscribeControl(
-                  {user_id: user.id, activity_id: activity.id},
+                  { user_id: user.id, activity_id: activity.id },
                   activity.subscribe,
                   activity,
                 )
               }
-              textStyle={{fontSize: 15}}
-              style={{height: 40, marginTop: 20}}
+              textStyle={{ fontSize: 15 }}
+              style={{ height: 40, marginTop: 20 }}
               subscribe={activity.subscribe}
               text={
                 user.id === activity.user.id
                   ? translations.edit
                   : activity.subscribe
-                  ? translations.following
-                  : translations.follow
+                    ? translations.following
+                    : translations.follow
               }
             />
           )}
@@ -338,13 +335,13 @@ const ActivityDetails = ({navigation, route}) => {
               <Button
                 onPress={() => setHideRateModal(true)}
                 text={'Завершить'}
-                style={{height: 40, marginTop: 16, backgroundColor: 'grey'}}
+                style={{ height: 40, marginTop: 16, backgroundColor: 'grey' }}
               />
             )}
-          <Text mTop={16} color={colors.grey} center>
+          {/* <Text mTop={16} color={colors.grey} center>
             Перед завершения действия вы cможете оценить взаимодествие с
             пользователем
-          </Text>
+          </Text> */}
         </View>
       </Animated.ScrollView>
     </View>

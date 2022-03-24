@@ -2,16 +2,14 @@ import React, {
   useEffect,
   useState,
   useRef,
-  useMemo,
   useCallback,
   useContext,
 } from 'react';
-import {StatusBar, TouchableOpacity, TextInput, Animated} from 'react-native';
-import {useSelector, useDispatch} from 'react-redux';
+import { StatusBar, TextInput, Animated, TouchableWithoutFeedback, LogBox } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
-
-import {activitiesActions} from 'store/activities';
+import { Shadow } from 'react-native-shadow-2';
+import { activitiesActions } from 'store/activities';
 import {
   View,
   Text,
@@ -19,53 +17,74 @@ import {
   CheckBox,
   ActivitiesCard,
 } from 'components';
-import {DefaultBackDrop} from 'components/BackDrop';
-import {DEVICE_HEIGHT} from 'constants';
-import {LocalizationContext} from 'services';
-import {colors} from 'colors';
+import { DefaultBackDrop } from 'components/BackDrop';
+import { DEVICE_HEIGHT } from 'constants';
+import { LocalizationContext } from 'services';
+import { colors } from 'colors';
 
 import styles from './styles';
+import { FiltersActivities, SearchActivities } from 'layouts';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Home = props => {
   const scrollYActivities = useRef(new Animated.Value(0)).current;
   const scrollYSubscriptions = useRef(new Animated.Value(0)).current;
-
-  const bottomSheetRef = useRef();
-
-  const {appLanguage, translations} = useContext(LocalizationContext);
-  const {user} = useSelector(state => state.user);
-
+  const { appLanguage, translations } = useContext(LocalizationContext);
+  const { user } = useSelector(state => state.user);
+  const [filters, setFilters] = useState({});
   const user_id = user.id;
   const [partner, setPartner] = useState(null);
   const [pageActivities, setPageActivities] = useState(0);
   const [pageSubscriptions, setPageSubscriptions] = useState(0);
-  const [tab, setTab] = useState(true);
+  const [tab, setTab] = useState('actual');
   const [search, setSearch] = useState('');
   const [hideSearch, setHideSearch] = useState(true);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [currentCategories, setCurrentCategories] = useState([]);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+
+  const headerBackgroundColor = scrollYActivities.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['white', '#dddcdc'],
+    extrapolate: 'clamp',
+  });
+
+
+  const tabs = [
+    { title: translations.actual, key: 'actual' },
+    { title: 'Друзі', key: 'friends' },
+    { title: translations.followings, key: 'followings' },
+  ];
 
   const {
     activities,
+    activities_categories,
     subscriptionActivities,
     activitiesLoading,
+    friendsActivities,
+    friendsActivitiesLoading,
     subscriptionActivitiesLoading,
     subscribeActivityLoading,
   } = useSelector(state => state.activities);
 
   const dispatch = useDispatch();
 
-  const snapPoints = useMemo(() => ['25%', '40%'], []);
+  let data = tab === 'actual' ? activities.activities : tab === 'followings' ? subscriptionActivities.activities : friendsActivities.activities;
+
+  useEffect(() => {
+    let data = {};
+
+    dispatch(activitiesActions.getActivitiesCategories(data));
+  }, [appLanguage]);
 
   const returnData = () => {
-    let data = {user_id};
+    let data = { user_id, ...filters };
 
-    if (search.length >= 3) {
+    if (search) {
       data.title = search;
     } else {
       data.title = '';
-    }
-
-    if (partner) {
-      data.partner = partner;
     }
 
     return data;
@@ -78,17 +97,29 @@ const Home = props => {
         {
           ...data,
           subscriptions: true,
+          friends: false
         },
         true,
       ),
     );
 
     dispatch(
-      activitiesActions.getActivities({...data, subscriptions: false}, true),
+      activitiesActions.getFriendsActivities(
+        {
+          ...data,
+          subscriptions: false,
+          friends: true
+        },
+        true,
+      ),
+    );
+
+    dispatch(
+      activitiesActions.getActivities({ ...data, subscriptions: false, friends: false }, true),
     );
 
     // setRefresh(false);
-  }, [search, appLanguage, partner]);
+  }, [search, appLanguage, partner, filters]);
 
   const handleRefreshListActivities = () => {
     setPageActivities(0);
@@ -96,6 +127,7 @@ const Home = props => {
       activitiesActions.getActivities(
         {
           ...returnData(),
+          friends: false,
           subscriptions: false,
         },
         true,
@@ -109,6 +141,7 @@ const Home = props => {
       activitiesActions.getSubscriptionsActivities(
         {
           ...returnData(),
+          friends: false,
           subscriptions: true,
         },
         true,
@@ -116,31 +149,20 @@ const Home = props => {
     );
   };
 
-  const returnTabBatton = (title, status) => {
-    return (
-      <TouchableOpacity
-        onPress={() => setTab(status)}
-        style={{
-          ...styles.tab,
-          backgroundColor: tab === status ? '#4285f4' : '#f4f4f4',
-        }}>
-        <Text
-          color={tab === status && 'white'}
-          style={{fontWeight: tab === status ? '600' : '400'}}>
-          {title}{' '}
-          {!status && (
-            <Text style={{fontWeight: '700'}}>
-              ({subscriptionActivities.totalItems})
-            </Text>
-          )}
-        </Text>
-      </TouchableOpacity>
+  const handleRefreshListActivitiesFriends = () => {
+    setPageSubscriptions(0);
+    dispatch(
+      activitiesActions.getFriendsActivities(
+        {
+          ...returnData(),
+          subscriptions: false,
+          friends: true,
+        },
+        true,
+      ),
     );
   };
 
-  const handleSheetChanges = useCallback(index => {
-    console.log('handleSheetChanges', index);
-  }, []);
 
   const returnPartnerCheckbox = (title, id) => {
     return (
@@ -166,21 +188,10 @@ const Home = props => {
     }
   };
 
-  const headerBackgroundColor = tab
-    ? scrollYActivities.interpolate({
-        inputRange: [0, 100],
-        outputRange: ['white', '#dddcdc'],
-        extrapolate: 'clamp',
-      })
-    : scrollYSubscriptions.interpolate({
-        inputRange: [0, 100],
-        outputRange: ['white', '#dddcdc'],
-        extrapolate: 'clamp',
-      });
-
   const renderItem = useCallback(
-    ({item}) => (
+    ({ item }) => (
       <ActivitiesCard
+        language={appLanguage === 'ua' ? 'uk' : appLanguage}
         subscribeControl={subscribeControl}
         navigation={props.navigation}
         item={item}
@@ -189,12 +200,13 @@ const Home = props => {
         translations={translations}
       />
     ),
-    [],
+    [appLanguage],
   );
 
   const keyExtractor = useCallback(item => item.id.toString(), []);
+  const itemSeperator = useCallback(() => <View style={{ height: 16 }} />, []);
 
-  const itemSeperator = useCallback(() => <View style={{height: 16}} />, []);
+  console.log(tab)
 
   const renderList = (data, handleRefreshList, loading, scrollY) => {
     return (
@@ -202,10 +214,10 @@ const Home = props => {
         onScroll={Animated.event(
           [
             {
-              nativeEvent: {contentOffset: {y: scrollY}},
+              nativeEvent: { contentOffset: { y: scrollY } },
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )}
         ListEmptyComponent={() => (
           <View
@@ -237,7 +249,7 @@ const Home = props => {
 
   const renderPager = useCallback(
     () =>
-      tab ? (
+      tab === 'actual' ? (
         <View key="0" flex>
           {renderList(
             activities.activities,
@@ -246,7 +258,7 @@ const Home = props => {
             scrollYActivities,
           )}
         </View>
-      ) : (
+      ) : tab === 'followings' ? (
         <View key="1" flex>
           {renderList(
             subscriptionActivities.activities,
@@ -255,20 +267,29 @@ const Home = props => {
             scrollYSubscriptions,
           )}
         </View>
+      ) : (
+        <View key="2" flex>
+          {renderList(
+            friendsActivities.activities,
+            handleRefreshListActivitiesFriends,
+            friendsActivitiesLoading,
+            scrollYSubscriptions,
+          )}
+        </View>
       ),
     [activities, subscriptionActivities, tab],
   );
 
   const loadMoreData = () => {
-    if (tab) {
+    if (tab === 'actual') {
       setPageActivities(pageActivities + 1);
       dispatch(
         activitiesActions.getActivities(
-          {...returnData(), page: pageActivities + 1, subscriptions: false},
+          { ...returnData(), page: pageActivities + 1, subscriptions: false },
           false,
         ),
       );
-    } else {
+    } else if (tab === 'followings') {
       setPageSubscriptions(pageSubscriptions + 1);
       dispatch(
         activitiesActions.getSubscriptionsActivities(
@@ -284,82 +305,96 @@ const Home = props => {
   };
 
   return (
-    <View flex style={{backgroundColor: 'white'}}>
-      <BottomSheetModal
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={snapPoints}
-        backdropComponent={DefaultBackDrop}
-        onChange={handleSheetChanges}>
-        <View
-          style={{
-            paddingHorizontal: 20,
-            borderBottomWidth: 1,
-            paddingBottom: 16,
-            borderColor: colors.lightGrey,
-          }}>
-          <Text size={20}>{translations.filters}</Text>
-        </View>
-        <BottomSheetScrollView
-          style={{paddingHorizontal: 20, paddingBottom: 20}}>
-          <View style={styles.block} mTop={16}>
-            <Text size={18} style={{fontWeight: '600'}} mBottom={6}>
-              {translations.who_would_you_like}
-            </Text>
-            {returnPartnerCheckbox(translations.a_man, 0)}
-            {returnPartnerCheckbox(translations.a_women, 1)}
-            {returnPartnerCheckbox(translations.by_the_company, 2)}
-            {returnPartnerCheckbox(translations.all_the_same, null)}
-          </View>
-        </BottomSheetScrollView>
-      </BottomSheetModal>
-      <StatusBar animated barStyle={'dark-content'} />
-      <CustomSafeAreaView>
-        <View
-          style={{paddingHorizontal: 20, paddingBottom: 8}}
-          row
-          centered
-          sBetween>
-          <Text size={24} style={{fontWeight: '700', color: '#386ec7'}}>
+      <View flex style={{ backgroundColor: 'white' }}>
+        <FiltersActivities
+          translations={translations}
+          appLanguage={appLanguage}
+          activitiesCategories={activities_categories}
+          setFilters={setFilters}
+          setFilterModalVisible={setFilterModalVisible}
+          filterModalVisible={filterModalVisible}
+        />
+        <SearchActivities
+          isVisible={!hideSearch}
+          setIsVisible={setHideSearch}
+          search={search}
+          data={data}
+          setSearch={setSearch}
+          translations={translations}
+        />
+        <StatusBar animated barStyle={'dark-content'} />
+        <CustomSafeAreaView>
+          <View
+            style={{ paddingHorizontal: 16, paddingBottom: 8, zIndex: 9 }}
+            row
+            centered
+            sBetween>
+            <View style={{ width: '100%' }}>
+              <View row sBetween centered>
+                <TouchableOpacity onPress={() => setOpenMenu(!openMenu)}>
+                  <View style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center' }}>
+                    <Text size={20} mRight={8} bold >{tabs.find(el => el.key === tab).title}</Text>
+                    <Icon name={openMenu ? 'chevron-up-outline' : 'chevron-down-outline'} size={18} color={'grey'} />
+                  </View>
+                </TouchableOpacity>
+                <View row centered>
+                  <TouchableOpacity
+                    style={{ marginRight: 16 }}
+                    onPress={() => setHideSearch(!hideSearch)}>
+                    {search.length ? <View style={{ ...styles.activeFilter, top: 7.8, left: 6.3 }} /> : null}
+                    <Icon
+                      name="search-outline"
+                      size={24}
+                      color={!hideSearch ? colors.mainBlue : 'grey'}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setFilterModalVisible(!filterModalVisible)}>
+                    <Icon name="options-outline" size={24} color="grey" />
+                    {Object.keys(filters).length != 0 && <View style={styles.activeFilter} />}
+                  </TouchableOpacity>
+                </View>
+              </View>
+              {openMenu &&
+                <View style={{ position: 'absolute', top: 30, zIndex: 9999}}>
+                  <Shadow viewStyle={{ backgroundColor: 'white', zIndex: 9999, borderRadius: 14 }} distance={18} startColor={'#00000012'} finalColor={'transparent'}>
+                    {tabs.map((el, index) => (
+                      <TouchableOpacity key={el.key} style={{ borderColor: colors.lightGrey, borderBottomWidth: index === tabs.length - 1 ? 0 : 1, height: 40, flexDirection: 'row', alignItems: 'center', paddingLeft: 8, paddingRight: 22 }} onPressIn={() => { console.log('rea'); setTab(el.key); setOpenMenu(!openMenu); }}>
+                        {tab === el.key && <Icon size={18} name={'checkmark-sharp'} />}
+                        <Text size={16} mLeft={tab === el.key ? 4 : 22}>{el.title}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </Shadow>
+                </View>
+              }
+            </View>
+            {/* <Text size={24} style={{ fontWeight: '700', color: '#386ec7' }}>
             Leafy
-          </Text>
-          <View row centered>
-            <TouchableOpacity
-              style={{marginRight: 16}}
-              onPress={() => setHideSearch(!hideSearch)}>
-              <Icon
-                name="search-outline"
-                size={24}
-                color={!hideSearch ? colors.mainBlue : 'grey'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => bottomSheetRef.current.present()}>
-              <Icon name="filter" size={24} color="grey" />
-              <View style={styles.activeFilter} />
-            </TouchableOpacity>
+          </Text> */}
           </View>
-        </View>
-        <View row centered style={styles.tabBar}>
+          {/* <View row centered style={styles.tabBar}>
           {returnTabBatton(translations.actual, true)}
           {returnTabBatton(translations.followings, false)}
-        </View>
-        {!hideSearch && (
-          <TextInput
-            onChangeText={setSearch}
-            placeholder={'Поиск'}
-            style={styles.headerInput}
+        </View> */}
+          {/* {
+            !hideSearch && (
+              <TextInput
+                onChangeText={setSearch}
+                placeholder={'Поиск'}
+                style={styles.headerInput}
+              />
+            )
+          } */}
+          <Animated.View
+            style={{
+              width: '100%',
+              height: 0.5,
+              zIndex: 0,
+              backgroundColor: headerBackgroundColor,
+            }}
           />
-        )}
-        <Animated.View
-          style={{
-            width: '100%',
-            height: 0.5,
-            backgroundColor: headerBackgroundColor,
-          }}
-        />
-      </CustomSafeAreaView>
-      {renderPager()}
-    </View>
+        </CustomSafeAreaView >
+        {renderPager()}
+      </View>
   );
 };
 

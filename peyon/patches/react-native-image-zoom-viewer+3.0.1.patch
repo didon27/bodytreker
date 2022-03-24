@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-image-zoom-viewer/src/image-viewer.component.tsx b/node_modules/react-native-image-zoom-viewer/src/image-viewer.component.tsx
+index 848eb7b..b60eb55 100644
+--- a/node_modules/react-native-image-zoom-viewer/src/image-viewer.component.tsx
++++ b/node_modules/react-native-image-zoom-viewer/src/image-viewer.component.tsx
+@@ -178,7 +178,7 @@ export default class ImageViewer extends React.Component<Props, State> {
+     let imageLoaded = false;
+ 
+     // Tagged success if url is started with file:, or not set yet(for custom source.uri).
+-    if (!image.url || image.url.startsWith(`file:`)) {
++    if (!image?.url || image.url.startsWith(`file:`)) {
+       imageLoaded = true;
+     }
+ 

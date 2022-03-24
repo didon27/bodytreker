@@ -6,20 +6,20 @@ import React, {
   useCallback,
   useContext,
 } from 'react';
-import {StatusBar, TouchableOpacity, TextInput, Animated} from 'react-native';
-import {useSelector, useDispatch} from 'react-redux';
+import { StatusBar, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
-import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
-import {View, Text, CustomSafeAreaView, CheckBox, UserBlock} from 'components';
-import {DefaultBackDrop} from 'components/BackDrop';
-import {DEVICE_HEIGHT} from 'constants';
-import {LocalizationContext} from 'services';
-import {colors} from 'colors';
-import {API_URL} from 'constants';
-import {userActions} from 'store/user';
-import {mamaAxios} from 'services/api';
+import { View, Text, CustomSafeAreaView, CheckBox, UserBlock } from 'components';
+import { DefaultBackDrop } from 'components/BackDrop';
+import { DEVICE_HEIGHT } from 'constants';
+import { LocalizationContext } from 'services';
+import { colors } from 'colors';
+import { API_URL } from 'constants';
+import { userActions } from 'store/user';
+import { mamaAxios } from 'services/api';
 
 import styles from './styles';
 
@@ -27,9 +27,9 @@ const FollowersAndFollowings = props => {
   const scrollYActivities = useRef(new Animated.Value(0)).current;
   const bottomSheetRef = useRef();
 
-  const {appLanguage, translations} = useContext(LocalizationContext);
+  const { appLanguage, translations } = useContext(LocalizationContext);
 
-  const {user_id, type, username} = props.route.params;
+  const { user_id, type, username } = props.route.params;
   const [partner, setPartner] = useState(null);
   const [pageActivities, setPageActivities] = useState(0);
   const [search, setSearch] = useState('');
@@ -45,7 +45,7 @@ const FollowersAndFollowings = props => {
   const snapPoints = useMemo(() => ['25%', '40%'], []);
 
   const returnData = () => {
-    let data = {user_id};
+    let data = { user_id };
 
     if (search.length >= 3) {
       data.username = search;
@@ -127,7 +127,7 @@ const FollowersAndFollowings = props => {
           () =>
             setUsers(prevState =>
               prevState.map(el =>
-                el.id === id ? {...el, subscribe: false} : el,
+                el.id === id ? { ...el, subscribe: false } : el,
               ),
             ),
         ),
@@ -142,7 +142,7 @@ const FollowersAndFollowings = props => {
           () =>
             setUsers(prevState =>
               prevState.map(el =>
-                el.id === id ? {...el, subscribe: true} : el,
+                el.id === id ? { ...el, subscribe: true } : el,
               ),
             ),
         ),
@@ -151,7 +151,7 @@ const FollowersAndFollowings = props => {
   };
 
   const renderItem = useCallback(
-    ({item, index}) => (
+    ({ item, index }) => (
       <UserBlock
         key={index}
         myId={myId}
@@ -167,7 +167,7 @@ const FollowersAndFollowings = props => {
 
   const keyExtractor = useCallback(item => item.id.toString(), []);
 
-  const itemSeperator = useCallback(() => <View style={{height: 16}} />, []);
+  const itemSeperator = useCallback(() => <View style={{ height: 16 }} />, []);
 
   const renderList = () => {
     return (
@@ -175,10 +175,10 @@ const FollowersAndFollowings = props => {
         onScroll={Animated.event(
           [
             {
-              nativeEvent: {contentOffset: {y: scrollYActivities}},
+              nativeEvent: { contentOffset: { y: scrollYActivities } },
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )}
         ListEmptyComponent={() => (
           <View
@@ -210,11 +210,11 @@ const FollowersAndFollowings = props => {
 
   const loadMoreData = () => {
     setPageActivities(pageActivities + 1);
-    fetchData({...returnData(), page: pageActivities + 1}, false);
+    fetchData({ ...returnData(), page: pageActivities + 1 }, false);
   };
 
   return (
-    <View flex style={{backgroundColor: 'white'}}>
+    <View flex style={{ backgroundColor: 'white' }}>
       <BottomSheetModal
         ref={bottomSheetRef}
         index={1}
@@ -223,7 +223,7 @@ const FollowersAndFollowings = props => {
         onChange={handleSheetChanges}>
         <View
           style={{
-            paddingHorizontal: 20,
+            paddingHorizontal: 16,
             borderBottomWidth: 1,
             paddingBottom: 16,
             borderColor: colors.lightGrey,
@@ -231,9 +231,9 @@ const FollowersAndFollowings = props => {
           <Text size={20}>{translations.filters}</Text>
         </View>
         <BottomSheetScrollView
-          style={{paddingHorizontal: 20, paddingBottom: 20}}>
+          style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
           <View style={styles.block} mTop={16}>
-            <Text size={18} style={{fontWeight: '600'}} mBottom={6}>
+            <Text size={18} style={{ fontWeight: '600' }} mBottom={6}>
               {translations.who_would_you_like}
             </Text>
             {returnPartnerCheckbox(translations.a_man, 0)}
@@ -246,7 +246,7 @@ const FollowersAndFollowings = props => {
       <StatusBar animated barStyle={'dark-content'} />
       <CustomSafeAreaView>
         <View
-          style={{paddingHorizontal: 20, paddingBottom: 8}}
+          style={{ paddingHorizontal: 16, paddingBottom: 8 }}
           row
           centered
           sBetween>
@@ -260,7 +260,6 @@ const FollowersAndFollowings = props => {
           </TouchableOpacity>
           <View row centered>
             <TouchableOpacity
-              style={{marginRight: 16}}
               onPress={() => setHideSearch(!hideSearch)}>
               <Icon
                 name="search-outline"
@@ -268,10 +267,10 @@ const FollowersAndFollowings = props => {
                 color={!hideSearch ? colors.mainBlue : 'grey'}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => bottomSheetRef.current.present()}>
+            {/* <TouchableOpacity onPress={() => bottomSheetRef.current.present()}>
               <Icon name="filter" size={24} color="grey" />
               <View style={styles.activeFilter} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
         {!hideSearch && (

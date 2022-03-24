@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "141809334192",
+    "project_id": "peyon-18dc6",
+    "storage_bucket": "peyon-18dc6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141809334192:android:af6f306f036b20ad148875",
+        "android_client_info": {
+          "package_name": "com.peyon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "141809334192-bgssnd8etkf5nv9u1otuautcdt01rfq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDV3--eESk_FWt62JBDQiZWxJrbrNJa1-U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "141809334192-bgssnd8etkf5nv9u1otuautcdt01rfq6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

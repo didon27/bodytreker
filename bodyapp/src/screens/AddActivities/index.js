@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo, useEffect, useContext} from 'react';
+import React, { useState, useRef, useMemo, useEffect, useContext } from 'react';
 import {
   TouchableOpacity,
   TextInput,
@@ -7,10 +7,11 @@ import {
   Platform,
   Alert,
   ImageBackground,
+  LogBox,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import {useSelector, useDispatch} from 'react-redux';
-import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import { useSelector, useDispatch } from 'react-redux';
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   request,
@@ -22,8 +23,8 @@ import {
 } from 'react-native-permissions';
 
 import axios from 'axios';
-import {API_URL} from 'constants';
-import {colors} from 'colors';
+import { API_URL } from 'constants';
+import { colors } from 'colors';
 import {
   View,
   Text,
@@ -31,30 +32,36 @@ import {
   CheckBox,
   CustomSafeAreaView,
   ItemCategory,
+  DropDownInput,
 } from 'components';
-import {activitiesActions} from 'store/activities';
-import {routeNames} from 'enums';
-import {DefaultBackDrop} from 'components/BackDrop';
-import {LocalizationContext} from 'services';
+import { activitiesActions } from 'store/activities';
+import { routeNames } from 'enums';
+import { DefaultBackDrop } from 'components/BackDrop';
+import { LocalizationContext } from 'services';
 
 import styles from './styles';
 
 const AddActivities = props => {
-  const {appLanguage, translations} = useContext(LocalizationContext);
-  const {createNewActivitiesError} = useSelector(state => state.activities);
-  const {user} = useSelector(state => state.user);
+  const { appLanguage, translations } = useContext(LocalizationContext);
+  const { createNewActivitiesError } = useSelector(state => state.activities);
+  const { user } = useSelector(state => state.user);
   const scrollY = useRef(new Animated.Value(0)).current;
-  const {activities_categories, loading} = useSelector(
+  const { activities_categories, loading } = useSelector(
     state => state.activities,
   );
   const [currentPhoto, setCurrentPhoto] = useState([]);
-  const {token} = useSelector(state => state.auth);
+  const { token } = useSelector(state => state.auth);
   const [currentCategories, setCurrentCategories] = useState([]);
   const [title, setTitle] = useState('');
   const [categoryTitle, setCategoryTitle] = useState('');
   const [partner, setPartner] = useState(null);
   const dispatch = useDispatch();
   const bottomSheetRef = useRef();
+
+  const [searchPlace, setSearchPlace] = useState('');
+  const [places, setPlaces] = useState([]);
+  const [currentPlace, setCurrentPlace] = useState(null);
+
 
   useEffect(() => {
     let data = {};
@@ -71,6 +78,18 @@ const AddActivities = props => {
       dispatch(activitiesActions.createNewActivitiesError(null));
     }
   }, [title, description]);
+
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+    if (searchPlace) {
+      axios({
+        method: 'get',
+        url: `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${translations.ukraine}+${searchPlace}&type=locality&key=AIzaSyAW0VemH8pVqgy-pql8uz20SyJP5Ul0Qpc`,
+        headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
+      })
+        .then((response) => { setPlaces(response.data.results) })
+    }
+  }, [appLanguage, searchPlace])
 
   // variables
   const snapPoints = useMemo(() => ['25%', '70%'], []);
@@ -121,9 +140,16 @@ const AddActivities = props => {
       currentCategories.map(id => data.append('categories_ids', id));
     }
 
+    let { lat, lng } = currentPlace.geometry.location;
+
     data.append('title', title);
     data.append('description', description);
     data.append('user_id', user.id);
+
+    if (lat && lng) {
+      data.append('lat', lat);
+      data.append('lng', lng);
+    }
 
     axios({
       method: 'post',
@@ -228,21 +254,21 @@ const AddActivities = props => {
   });
 
   return (
-    <View style={{backgroundColor: 'white', flex: 1}}>
+    <View style={{ backgroundColor: 'white', flex: 1 }}>
       <CustomSafeAreaView>
         <View
-          style={{paddingHorizontal: 20, paddingBottom: 20}}
+          style={{ paddingHorizontal: 16, paddingBottom: 20 }}
           row
           centered
           sBetween>
-          <Text size={20} style={{fontWeight: '600'}}>
+          <Text size={20} style={{ fontWeight: '600' }}>
             {translations.newActivities}
           </Text>
           <Button
             onPress={createNewActivities}
             text={translations.publish}
             loading={loading}
-            textStyle={{fontSize: 14}}
+            textStyle={{ fontSize: 14 }}
             style={styles.publishBtn}
           />
         </View>
@@ -265,20 +291,20 @@ const AddActivities = props => {
         onScroll={Animated.event(
           [
             {
-              nativeEvent: {contentOffset: {y: scrollY}},
+              nativeEvent: { contentOffset: { y: scrollY } },
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )}>
         <ScrollView
           horizontal
-          contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 20}}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
           showsHorizontalScrollIndicator={false}>
           {currentPhoto.map((item, index) => (
             <ImageBackground
               key={index}
-              source={{uri: item.path}}
-              imageStyle={{borderRadius: 14}}
+              source={{ uri: item.path }}
+              imageStyle={{ borderRadius: 14 }}
               style={styles.image}>
               <TouchableOpacity
                 onPress={() =>
@@ -303,15 +329,15 @@ const AddActivities = props => {
             </TouchableOpacity>
           )}
         </ScrollView>
-        <View style={{paddingHorizontal: 20}}>
-          <View style={styles.block}>
+        <View style={{ paddingHorizontal: 16, zIndex: 9999 }}>
+          <View style={{ ...styles.block, zIndex: 9999 }}>
             <View row sBetween centered>
-              <Text size={18} style={{fontWeight: '600'}}>
+              <Text size={18} style={{ fontWeight: '600' }}>
                 {translations.title}
               </Text>
               <Text>
                 {title.length}
-                <Text style={{color: 'grey'}}>/250</Text>
+                <Text style={{ color: 'grey' }}>/250</Text>
               </Text>
             </View>
             <TextInput
@@ -332,12 +358,12 @@ const AddActivities = props => {
               </Text>
             )} */}
             <View row sBetween centered mTop={16}>
-              <Text size={18} style={{fontWeight: '600'}}>
+              <Text size={18} style={{ fontWeight: '600' }}>
                 {translations.description}
               </Text>
               <Text>
                 {description.length}
-                <Text style={{color: 'grey'}}>/250</Text>
+                <Text style={{ color: 'grey' }}>/250</Text>
               </Text>
             </View>
             <TextInput
@@ -353,6 +379,18 @@ const AddActivities = props => {
                   : colors.white,
               }}
             />
+            <View mTop={16} style={{ zIndex: 9999 }}>
+              <Text size={16} medium>
+                Місто / селеще
+              </Text>
+              <DropDownInput
+                onPress={(item) => { setCurrentPlace(item); setSearchPlace(item.name) }}
+                search={searchPlace}
+                placeholder={'City'}
+                setSearch={setSearchPlace}
+                data={places}
+              />
+            </View>
             {/* {createNewActivitiesError?.description && (
               <Text color={colors.errorColor} style={{marginBottom: -18}}>
                 {createNewActivitiesError.description}
@@ -361,18 +399,18 @@ const AddActivities = props => {
           </View>
           <View style={styles.block} mTop={16}>
             <View row centered sBetween>
-              <Text size={18} style={{fontWeight: '600'}}>
+              <Text size={18} style={{ fontWeight: '600' }}>
                 {translations.categories}
               </Text>
               <TouchableOpacity
                 onPress={() => bottomSheetRef.current.present()}>
-                <Text color={colors.mainBlue} style={{fontWeight: '600'}}>
+                <Text color={colors.mainBlue} style={{ fontWeight: '600' }}>
                   {translations.add}
                 </Text>
               </TouchableOpacity>
             </View>
             <View
-              style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 8}}>
+              style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
               {currentCategories.length ? (
                 currentCategories.map((el, index) => {
                   let item = activities_categories[el - 1];
@@ -393,7 +431,7 @@ const AddActivities = props => {
               )}
             </View>
           </View>
-          <View style={styles.block} mTop={16}>
+          {/* <View style={styles.block} mTop={16}>
             <Text size={18} style={{fontWeight: '600'}} mBottom={6}>
               {translations.who_would_you_like}
             </Text>
@@ -401,7 +439,7 @@ const AddActivities = props => {
             {returnPartnerCheckbox(translations.a_women, 1)}
             {returnPartnerCheckbox(translations.by_the_company, 2)}
             {returnPartnerCheckbox(translations.all_the_same, null)}
-          </View>
+          </View> */}
         </View>
       </Animated.ScrollView>
       <BottomSheetModal
@@ -419,7 +457,7 @@ const AddActivities = props => {
           />
         </View>
         <BottomSheetScrollView
-          style={{paddingHorizontal: 20, paddingBottom: 20}}>
+          style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
           {activities_categories.map((item, index) => {
             let selected = currentCategories.includes(item.id);
             return (
@@ -455,7 +493,7 @@ const AddActivities = props => {
                       name="close"
                       size={17}
                       color={colors.blackLabel}
-                      style={{position: 'absolute', right: -20}}
+                      style={{ position: 'absolute', right: -20 }}
                     />
                   )}
                 </View>

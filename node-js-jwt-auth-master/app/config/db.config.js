@@ -1,7 +1,7 @@
 module.exports = {
   HOST: "127.0.0.1",
   USER: "root",
-  PASSWORD: "password",
+  PASSWORD: "root",
   DB: "bodytreker",
   port: 8889,
   dialect: "mysql",

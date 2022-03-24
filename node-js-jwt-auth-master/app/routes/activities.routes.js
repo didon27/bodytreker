@@ -45,7 +45,33 @@ module.exports = function (app) {
 
   app.post(
     "/api/activities/create-new-activities",
+    [authJwt.verifyToken],
     controller.createNewActivities
+  );
+
+  app.post(
+    "/api/activities/activity-update",
+    [authJwt.verifyToken],
+    controller.activityUpdate
+  );
+
+  app.post(
+    "/api/activities/delete-activity",
+    [authJwt.verifyToken],
+    controller.deleteActivity
+  );
+
+  app.post(
+    "/api/activities/delete-image-activity",
+    [authJwt.verifyToken],
+    controller.deleteImageActivity
+  );
+
+
+  app.post(
+    "/api/activities/search-activities",
+    [authJwt.verifyToken],
+    controller.searchActivities
   );
 
   app.post(

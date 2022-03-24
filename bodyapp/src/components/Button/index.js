@@ -1,11 +1,12 @@
 import React from 'react';
-import {TouchableOpacity, ActivityIndicator} from 'react-native';
+import { ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
 
 import Text from '../Text';
 import {colors} from 'colors';
 
 import {styles} from './styles';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Button = (props) => {
   return (

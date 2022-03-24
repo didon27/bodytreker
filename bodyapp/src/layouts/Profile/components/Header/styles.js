@@ -6,7 +6,7 @@ export default StyleSheet.create({
     backgroundColor: 'white',
     width: '100%',
     marginTop: -40,
-    paddingTop: 20,
+    paddingTop: 16,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },

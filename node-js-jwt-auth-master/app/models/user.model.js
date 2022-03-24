@@ -39,6 +39,12 @@ module.exports = (sequelize, Sequelize) => {
     rating: {
       type: Sequelize.FLOAT,
     },
+    rating: {
+      type: Sequelize.FLOAT,
+    },
+    verified_account: {
+      type: Sequelize.BOOLEAN,
+    },
   });
 
   return User;

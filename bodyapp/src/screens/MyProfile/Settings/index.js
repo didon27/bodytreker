@@ -101,7 +101,7 @@ const Settings = props => {
         <LanguageItem title={'English'} language={'en'} />
         <LanguageItem title={'Русский'} language={'ru'} />
       </BottomSheetModal>
-      <CustomSafeAreaView style={{paddingHorizontal: 20}}>
+      <CustomSafeAreaView style={{paddingHorizontal: 16}}>
         <View style={{zIndex: 9999}}>
           <TouchableOpacity
             style={styles.goBack}

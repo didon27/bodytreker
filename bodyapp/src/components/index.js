@@ -13,3 +13,7 @@ export {default as Avatar} from './Avatar';
 export {default as ActivitiesCard} from './ActivitiesCard';
 export {default as UserBlock} from './UserBlock';
 export {default as SubscribeButton} from './SubscribeButton';
+export {default as DropDownInput} from './DropDownInput';
+export {default as SearchInput} from './SearchInput';
+export {default as FixedTouchableHighlight} from './FixedTouchableHighlight';
+export {default as ActivityHeader} from './ActivityHeader';

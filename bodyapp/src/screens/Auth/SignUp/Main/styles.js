@@ -16,7 +16,7 @@ export default StyleSheet.create({
     zIndex: 3,
     width: '100%',
     height: '100%',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     justifyContent: 'center',
   },
   centerBlock: {

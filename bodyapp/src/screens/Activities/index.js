@@ -6,11 +6,11 @@ import React, {
   useCallback,
   useContext,
 } from 'react';
-import {StatusBar, TouchableOpacity, TextInput, Animated} from 'react-native';
-import {useSelector, useDispatch} from 'react-redux';
+import { StatusBar, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
-import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 import {
   View,
@@ -19,27 +19,29 @@ import {
   CheckBox,
   ActivitiesCard,
 } from 'components';
-import {DefaultBackDrop} from 'components/BackDrop';
-import {DEVICE_HEIGHT} from 'constants';
-import {LocalizationContext} from 'services';
-import {colors} from 'colors';
-import {API_URL} from 'constants';
-import {mamaAxios} from 'services/api';
+import { DefaultBackDrop } from 'components/BackDrop';
+import { DEVICE_HEIGHT } from 'constants';
+import { LocalizationContext } from 'services';
+import { colors } from 'colors';
+import { API_URL } from 'constants';
+import { mamaAxios } from 'services/api';
 
 import styles from './styles';
+import { FiltersActivities, SearchActivities } from 'layouts';
 
 const Activities = props => {
   const scrollYActivities = useRef(new Animated.Value(0)).current;
   const bottomSheetRef = useRef();
 
-  const {appLanguage, translations} = useContext(LocalizationContext);
-
-  const {user_id, username} = props.route.params;
+  const { appLanguage, translations } = useContext(LocalizationContext);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [filters, setFilters] = useState({});
+  const { user_id, username } = props.route.params;
   const [partner, setPartner] = useState(null);
   const [pageActivities, setPageActivities] = useState(0);
   const [search, setSearch] = useState('');
   const [hideSearch, setHideSearch] = useState(true);
-  const {user} = useSelector(state => state.user);
+  const { user } = useSelector(state => state.user);
 
   const [loading, setLoading] = useState(false);
   const [subscribeLoading, setSubscribeLoading] = useState(false);
@@ -48,9 +50,9 @@ const Activities = props => {
   const snapPoints = useMemo(() => ['25%', '40%'], []);
 
   const returnData = () => {
-    let data = {user_id};
+    let data = { user_id, ...filters };
 
-    if (search.length >= 3) {
+    if (search.length) {
       data.title = search;
     } else {
       data.title = '';
@@ -89,7 +91,7 @@ const Activities = props => {
 
   useEffect(() => {
     fetchData(returnData(), true);
-  }, [search, appLanguage, partner, user_id]);
+  }, [search, appLanguage, filters, user_id]);
 
   const handleRefreshListActivities = () => {
     setPageActivities(0);
@@ -127,15 +129,14 @@ const Activities = props => {
 
     mamaAxios
       .post(
-        `${API_URL}/activities/${
-          !subscribe ? 'subscribe' : 'unsubscribe'
+        `${API_URL}/activities/${!subscribe ? 'subscribe' : 'unsubscribe'
         }-activity`,
         data,
       )
       .then(() => {
         setActivities(prevState =>
           prevState.map(el =>
-            el.id === data.activity_id ? {...el, subscribe: !el.subscribe} : el,
+            el.id === data.activity_id ? { ...el, subscribe: !el.subscribe } : el,
           ),
         );
         setSubscribeLoading(false);
@@ -147,8 +148,9 @@ const Activities = props => {
   };
 
   const renderItem = useCallback(
-    ({item, index}) => (
+    ({ item, index }) => (
       <ActivitiesCard
+        language={appLanguage === 'ua' ? 'uk' : appLanguage}
         navigation={props.navigation}
         item={item}
         key={index}
@@ -158,12 +160,12 @@ const Activities = props => {
         translations={translations}
       />
     ),
-    [subscribeLoading],
+    [subscribeLoading, appLanguage],
   );
 
   const keyExtractor = useCallback(item => item.id.toString(), []);
 
-  const itemSeperator = useCallback(() => <View style={{height: 16}} />, []);
+  const itemSeperator = useCallback(() => <View style={{ height: 16 }} />, []);
 
   const renderList = () => {
     return (
@@ -171,10 +173,10 @@ const Activities = props => {
         onScroll={Animated.event(
           [
             {
-              nativeEvent: {contentOffset: {y: scrollYActivities}},
+              nativeEvent: { contentOffset: { y: scrollYActivities } },
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )}
         ListEmptyComponent={() => (
           <View
@@ -206,43 +208,30 @@ const Activities = props => {
 
   const loadMoreData = () => {
     setPageActivities(pageActivities + 1);
-    fetchData({...returnData(), page: pageActivities + 1}, false);
+    fetchData({ ...returnData(), page: pageActivities + 1 }, false);
   };
 
   return (
-    <View flex style={{backgroundColor: 'white'}}>
-      <BottomSheetModal
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={snapPoints}
-        backdropComponent={DefaultBackDrop}
-        onChange={handleSheetChanges}>
-        <View
-          style={{
-            paddingHorizontal: 20,
-            borderBottomWidth: 1,
-            paddingBottom: 16,
-            borderColor: colors.lightGrey,
-          }}>
-          <Text size={20}>{translations.filters}</Text>
-        </View>
-        <BottomSheetScrollView
-          style={{paddingHorizontal: 20, paddingBottom: 20}}>
-          <View style={styles.block} mTop={16}>
-            <Text size={18} style={{fontWeight: '600'}} mBottom={6}>
-              {translations.who_would_you_like}
-            </Text>
-            {returnPartnerCheckbox(translations.a_man, 0)}
-            {returnPartnerCheckbox(translations.a_women, 1)}
-            {returnPartnerCheckbox(translations.by_the_company, 2)}
-            {returnPartnerCheckbox(translations.all_the_same, null)}
-          </View>
-        </BottomSheetScrollView>
-      </BottomSheetModal>
+    <View flex style={{ backgroundColor: 'white' }}>
+      <FiltersActivities
+        translations={translations}
+        appLanguage={appLanguage}
+        setFilters={setFilters}
+        setFilterModalVisible={setFilterModalVisible}
+        filterModalVisible={filterModalVisible}
+      />
+      <SearchActivities
+        isVisible={!hideSearch}
+        setIsVisible={setHideSearch}
+        search={search}
+        data={activities}
+        setSearch={setSearch}
+        translations={translations}
+      />
       <StatusBar animated barStyle={'dark-content'} />
       <CustomSafeAreaView>
         <View
-          style={{paddingHorizontal: 20, paddingBottom: 8}}
+          style={{ paddingHorizontal: 16, paddingBottom: 8 }}
           row
           centered
           sBetween>
@@ -256,7 +245,7 @@ const Activities = props => {
           </TouchableOpacity>
           <View row centered>
             <TouchableOpacity
-              style={{marginRight: 16}}
+              style={{ marginRight: 16 }}
               onPress={() => setHideSearch(!hideSearch)}>
               <Icon
                 name="search-outline"
@@ -264,19 +253,12 @@ const Activities = props => {
                 color={!hideSearch ? colors.mainBlue : 'grey'}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => bottomSheetRef.current.present()}>
-              <Icon name="filter" size={24} color="grey" />
-              <View style={styles.activeFilter} />
+            <TouchableOpacity onPress={() => setFilterModalVisible(!filterModalVisible)}>
+              <Icon name="options-outline" size={24} color="grey" />
+              {Object.keys(filters).length != 0 && <View style={styles.activeFilter} />}
             </TouchableOpacity>
           </View>
         </View>
-        {!hideSearch && (
-          <TextInput
-            onChangeText={setSearch}
-            placeholder={'Поиск'}
-            style={styles.headerInput}
-          />
-        )}
         <Animated.View
           style={{
             width: '100%',
