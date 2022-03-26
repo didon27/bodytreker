@@ -51,7 +51,7 @@ const ActivityDetails = ({ navigation, route }) => {
         activity_id: route.params.activity.id,
       })
       .then(response => {
-        route.params?.updateList();
+        route.params?.updateList && route.params?.updateList();
         setActivity(response.data);
       })
       .catch(err => {
@@ -303,7 +303,7 @@ const ActivityDetails = ({ navigation, route }) => {
             ) : (
               <View>
                 <Text size={16} style={{ fontWeight: '500' }} color={'#afafaf'}>
-                 {translations.noMembers}
+                  {translations.noMembers}
                 </Text>
               </View>
             )}

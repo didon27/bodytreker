@@ -17,6 +17,7 @@ import {
   Platform,
   Alert,
   Animated,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useSelector, useDispatch} from 'react-redux';
@@ -199,6 +200,7 @@ const EditProfile = props => {
   });
 
   return (
+    <KeyboardAvoidingView behavior={'height'} style={{flex: 1}}>
     <Fragment>
       <CustomSafeAreaView style={{backgroundColor: colors.white}}>
         <View
@@ -350,6 +352,7 @@ const EditProfile = props => {
         </View>
       </Animated.ScrollView>
     </Fragment>
+    </KeyboardAvoidingView>
   );
 };
 
