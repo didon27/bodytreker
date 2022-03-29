@@ -1,6 +1,6 @@
-import {DEVICE_WIDTH} from 'constants';
-import {Dimensions, StyleSheet} from 'react-native';
-import {colors} from 'colors';
+import { DEVICE_WIDTH } from 'constants';
+import { Dimensions, StyleSheet } from 'react-native';
+import { colors } from 'colors';
 
 export default StyleSheet.create({
   input: {
@@ -24,4 +24,6 @@ export default StyleSheet.create({
     borderRadius: 20,
     zIndex: 9999,
   },
+  inputContainer: { borderColor: colors.errorColor, backgroundColor: '#f4f4f4', height: 40, borderRadius: 10, paddingHorizontal: 16, },
+  inputDescriptionContainer: { backgroundColor: '#f4f4f4', paddingTop: 8, paddingBottom: 16, borderRadius: 10, paddingHorizontal: 16, },
 });

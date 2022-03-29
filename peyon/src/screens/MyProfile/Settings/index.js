@@ -27,6 +27,7 @@ const Settings = props => {
 
   const logout = async () => {
     await storage.delete(keys.JWT_TOKEN);
+
     dispatch(authActions.removeTokenSuccess());
   };
 

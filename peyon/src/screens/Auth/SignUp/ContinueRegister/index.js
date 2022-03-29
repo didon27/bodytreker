@@ -10,6 +10,8 @@ import Header from '../../components/Header';
 import { colors } from 'colors';
 
 import styles from './styles';
+import { storage } from 'services/storage';
+import { routeNames } from 'enums';
 
 const ContinueRegister = props => {
   const { translations } = useContext(LocalizationContext);
@@ -29,7 +31,7 @@ const ContinueRegister = props => {
     }
   }, [password, confirmPassword, username]);
 
-  const signUp = () => {
+  const signUp = async () => {
     if (username.length < 6) {
       dispatch(
         authActions.setErrorContinueRegister({ username: 'Min length 6' }),
@@ -61,15 +63,26 @@ const ContinueRegister = props => {
       return;
     }
 
-    dispatch(
-      authActions.continueRegisterRequest({
-        email,
-        username,
-        password,
-        first_name,
-        last_name,
-      }),
-    );
+    let fcm_token = await storage.get('fcmToken');
+
+    props.navigation.navigate(routeNames.socialNetwork, {
+      email,
+      username,
+      password,
+      first_name,
+      last_name,
+      fcm_token
+    })
+    // dispatch(
+    //   authActions.continueRegisterRequest({
+    //     email,
+    //     username,
+    //     password,
+    //     first_name,
+    //     last_name,
+    //     fcm_token
+    //   }),
+    // );
   };
 
   return (

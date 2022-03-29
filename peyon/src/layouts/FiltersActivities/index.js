@@ -118,6 +118,7 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
         setCurrentPlace(null);
         setDistance([radius]);
         setCurrentCategory(null);
+        setFilters({});
         setPlaces([]);
         setSearchPlace('');
     }

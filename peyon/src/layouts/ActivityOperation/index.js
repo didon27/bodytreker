@@ -265,8 +265,6 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
                     multiple: true,
                 });
 
-                console.log(result)
-
                 changeField('activities_images', [...activity.activities_images, ...result.map((image, index) => ({ url: Platform.OS === 'ios' ? image.sourceURL : image.path, edit: true, id: `${moment()}${index}` }))])
                 break;
             }
@@ -334,7 +332,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         <KeyboardAvoidingView behavior={'height'} style={{flex: 1}} >
             <ScrollView bounces={false}  style={{ backgroundColor: colors.white }}>
                 <Modal isVisible={updateModalVisible}>
-                    <View style={{ backgroundColor: colors.white, padding: 16, borderRadius: 14, alignItems: 'center' }}>
+                    <View style={{ backgroundColor: colors.white, padding: 16, borderRadius: 10, alignItems: 'center' }}>
                         <IconIonicons size={80} color={colors.mainBlue} name="checkmark-circle-outline" />
                         <Text size={18} mTop={8} medium>{popUpText}</Text>
                         <Button style={{ height: 36 }} text={'OK'} onPress={() => setUpdateModalVisible(false)} />
@@ -415,7 +413,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
                     <ActivityHeader showUser={showUser} changeData={(data) => changeField('activities_images', data)} navigation={navigation} activity={activity} userId={user.id} translations={translations} />
                     <View style={{ padding: 20 }}>
                         <Text size={16} mBottom={8} color={'grey'}>{translations.title}</Text>
-                        <View row flex centered style={[{ backgroundColor: '#f4f4f4', height: 40, borderRadius: 14, paddingHorizontal: 16, }, errors.title ? { borderWidth: 1, borderColor: colors.errorColor } : { borderWidth: 0 }]}>
+                        <View row flex centered style={[{ backgroundColor: '#f4f4f4', height: 40, borderRadius: 10, paddingHorizontal: 16, }, errors.title ? { borderWidth: 1, borderColor: colors.errorColor } : { borderWidth: 0 }]}>
                             {/* <Image source={{ uri: activity.activities_images[0]?.url }} style={{ height: 100, width: 100 }} /> */}
                             <TextInput
                                 value={activity?.title}
@@ -427,7 +425,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
                         </View>
                         {errors.title && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimum_six_characters}</Text>}
                         <Text mTop={16} size={16} mBottom={8} color={'grey'}>{translations.description}</Text>
-                        <View row flex centered style={[{ backgroundColor: '#f4f4f4', paddingTop: 8, paddingBottom: 16, borderRadius: 14, paddingHorizontal: 16, }, errors.description ? { borderWidth: 1, borderColor: colors.errorColor } : { borderWidth: 0 }]}>
+                        <View row flex centered style={[{ backgroundColor: '#f4f4f4', paddingTop: 8, paddingBottom: 16, borderRadius: 10, paddingHorizontal: 16, }, errors.description ? { borderWidth: 1, borderColor: colors.errorColor } : { borderWidth: 0 }]}>
                             <TextInput
                                 maxLength={500}
                                 multiline
@@ -439,7 +437,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
                         </View>
                         {errors.description && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimum_six_characters}</Text>}
                         <Text mTop={16} size={16} color={'grey'}>{translations.location}</Text>
-                        <TouchableOpacity onPress={() => setLocationHideModal(true)} style={[{ marginTop: 8, marginBottom: 16, borderWidth: 1, borderColor: colors.lightGrey, borderRadius: 14, height: 40, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 16 }, errors.location && { borderWidth: 1, borderColor: colors.errorColor }]}>
+                        <TouchableOpacity onPress={() => setLocationHideModal(true)} style={[{ marginTop: 8, marginBottom: 16, borderWidth: 1, borderColor: colors.lightGrey, borderRadius: 10, height: 40, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 16 }, errors.location && { borderWidth: 1, borderColor: colors.errorColor }]}>
                             <Text style={{ flex: 1 }} color={currentPlace?.place ? 'black' : 'grey'} numberOfLines={1}>{currentPlace?.place ? currentPlace?.place : translations.location}</Text>
                             <IconIonicons name="location-outline" size={20} color={'grey'} />
                         </TouchableOpacity>

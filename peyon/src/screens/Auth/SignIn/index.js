@@ -1,29 +1,30 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   TouchableOpacity,
   Image,
   KeyboardAvoidingView,
   StatusBar,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {Button, Text, View, TextInput} from 'components';
-import {images} from 'images';
-import {authActions} from 'store/auth';
+import { Button, Text, View, TextInput } from 'components';
+import { images } from 'images';
+import { authActions } from 'store/auth';
 import Header from '../components/Header';
-import {colors} from 'colors';
-import {LocalizationContext} from 'services';
-import {routeNames} from 'enums';
+import { colors } from 'colors';
+import { LocalizationContext } from 'services';
+import { routeNames } from 'enums';
 
 import styles from './styles';
+import { storage } from 'services/storage';
 
-const SignIn = ({navigation}) => {
-  const {translations} = useContext(LocalizationContext);
+const SignIn = ({ navigation }) => {
+  const { translations } = useContext(LocalizationContext);
   const [emailOrLogin, setEmailOrLogin] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
-  const {loading, errorLogin} = useSelector(state => state.auth);
+  const { loading, errorLogin } = useSelector(state => state.auth);
 
   useEffect(() => {
     if (errorLogin) {
@@ -31,10 +32,10 @@ const SignIn = ({navigation}) => {
     }
   }, [password, emailOrLogin]);
 
-  const signIn = () => {
+  const signIn = async () => {
     if (emailOrLogin.length < 6) {
       dispatch(
-        authActions.setErrorLogin({email: translations.minimum_six_characters}),
+        authActions.setErrorLogin({ email: translations.minimum_six_characters }),
       );
       return;
     }
@@ -48,14 +49,16 @@ const SignIn = ({navigation}) => {
       return;
     }
 
-    let data;
+    let data = {};
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     if (reg.test(emailOrLogin)) {
-      data = {email: emailOrLogin.toLowerCase().trim(), password};
+      data = { email: emailOrLogin.toLowerCase().trim(), password };
     } else {
-      data = {password, username: emailOrLogin};
+      data = { password, username: emailOrLogin };
     }
+    data.fcm_token = await storage.get('fcmToken');
+
 
     dispatch(authActions.login(data));
   };
@@ -93,10 +96,10 @@ const SignIn = ({navigation}) => {
             text={translations.singIn}
             onPress={signIn}
             loading={loading}
-            style={{marginTop: 24}}
+            style={{ marginTop: 24 }}
           />
           <TouchableOpacity
-            style={{marginTop: 16}}
+            style={{ marginTop: 16 }}
             onPress={() => navigation.navigate(routeNames.forgotPassword)}>
             <Text size={14} color={colors.white} right>
               {translations.forgotPassword}

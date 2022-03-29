@@ -9,6 +9,7 @@ export const routeNames = Object.freeze({
   verificationPasswordCode: 'VerificationPasswordCode',
   passwordRecovery: 'PasswordRecovery',
   settings: 'Settings',
+  socialNetwork: 'SocialNetwork',
   activityDetails: 'ActivityDetails',
   myProfile: 'MyProfile',
   editProfile: 'EditProfile',

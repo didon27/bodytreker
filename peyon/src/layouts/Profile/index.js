@@ -155,10 +155,36 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
           user={user}
         />
         <View style={{ padding: 20 }}>
+          <Text size={18} medium>
+            {translations.socialNetwork}
+          </Text>
+          {user.telegram ?
+            (<View row centered mTop={8}>
+              <Icon name="telegram" size={24} color={colors.mainBlue} />
+              <Text
+                size={16}
+                mLeft={8}
+                style={{ fontWeight: '500' }}
+                color={'#afafaf'}>
+                @{user.telegram}
+              </Text>
+            </View>) : null
+          }
+          {user.instagram ?
+            (<View row centered mTop={8}>
+              <Icon name="instagram" size={24} color={colors.mainBlue} />
+              <Text
+                size={16}
+                mLeft={8}
+                style={{ fontWeight: '500' }}
+                color={'#afafaf'}>
+                @{user.instagram}
+              </Text>
+            </View>) : null}
           {user.description ? (
-            <View mBottom={22}>
-              <Text size={18} style={{ fontWeight: '600' }}>
-                About me
+            <View mBottom={22} mTop={16}>
+              <Text size={18} medium>
+                {translations.aboutMe}
               </Text>
               <Text
                 mTop={8}

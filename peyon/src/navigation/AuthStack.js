@@ -14,6 +14,7 @@ import ContinueRegister from 'screens/Auth/SignUp/ContinueRegister';
 import ForgotPassword from 'screens/Auth/ResetPassword/ForgotPassword';
 import VerificationPasswordCode from 'screens/Auth/ResetPassword/VerificationPasswordCode';
 import PasswordRecovery from 'screens/Auth/ResetPassword/PasswordRecovery';
+import SocialNetwork from 'screens/Auth/SignUp/SocialNetwork';
 
 const AuthStack = createStackNavigator();
 
@@ -30,6 +31,7 @@ export default props => {
         },
       })}>
       <AuthStack.Screen name="Start" component={Start} />
+      <AuthStack.Screen name={routeNames.socialNetwork} component={SocialNetwork} />
       <AuthStack.Screen name={routeNames.signIn} component={SignIn} />
       <AuthStack.Screen name={routeNames.signUp} component={SignUp} />
       <AuthStack.Screen
