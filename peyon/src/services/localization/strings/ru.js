@@ -11,6 +11,7 @@ export const ru = {
   first_name: 'Имя',
   my: 'Мои',
   information: 'Информация',
+  oldPassword: 'Старый пароль',
   createSuccessfully: 'Успешно создано!',
   updateSuccessfully: 'Обновление прошло успешно!',
   noMembers: 'Пока нет участников, стань первым',

@@ -141,7 +141,7 @@ const Settings = props => {
         language
       />
       <ListButton
-        onPress={() => bottomSheetRef.current.present()}
+        onPress={() => props.navigation.navigate(routeNames.changePassword)}
         text={translations.change_password}
         iconName="lock"
       />

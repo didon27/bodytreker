@@ -1,7 +1,7 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import {routeNames} from 'enums';
+import { routeNames } from 'enums';
 import MyProfile from 'screens/MyProfile/Main';
 import Settings from 'screens/MyProfile/Settings';
 import EditProfile from 'screens/MyProfile/EditProfile';
@@ -10,6 +10,7 @@ import ActivityStack from './ActivityStack';
 import FollowersAndFollowings from 'screens/FollowersAndFollowings';
 import UserProfile from 'screens/UserProfile';
 import ActivityEdit from 'screens/ActivityEdit';
+import ChangePassword from 'screens/MyProfile/ChangePassword';
 
 const ProfileStack = createStackNavigator();
 
@@ -35,6 +36,10 @@ export default props => {
       <ProfileStack.Screen
         name={routeNames.editProfile}
         component={EditProfile}
+      />
+      <ProfileStack.Screen
+        name={routeNames.changePassword}
+        component={ChangePassword}
       />
       <ProfileStack.Screen name={routeNames.settings} component={Settings} />
       <ProfileStack.Screen

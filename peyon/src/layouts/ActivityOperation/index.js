@@ -133,19 +133,21 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
                 'Content-Type': 'multipart/form-data'
             }
         }
-        )
-            .then(() => {
-                initialActivity && (
-                    setActivity(initialActivity),
-                    setCurrentPlace(null),
-                    dispatch(userActions.fetch(token))
-                )
+        ).then(() => {
+            if (initialActivity) {
+                setActivity(initialActivity);
+                setCurrentPlace(null);
+                setUpdateModalVisible(true);
+                dispatch(userActions.fetch(token));
+                setErrors(initialErrors);
+                setUpdateActivityLoading(false);
+            } else {
                 updateList();
                 setUpdateModalVisible(true);
                 setErrors(initialErrors);
                 setUpdateActivityLoading(false);
-            })
-            .catch(() => setUpdateActivityLoading(false))
+            }
+        }).catch(() => setUpdateActivityLoading(false))
     }
 
     useEffect(() => {
@@ -329,8 +331,8 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
 
 
     return (
-        <KeyboardAvoidingView behavior={'height'} style={{flex: 1}} >
-            <ScrollView bounces={false}  style={{ backgroundColor: colors.white }}>
+        <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }} >
+            <ScrollView bounces={false} style={{ backgroundColor: colors.white }}>
                 <Modal isVisible={updateModalVisible}>
                     <View style={{ backgroundColor: colors.white, padding: 16, borderRadius: 10, alignItems: 'center' }}>
                         <IconIonicons size={80} color={colors.mainBlue} name="checkmark-circle-outline" />

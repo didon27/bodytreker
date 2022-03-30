@@ -18,3 +18,4 @@ export {default as SearchInput} from './SearchInput';
 export {default as FixedTouchableHighlight} from './FixedTouchableHighlight';
 export {default as ActivityHeader} from './ActivityHeader';
 export {default as SearchPlaces} from './SearchPlaces';
+export {default as DefaultModal} from './DefaultModal';

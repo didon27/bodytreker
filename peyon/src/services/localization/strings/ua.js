@@ -35,6 +35,7 @@ export const ua = {
   myLocation: 'Моє розташування',
   enterCityName: 'Введіть названу міста',
   ukraine: 'Україна',
+  oldPassword: 'Старий пароль',
   enter_your_email:
     'Введіть вашу електронну пошту, на який має прийти лист із кодом підтвердження',
   password_mismatch: 'Паролі не співпадають!',
