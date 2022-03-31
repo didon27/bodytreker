@@ -1,40 +1,26 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-import {activitiesActions} from 'store/activities';
-
-import {LocalizationContext} from 'services';
-
-import {Profile} from 'layouts';
-import axios from 'axios';
-import {API_URL} from 'constants';
-import {routeNames} from 'enums';
-import {userActions} from 'store/user';
+import { Profile } from 'layouts';
+import { API_URL } from 'constants';
+import { routeNames } from 'enums';
+import { userActions } from 'store/user';
+import { mamaAxios } from 'services/api';
 
 const UserProfile = props => {
-  const {params} = props.route;
+  const { params } = props.route;
   const [user, setUser] = useState({
     ...params.user,
-    images: [{filename: params.user.avatar}],
+    images: [{ filename: params.user.avatar }],
   });
   const dispatch = useDispatch();
-  const {appLanguage} = useContext(LocalizationContext);
-  const {myActivities} = useSelector(state => state.activities);
-  const {token} = useSelector(state => state.auth);
-  const {subscribeUserLoading} = useSelector(state => state.user);
+  const { myActivities } = useSelector(state => state.activities);
+  const { subscribeUserLoading } = useSelector(state => state.user);
   const myUser = useSelector(state => state.user.user);
   const myAccount = user.id === myUser.id;
 
   const fetchData = () => {
-    axios({
-      method: 'post',
-      url: `${API_URL}/user/get-user`,
-      data: {user_id: params.user.id},
-      headers: {
-        'accept-language': appLanguage,
-        Authorization: token,
-      },
-    })
+    mamaAxios.post(`${API_URL}/user/get-user`, { user_id: params.user.id })
       .then(response => {
         setUser(response.data);
       })
