@@ -23,7 +23,7 @@ export default StyleSheet.create({
     padding: 20,
     backgroundColor: '#202124cc',
     borderRadius: 20,
-    marginTop: 20,
+    marginTop: 80,
   },
   background: {width: '100%', height: '100%', zIndex: 0},
   saveMeContainer: {

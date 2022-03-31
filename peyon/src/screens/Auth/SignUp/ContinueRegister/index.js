@@ -52,7 +52,6 @@ const ContinueRegister = props => {
       );
       return;
     }
-
     if (confirmPassword !== password) {
       dispatch(
         authActions.setErrorContinueRegister({
@@ -86,17 +85,25 @@ const ContinueRegister = props => {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding">
+
+    <KeyboardAvoidingView 
+
+ behavior="padding">
+
       <StatusBar barStyle="light-content" />
       <Header navigation={props.navigation} />
+
       <Image
         resizeMode="cover"
         blurRadius={20}
         style={styles.background}
         source={images.startBackground}
       />
+
       <View style={styles.dimmer} />
+
       <View style={styles.centerContainer}>
+       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.centerBlock}>
           <Text color={colors.white} size={28}>
             {translations.signUp}
@@ -151,8 +158,10 @@ const ContinueRegister = props => {
             loading={loading}
           />
         </View>
+       </ScrollView>
       </View>
     </KeyboardAvoidingView>
+
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Animated, StatusBar, TouchableOpacity } from 'react-native';
+import { Animated, Linking, StatusBar, TouchableOpacity } from 'react-native';
 import StarRating from 'react-native-star-rating';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
@@ -67,6 +67,16 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
     outputRange: ['transparent', 'transparent', 'transparent', 'black'],
     extrapolate: 'clamp',
   });
+  const tel = `http://t.me/${user.telegram}`;
+    const inst = `https://www.instagram.com/${user.instagram}`;
+
+
+  const openTelegram = () => {
+      Linking.openURL(tel).catch(err => console.error('An error occurred', err))
+  };
+   const openInstagram = () => {
+      Linking.openURL(inst).catch(err => console.error('An error occurred', err))
+  };
 
   return (
     <View flex style={{ backgroundColor: colors.white }}>
@@ -158,9 +168,13 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
           <Text size={18} medium>
             {translations.socialNetwork}
           </Text>
+          <View  sBetween row >
           {user.telegram ?
             (<View row centered mTop={8}>
               <Icon name="telegram" size={24} color={colors.mainBlue} />
+                  <AnimatedTouchableOpacity
+              onPress={() => openTelegram()}
+              >
               <Text
                 size={16}
                 mLeft={8}
@@ -168,11 +182,15 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
                 color={'#afafaf'}>
                 @{user.telegram}
               </Text>
+              </AnimatedTouchableOpacity>
             </View>) : null
           }
           {user.instagram ?
             (<View row centered mTop={8}>
               <Icon name="instagram" size={24} color={colors.mainBlue} />
+               <AnimatedTouchableOpacity
+              onPress={() => openInstagram()}
+              >
               <Text
                 size={16}
                 mLeft={8}
@@ -180,7 +198,9 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
                 color={'#afafaf'}>
                 @{user.instagram}
               </Text>
+              </AnimatedTouchableOpacity>
             </View>) : null}
+                </View>
           {user.description ? (
             <View mBottom={22} mTop={16}>
               <Text size={18} medium>
