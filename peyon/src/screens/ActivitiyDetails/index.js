@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Animated, StatusBar, TouchableOpacity } from 'react-native';
+import { Animated, Linking, Platform, StatusBar, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -27,6 +27,7 @@ import moment from 'moment';
 import axios from 'axios';
 import { API_URL } from 'constants';
 import { mamaAxios } from 'services/api';
+import { GOOGLE_KEY } from 'constants';
 
 const ActivityDetails = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
@@ -44,6 +45,7 @@ const ActivityDetails = ({ navigation, route }) => {
   const [firstRating, setFirstRating] = useState(0);
   const [secondRating, setSecondRating] = useState(0);
   const [thirdRating, setThirdRating] = useState(0);
+  const [currentPlace, setCurrentPlace] = useState(null);
 
   const fetchData = () => {
     mamaAxios
@@ -53,11 +55,22 @@ const ActivityDetails = ({ navigation, route }) => {
       .then(response => {
         route.params?.updateList && route.params?.updateList();
         setActivity(response.data);
+        getMyLocation(response.data.lat, response.data.lng);
       })
       .catch(err => {
         console.log('error', err.response.data);
       });
   };
+
+  const getMyLocation = (lat, lng) => {
+    axios({
+      method: 'get',
+      url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_KEY}&result_type=locality`,
+      headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
+    }).then(response => {
+      setCurrentPlace({ description: response.data.results[0].formatted_address })
+    })
+  }
 
   const inviteUserActivity = user_id => {
     mamaAxios
@@ -154,6 +167,12 @@ const ActivityDetails = ({ navigation, route }) => {
       dispatch(activitiesActions.subscribeActivitiy(data, item, fetchData));
     }
   };
+
+  const openGps = (lat, lng) => {
+    var scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
+    var url = scheme + `${lat},${lng}`;
+    Linking.openURL(url);
+  }
 
   return (
     <View flex style={{ backgroundColor: colors.white }}>
@@ -265,6 +284,9 @@ const ActivityDetails = ({ navigation, route }) => {
               {activity.description}
             </Text>
           ) : null}
+          <TouchableOpacity onPress={() => openGps(activity.lat, activity.lng)} style={{ marginTop: 8 }}>
+            <Text color={colors.mainBlue}>{currentPlace?.description ? currentPlace?.description : translations.location}</Text>
+          </TouchableOpacity>
           {/* <View mTop={16} row>
             <Text size={16} style={{fontWeight: '500'}} color={'#afafaf'}>
               Хочу выполнить это с{' '}
