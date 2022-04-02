@@ -62,7 +62,6 @@ const ContinueRegister = props => {
     if (confirmPassword.length < 6) {
       _errors.confirmPassword = translations.minimum_six_characters;
     }
-
     if (confirmPassword !== password) {
       _errors.confirmPassword = translations.password_mismatch;
       _errors.password = translations.password_mismatch;
@@ -87,16 +86,23 @@ const ContinueRegister = props => {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding">
+
+    <KeyboardAvoidingView 
+
+ behavior="padding">
+
       <StatusBar barStyle="light-content" />
       <Header navigation={props.navigation} />
+
       <Image
         resizeMode="cover"
         blurRadius={20}
         style={styles.background}
         source={images.startBackground}
       />
+
       <View style={styles.dimmer} />
+
       <View style={styles.centerContainer}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <CustomSafeAreaView />
@@ -159,6 +165,7 @@ const ContinueRegister = props => {
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
+
   );
 };
 
