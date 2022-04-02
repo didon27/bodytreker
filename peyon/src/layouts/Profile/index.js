@@ -68,14 +68,14 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
     extrapolate: 'clamp',
   });
   const tel = `http://t.me/${user.telegram}`;
-    const inst = `https://www.instagram.com/${user.instagram}`;
+  const inst = `https://www.instagram.com/${user.instagram}`;
 
 
   const openTelegram = () => {
-      Linking.openURL(tel).catch(err => console.error('An error occurred', err))
+    Linking.openURL(tel).catch(err => console.error('An error occurred', err))
   };
-   const openInstagram = () => {
-      Linking.openURL(inst).catch(err => console.error('An error occurred', err))
+  const openInstagram = () => {
+    Linking.openURL(inst).catch(err => console.error('An error occurred', err))
   };
 
   return (
@@ -168,39 +168,39 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
           <Text size={18} medium>
             {translations.socialNetwork}
           </Text>
-          <View  sBetween row >
-          {user.telegram ?
-            (<View row centered mTop={8}>
-              <Icon name="telegram" size={24} color={colors.mainBlue} />
-                  <AnimatedTouchableOpacity
-              onPress={() => openTelegram()}
-              >
-              <Text
-                size={16}
-                mLeft={8}
-                style={{ fontWeight: '500' }}
-                color={'#afafaf'}>
-                @{user.telegram}
-              </Text>
-              </AnimatedTouchableOpacity>
-            </View>) : null
-          }
-          {user.instagram ?
-            (<View row centered mTop={8}>
-              <Icon name="instagram" size={24} color={colors.mainBlue} />
-               <AnimatedTouchableOpacity
-              onPress={() => openInstagram()}
-              >
-              <Text
-                size={16}
-                mLeft={8}
-                style={{ fontWeight: '500' }}
-                color={'#afafaf'}>
-                @{user.instagram}
-              </Text>
-              </AnimatedTouchableOpacity>
-            </View>) : null}
-                </View>
+          <View >
+            {user.telegram ?
+              (<View row centered mTop={8}>
+                <Icon name="telegram" size={24} color={colors.mainBlue} />
+                <AnimatedTouchableOpacity
+                  onPress={() => openTelegram()}
+                >
+                  <Text
+                    size={16}
+                    mLeft={8}
+                    style={{ fontWeight: '500' }}
+                    color={colors.mainBlue}>
+                    @{user.telegram}
+                  </Text>
+                </AnimatedTouchableOpacity>
+              </View>) : null
+            }
+            {user.instagram ?
+              (<View row centered mTop={8}>
+                <Icon name="instagram" size={24} color={colors.mainBlue} />
+                <AnimatedTouchableOpacity
+                  onPress={() => openInstagram()}
+                >
+                  <Text
+                    size={16}
+                    mLeft={8}
+                    style={{ fontWeight: '500' }}
+                    color={colors.mainBlue}>
+                    @{user.instagram}
+                  </Text>
+                </AnimatedTouchableOpacity>
+              </View>) : null}
+          </View>
           {user.description ? (
             <View mBottom={22} mTop={16}>
               <Text size={18} medium>

@@ -154,7 +154,6 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         StatusBar.setHidden(true);
     }, []);
 
-    console.log('MODAL', updateModalVisible);
     useEffect(() => {
         let data = {};
 

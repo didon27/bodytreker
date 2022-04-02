@@ -154,7 +154,6 @@ const EditProfile = props => {
         },
       })
         .then(response => {
-          console.log(response.data);
           setUpdateUserLoading(false);
           setCurrentPhoto(null);
           dispatch(userActions.updateUserSuccess(response.data));

@@ -11,6 +11,7 @@ import FollowersAndFollowings from 'screens/FollowersAndFollowings';
 import UserProfile from 'screens/UserProfile';
 import ActivityEdit from 'screens/ActivityEdit';
 import ChangePassword from 'screens/MyProfile/ChangePassword';
+import Information from 'screens/MyProfile/Information';
 
 const ProfileStack = createStackNavigator();
 
@@ -40,6 +41,10 @@ export default props => {
       <ProfileStack.Screen
         name={routeNames.changePassword}
         component={ChangePassword}
+      />
+      <ProfileStack.Screen
+        name={routeNames.information}
+        component={Information}
       />
       <ProfileStack.Screen name={routeNames.settings} component={Settings} />
       <ProfileStack.Screen

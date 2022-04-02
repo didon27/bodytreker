@@ -30,7 +30,7 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
     const [location, setLocation] = useState(null);
     const [locationHideModal, setLocationHideModal] = useState(false);
     const [usesFilters, setUsesFilters] = useState(0);
-    const {user} = useSelector(state => state.user)
+    const {userLocation} = useSelector(state => state.user)
     const [searchCtegory, setSearchCategory] = useState('');
     const [categoriesModalVisible, setCategoriesModalVisible] = useState(false);
     const [currentCategory, setCurrentCategory] = useState(null);
@@ -43,10 +43,10 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
     const getMyLocation = () => {
         axios({
             method: 'get',
-            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${user.lat},${user.lng}&key=${GOOGLE_KEY}&result_type=locality`,
+            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${GOOGLE_KEY}&result_type=locality`,
             headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
         }).then(response => {
-            setLocation({ lat: user.lat, lng: user.lng });
+            setLocation({ lat: userLocation.lat, lng: userLocation.lng });
             setCurrentPlace({ description: response.data.results[0].formatted_address })
             setLocationHideModal(false);
         })

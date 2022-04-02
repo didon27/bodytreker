@@ -10,6 +10,7 @@ export const ru = {
   last_name: 'Фамилия',
   first_name: 'Имя',
   my: 'Мои',
+  friends: 'Друзья',
   information: 'Информация',
   oldPassword: 'Старый пароль',
   createSuccessfully: 'Успешно создано!',

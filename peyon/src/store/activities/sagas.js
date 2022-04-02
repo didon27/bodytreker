@@ -9,7 +9,6 @@ import {navigate} from '../../navigation';
 function* getActivities(data) {
   const {payload, refresh} = data;
 
-  console.log(payload)
   try {
     const response = yield call(api.activities.getActivities, payload);
     yield put(activitiesActions.getActivitiesSuccess(response.data, refresh));
