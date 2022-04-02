@@ -122,20 +122,22 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
                 style={{ color: headerButtonColor }}
               />
             </AnimatedTouchableOpacity>
-          ) : (
-            <AnimatedTouchableOpacity
-              onPress={() => navigation.navigate(routeNames.settings, { user })}
-              style={{
-                ...styles.secondHeaderBtn,
-                backgroundColor: headerButtonBackgroundColor,
-              }}>
-              <AnimatedIonicons
-                name={'ios-chatbubbles'}
-                size={24}
-                style={{ color: headerButtonColor }}
-              />
-            </AnimatedTouchableOpacity>
-          )}
+          ) : null
+          //  (
+          //   <AnimatedTouchableOpacity
+          //     onPress={() => navigation.navigate(routeNames.settings, { user })}
+          //     style={{
+          //       ...styles.secondHeaderBtn,
+          //       backgroundColor: headerButtonBackgroundColor,
+          //     }}>
+          //     <AnimatedIonicons
+          //       name={'ios-chatbubbles'}
+          //       size={24}
+          //       style={{ color: headerButtonColor }}
+          //     />
+          //   </AnimatedTouchableOpacity>
+          // )
+          }
         </View>
         <Animated.View
           style={{
