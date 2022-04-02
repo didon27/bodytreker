@@ -12,6 +12,8 @@ import { colors } from 'colors';
 import styles from './styles';
 import { storage } from 'services/storage';
 import { routeNames } from 'enums';
+import { mamaAxios } from 'services/api';
+import { API_URL } from 'constants';
 
 const ContinueRegister = props => {
   const { translations } = useContext(LocalizationContext);
@@ -22,6 +24,7 @@ const ContinueRegister = props => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { loading, errorContinueRegister } = useSelector(state => state.auth);
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
 
@@ -32,34 +35,42 @@ const ContinueRegister = props => {
   }, [password, confirmPassword, username]);
 
   const signUp = async () => {
+    let _errors = {};
+
+    if (!first_name.length) {
+      _errors.first_name = translations.fieldIsRequired;
+    }
+
+    if (!last_name.length) {
+      _errors.last_name = translations.fieldIsRequired;
+    }
+
+    await mamaAxios.post(`${API_URL}/user/check-username`,
+      { id: null, username: username },
+    ).catch(error => {
+      _errors.username = error.response.data.message;
+    })
+
     if (username.length < 6) {
-      dispatch(
-        authActions.setErrorContinueRegister({ username: 'Min length 6' }),
-      );
-      return;
+      _errors.username = translations.minimum_six_characters;
     }
 
     if (password.length < 6) {
-      dispatch(
-        authActions.setErrorContinueRegister({ password: 'Min length 6' }),
-      );
-      return;
+      _errors.password = translations.minimum_six_characters;
     }
 
     if (confirmPassword.length < 6) {
-      dispatch(
-        authActions.setErrorContinueRegister({ confirmPassword: 'Min length 6' }),
-      );
-      return;
+      _errors.confirmPassword = translations.minimum_six_characters;
     }
 
     if (confirmPassword !== password) {
-      dispatch(
-        authActions.setErrorContinueRegister({
-          confirmPassword: translations.password_mismatch,
-          password: translations.password_mismatch,
-        }),
-      );
+      _errors.confirmPassword = translations.password_mismatch;
+      _errors.password = translations.password_mismatch;
+    }
+
+
+    if (Object.keys(_errors).length) {
+      setErrors(_errors);
       return;
     }
 
@@ -73,16 +84,6 @@ const ContinueRegister = props => {
       last_name,
       fcm_token
     })
-    // dispatch(
-    //   authActions.continueRegisterRequest({
-    //     email,
-    //     username,
-    //     password,
-    //     first_name,
-    //     last_name,
-    //     fcm_token
-    //   }),
-    // );
   };
 
   return (
@@ -97,60 +98,65 @@ const ContinueRegister = props => {
       />
       <View style={styles.dimmer} />
       <View style={styles.centerContainer}>
-        <View style={styles.centerBlock}>
-          <Text color={colors.white} size={28}>
-            {translations.signUp}
-          </Text>
-          <Text color={colors.lightGrey} size={16} mTop={10} mBottom={10}>
-            {translations.fields_to_complete_registration}
-          </Text>
-          {/* <TextInput
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <CustomSafeAreaView />
+          <View style={styles.centerBlock}>
+            <Text color={colors.white} size={28}>
+              {translations.signUp}
+            </Text>
+            <Text color={colors.lightGrey} size={16} mTop={10} mBottom={10}>
+              {translations.fields_to_complete_registration}
+            </Text>
+            {/* <TextInput
             value={email}
             placeholderTextColor={'#adadad'}
             placeholder="Email"
             disabled
           /> */}
-          <TextInput
-            value={first_name}
-            placeholderTextColor={'#adadad'}
-            placeholder={translations.first_name}
-            onChangeText={setFirstName}
-          />
-          <TextInput
-            value={last_name}
-            placeholderTextColor={'#adadad'}
-            placeholder={translations.last_name}
-            onChangeText={setLastName}
-          />
-          <TextInput
-            value={username}
-            placeholderTextColor={'#adadad'}
-            placeholder={translations.login}
-            error={errorContinueRegister?.username}
-            onChangeText={setUresname}
-          />
-          <TextInput
-            value={password}
-            placeholderTextColor={'#adadad'}
-            placeholder={translations.password}
-            isPassword
-            error={errorContinueRegister?.password}
-            onChangeText={setPassword}
-          />
-          <TextInput
-            value={confirmPassword}
-            placeholderTextColor={'#adadad'}
-            placeholder={translations.repeat_password}
-            isPassword
-            error={errorContinueRegister?.confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-          <Button
-            text={translations.continue}
-            onPress={signUp}
-            loading={loading}
-          />
-        </View>
+            <TextInput
+              value={first_name}
+              error={errors?.first_name}
+              placeholderTextColor={'#adadad'}
+              placeholder={translations.first_name}
+              onChangeText={setFirstName}
+            />
+            <TextInput
+              value={last_name}
+              error={errors?.last_name}
+              placeholderTextColor={'#adadad'}
+              placeholder={translations.last_name}
+              onChangeText={setLastName}
+            />
+            <TextInput
+              value={username}
+              placeholderTextColor={'#adadad'}
+              placeholder={translations.login}
+              error={errors?.username}
+              onChangeText={setUresname}
+            />
+            <TextInput
+              value={password}
+              placeholderTextColor={'#adadad'}
+              placeholder={translations.password}
+              isPassword
+              error={errors?.password}
+              onChangeText={setPassword}
+            />
+            <TextInput
+              value={confirmPassword}
+              placeholderTextColor={'#adadad'}
+              placeholder={translations.repeat_password}
+              isPassword
+              error={errors?.confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            <Button
+              text={translations.continue}
+              onPress={signUp}
+              loading={loading}
+            />
+          </View>
+        </ScrollView>
       </View>
     </KeyboardAvoidingView>
   );

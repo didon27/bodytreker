@@ -37,6 +37,7 @@ export const en = {
   logout: 'Logout',
   actual: 'Actual',
   filters: 'Filters',
+  friends: 'Friends',
   oldPassword: 'Old password',
   thisLoginAlreadyTaken: 'This login is already taken!',
   language: 'Language',

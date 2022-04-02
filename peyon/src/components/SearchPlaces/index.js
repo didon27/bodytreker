@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
     FlatList, ScrollView, TouchableOpacity, TextInput, PermissionsAndroid,
     Platform,
+    ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Modal from 'react-native-modal';
@@ -22,17 +23,17 @@ const SearchPlaces = ({ selectPlace, visible, setVisible, translations, appLangu
     const [places, setPlaces] = useState([]);
     const [currentPlace, setCurrentPlace] = useState(null);
     const insets = useSafeAreaInsets();
-    const { user } = useSelector(state => state.user)
+    const {  userLocation } = useSelector(state => state.user)
     const keyExtractorPlaces = useCallback(item => item.place_id.toString(), []);
 
 
     const getMyLocation = () => {
         axios({
             method: 'get',
-            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${user.lat},${user.lng}&key=${GOOGLE_KEY}&result_type=locality`,
+            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${GOOGLE_KEY}&result_type=locality`,
             headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
         }).then(response => {
-            selectPlace({ place: response.data.results[0].formatted_address, location: { lat: user.lat, lng: user.lng } })
+            selectPlace({ place: response.data.results[0].formatted_address, location: { lat: userLocation.lat, lng: userLocation.lng } })
         })
     }
 
@@ -91,6 +92,8 @@ const SearchPlaces = ({ selectPlace, visible, setVisible, translations, appLangu
                             <Icon name="location-outline" size={18} color={'grey'} />
                         </TouchableOpacity>
                     )}
+                    refreshing={true}
+                    refreshControl={() => <ActivityIndicator size={"small"}/>}
                     data={places}
                     renderItem={renderItemPlace}
                     keyExtractor={keyExtractorPlaces}
