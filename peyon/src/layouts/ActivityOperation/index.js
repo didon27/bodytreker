@@ -261,6 +261,9 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
                 const result = await ImagePicker.openPicker({
                     mediaType: 'photo',
                     includeBase64: false,
+                    maxWidth: 500,
+                    maxHeight: 500,
+                    quality: 0.5,
                     compressImageQuality: 0.5,
                     maxFiles: 4,
                     multiple: true,
