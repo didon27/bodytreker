@@ -207,12 +207,6 @@ const Home = props => {
     }
   }, [tab])
 
-
-console.log(friendsActivities.activities.map(el => el.id))
-
-
-
-
   const handleRefreshListActivities = () => {
     setPageActivities(0);
     dispatch(
