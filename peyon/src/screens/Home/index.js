@@ -208,7 +208,7 @@ const Home = props => {
   }, [tab])
 
 
-
+console.log(friendsActivities.activities.map(el => el.id))
 
 
 
@@ -359,7 +359,7 @@ const Home = props => {
           )}
         </View>
       ),
-    [activities, subscriptionActivities, tab],
+    [activities, subscriptionActivities, friendsActivities, tab],
   );
 
   const loadMoreData = () => {
@@ -384,7 +384,8 @@ const Home = props => {
         ),
       );
     } else if (tab === 'friends') {
-      setPageSubscriptions(pageFriends + 1);
+      console.log(pageFriends);
+      setPageFriends(pageFriends + 1);
       dispatch(
         activitiesActions.getFriendsActivities(
           {
