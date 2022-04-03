@@ -26,7 +26,7 @@ const Settings = props => {
   const bottomSheetRef = useRef();
 
   const logout = async () => {
-    await storage.delete(keys.JWT_TOKEN);
+    await storage.delete('UserToken');
 
     dispatch(authActions.removeTokenSuccess());
   };

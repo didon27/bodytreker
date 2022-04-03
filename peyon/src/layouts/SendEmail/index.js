@@ -1,11 +1,13 @@
-import React, {useEffect} from 'react';
-import {Image, KeyboardAvoidingView, StatusBar} from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { Image, KeyboardAvoidingView, StatusBar } from 'react-native';
 
-import {Button, Text, View, TextInput, Header} from 'components';
-import {images} from 'images';
-import {colors} from 'colors';
+import { Button, Text, View, TextInput, Header } from 'components';
+import { images } from 'images';
+import { colors } from 'colors';
 
 import styles from './styles';
+import { LocalizationContext } from 'services';
+import { routeNames } from 'enums';
 
 const SignUp = ({
   email,
@@ -18,7 +20,9 @@ const SignUp = ({
   navigation,
   subtitle,
   buttonText,
+  register
 }) => {
+  const { translations } = useContext(LocalizationContext)
   useEffect(() => {
     if (error) {
       setError(null);
@@ -60,6 +64,7 @@ const SignUp = ({
             error={error}
             onChangeText={setEmail}
           />
+          {register && <Text mTop={4} size={12} color={colors.white}>{translations.pleaseReadThe} <Text medium color={colors.mainBlue} onPress={() => navigation.navigate(routeNames.privacyPolicy)}>{translations.privacyPolicy}</Text> {translations.beforeRegistration}</Text>}
           <Button
             text={buttonText}
             onPress={signUp}

@@ -122,7 +122,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         }
         data.append('description', description);
         data.append('user_id', user.id);
-
+        data.append('username', user.username);
         if (lat && lng) {
             data.append('lat', lat);
             data.append('lng', lng);

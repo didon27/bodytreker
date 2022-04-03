@@ -36,6 +36,9 @@ export const ua = {
   enterCityName: 'Введіть названу міста',
   ukraine: 'Україна',
   newPost: 'Нова публікація',
+  privacyPolicy: 'Політика Конфіденційності',
+  pleaseReadThe: 'Будь ласка, прочитайте ',
+  beforeRegistration: 'перед реєстрацією',
   friends: 'Друзі',
   oldPassword: 'Старий пароль',
   enter_your_email:

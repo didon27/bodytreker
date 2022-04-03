@@ -8,21 +8,19 @@ import WebView from 'react-native-webview';
 import { LocalizationContext } from 'services';
 import { mamaAxios } from 'services/api';
 
-const Information = (props) => {
+const PrivacyPolicy = (props) => {
     const { translations } = useContext(LocalizationContext)
     const [information, setInformation] = useState('');
     const [loading, setLoading] = useState(false);
-
     useEffect(() => {
         setLoading(true);
-        mamaAxios.post(API_URL + '/user/get-information', { id: 1 })
+        mamaAxios.post(API_URL + '/user/get-information', { id: 2 })
             .then((response) => {
                 setInformation(response.data.text);
                 setTimeout(() => {
                     setLoading(false);
                 }, 100);
-            })
-            .catch(() => setLoading(false))
+            }).catch(() => setLoading(false))
     }, [])
 
     return loading ? <View flex jCenter center style={{backgroundColor: colors.white}}><ActivityIndicator size={'large'} color={colors.mainBlue} /></View> : (
@@ -32,11 +30,12 @@ const Information = (props) => {
                     <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ position: 'absolute', left: 0 }}>
                         <Icon name="angle-left" size={30} color={'#585858'} />
                     </TouchableOpacity>
-                    <Text bold size={18}>{translations.information}</Text>
+                    <Text bold size={18}>{translations.privacyPolicy}</Text>
                 </View>
             </CustomSafeAreaView>
             <WebView
                 style={{ marginTop: 24, marginHorizontal: 16 }}
+                showsVerticalScrollIndicator={false}
                 originWhitelist={['*']}
                 source={{ html: `<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>${information}</body></html>` }}
             />
@@ -44,4 +43,4 @@ const Information = (props) => {
     )
 }
 
-export default Information;
+export default PrivacyPolicy;

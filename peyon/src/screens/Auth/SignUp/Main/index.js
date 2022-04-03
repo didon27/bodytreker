@@ -30,6 +30,7 @@ const SignUp = ({navigation}) => {
     <SendEmail
       error={errorRegister}
       email={email}
+      register
       title={translations.signUp}
       subtitle={translations.enter_your_email}
       buttonText={translations.continue}

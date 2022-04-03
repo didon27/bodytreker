@@ -30,6 +30,7 @@ const CodeVerify = ({
   resendCode,
   navigation,
   email,
+  register
 }) => {
   const {translations} = useContext(LocalizationContext);
   const [value, setValue] = useState('');

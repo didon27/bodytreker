@@ -8,6 +8,7 @@ export const routeNames = Object.freeze({
   forgotPassword: 'ForgotPassword',
   changePassword: 'ChangePassword',
   information: 'Information',
+  privacyPolicy: 'PrivacyPolicy',
   verificationPasswordCode: 'VerificationPasswordCode',
   passwordRecovery: 'PasswordRecovery',
   settings: 'Settings',
