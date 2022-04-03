@@ -9,6 +9,7 @@ export const ru = {
   actual: 'Актуальные',
   last_name: 'Фамилия',
   first_name: 'Имя',
+  newPost: 'Новавя публикация',
   my: 'Мои',
   friends: 'Друзья',
   information: 'Информация',

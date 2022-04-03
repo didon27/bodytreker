@@ -1,13 +1,13 @@
-import {colors} from 'colors';
-import {Text, View} from 'components';
-import {API} from 'constants';
+import { colors } from 'colors';
+import { Text, View } from 'components';
+import { API } from 'constants';
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-const Avatar = ({user, style, edit, letterStyle}) => {
+const Avatar = ({ user, style, edit, letterStyle }) => {
   const styles = StyleSheet.create({
-    avatar: {width: 34, height: 34, borderRadius: 17},
+    avatar: { width: 34, height: 34, borderRadius: 17, backgroundColor: colors.lightGrey },
   });
 
   const generateLetter = string => {
@@ -16,10 +16,11 @@ const Avatar = ({user, style, edit, letterStyle}) => {
       : '';
   };
 
+
   if (user.avatar) {
     return (
       <FastImage
-        source={{uri: edit ? user.avatar : API + '/images/' + user.avatar}}
+        source={{ uri: edit ? user.avatar : API + '/images/' + user.avatar }}
         style={[styles.avatar, style && style]}
       />
     );

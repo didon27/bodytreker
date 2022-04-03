@@ -263,13 +263,13 @@ const Activities = props => {
             </TouchableOpacity>
           </View>
         </View>
-        <Animated.View
+        {/* <Animated.View
           style={{
             width: '100%',
             height: 0.5,
             backgroundColor: headerBackgroundColor,
           }}
-        />
+        /> */}
       </CustomSafeAreaView>
       <View flex>{renderList()}</View>
     </View>

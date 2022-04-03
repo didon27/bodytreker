@@ -125,7 +125,7 @@ const EditProfile = props => {
         uri:
           Platform.OS === 'android'
             ? currentPhoto.path
-            : currentPhoto.sourceURL?.replace('file://', ''),
+            : currentPhoto.path?.replace('file://', ''),
         name: 'image.jpg',
         type: 'image/jpeg',
       });
@@ -242,139 +242,140 @@ const EditProfile = props => {
   });
 
   return (
-    <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
-      <Fragment>
-        <CustomSafeAreaView style={{ backgroundColor: colors.white }}>
-          <View
-            row
-            centered
-            sBetween
-            style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
-            <TouchableOpacity onPress={() => props.navigation.goBack()}>
-              <Icon name="angle-left" size={30} color={'#585858'} />
-            </TouchableOpacity>
-            <Button
-              text={translations.save}
-              loading={updateUserLoading}
-              textStyle={{ fontSize: 14 }}
-              onPress={updateUser}
-              style={{
-                marginTop: 0,
-                height: 31,
-                width: null,
-                paddingHorizontal: 12,
-              }}
-            />
-          </View>
-          <Animated.View
-            style={{
-              width: '100%',
-              height: 0.5,
-              backgroundColor: headerBorderColor,
-            }}
-          />
-        </CustomSafeAreaView>
-        <Animated.ScrollView
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: { contentOffset: { y: scrollY } },
-              },
-            ],
-            { useNativeDriver: false },
-          )}
-          style={{ backgroundColor: colors.white }}
-          bounces={false}
-          contentContainerStyle={{ paddingBottom: 40 }}
-          showsVerticalScrollIndicator={false}>
-          <View style={{ width: '100%', alignItems: 'center', marginVertical: 10 }}>
-            <View>
-              <Avatar
-                edit
-                style={{ width: 110, height: 110, borderRadius: 55, zIndex: 0 }}
-                letterStyle={{ fontSize: 40 }}
-                user={{
-                  first_name: user.first_name,
-                  avatar: currentPhoto
-                    ? Platform.OS === 'ios'
-                      ? currentPhoto.path
-                      : currentPhoto
-                    : user.avatar
-                      ? API + '/images/' + user.avatar
-                      : null,
+    <View flex style={{ backgroundColor: 'white' }}>
+      <KeyboardAvoidingView behavior={'height'} style={{  flex: 1 }} onPress={() => Keyboard.dismiss()}>
+        <Fragment>
+          <CustomSafeAreaView style={{ backgroundColor: colors.white }}>
+            <View
+              row
+              centered
+              sBetween
+              style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
+              <TouchableOpacity onPress={() => props.navigation.goBack()}>
+                <Icon name="angle-left" size={30} color={'#585858'} />
+              </TouchableOpacity>
+              <Button
+                text={translations.save}
+                loading={updateUserLoading}
+                textStyle={{ fontSize: 14 }}
+                onPress={updateUser}
+                style={{
+                  marginTop: 0,
+                  height: 31,
+                  width: null,
+                  paddingHorizontal: 12,
                 }}
               />
-              <TouchableOpacity style={styles.camera} onPress={openCamera}>
-                <Icon name={'camera'} size={16} color={colors.white} />
-              </TouchableOpacity>
             </View>
-          </View>
-          <View style={{ paddingHorizontal: 16 }}>
-            <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.first_name}</Text>
-            <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.first_name ? 1 : 0 }}>
-              <TextInput
-                placeholderTextColor={colors.lightGrey}
-                value={user.first_name}
-                onChangeText={value => changeUserField('first_name', value)}
-                placeholder={translations.first_name}
-                style={[{ flex: 1, fontSize: 14 }]} />
+            <Animated.View
+              style={{
+                width: '100%',
+                height: 0.5,
+                backgroundColor: headerBorderColor,
+              }}
+            />
+          </CustomSafeAreaView>
+          <Animated.ScrollView
+            onScroll={Animated.event(
+              [
+                {
+                  nativeEvent: { contentOffset: { y: scrollY } },
+                },
+              ],
+              { useNativeDriver: false },
+            )}
+            style={{ backgroundColor: colors.white }}
+            bounces={false}
+            contentContainerStyle={{ paddingBottom: 40 }}
+            showsVerticalScrollIndicator={false}>
+            <View style={{ width: '100%', alignItems: 'center', marginVertical: 10 }}>
+              <View>
+                <Avatar
+                  edit
+                  style={{ width: 110, height: 110, borderRadius: 55, zIndex: 0 }}
+                  letterStyle={{ fontSize: 40 }}
+                  user={{
+                    first_name: user.first_name,
+                    avatar: currentPhoto
+                      ? Platform.OS === 'ios'
+                        ? currentPhoto.path
+                        : currentPhoto
+                      : user.avatar
+                        ? API + '/images/' + user.avatar
+                        : null,
+                  }}
+                />
+                <TouchableOpacity style={styles.camera} onPress={openCamera}>
+                  <Icon name={'camera'} size={16} color={colors.white} />
+                </TouchableOpacity>
+              </View>
             </View>
-            {errors.first_name && <Text mTop={4} size={12} color={colors.errorColor}>{translations.fieldIsRequired}</Text>}
-            <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.last_name}</Text>
-            <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.last_name ? 1 : 0 }}>
-              <TextInput
-                placeholderTextColor={colors.lightGrey}
-                value={user.last_name}
-                onChangeText={value => changeUserField('last_name', value)}
-                placeholder={translations.last_name}
-                style={[{ flex: 1, fontSize: 14 }]} />
-            </View>
-            {errors.last_name && <Text mTop={4} size={12} color={colors.errorColor}>{translations.fieldIsRequired}</Text>}
-            <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.login}</Text>
-            <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.username ? 1 : 0 }}>
-              <Icon size={22} color={'grey'} name="at" />
-              <TextInput
-                placeholderTextColor={colors.lightGrey}
-                value={user.username}
-                onChangeText={value => changeUserField('username', value.replace(' ', ''))}
-                placeholder={translations.login}
-                style={[{ flex: 1, paddingLeft: 10, fontSize: 14 }]} />
-            </View>
-            {errors.username && !errors.login && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimum_six_characters}</Text>}
-            {errors.login && <Text mTop={4} size={12} color={colors.errorColor}>{translations.thisLoginAlreadyTaken}</Text>}
-            <Text mTop={8} size={16} mBottom={8} color={'grey'}>Instagram</Text>
-            <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.social ? 1 : 0 }}>
-              <Icon size={22} color={'grey'} name="at" />
-              <TextInput
-                placeholderTextColor={colors.lightGrey}
-                value={user.instagram}
-                onChangeText={value => changeUserField('instagram', value.replace(' ', ''))}
-                placeholder={'Instagram'}
-                style={[{ flex: 1, paddingLeft: 10, fontSize: 14 }]} />
-            </View>
-            <Text mTop={8} size={16} mBottom={8} color={'grey'}>Telegram</Text>
-            <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.social ? 1 : 0 }}>
-              <Icon size={22} color={'grey'} name="at" />
-              <TextInput
-                placeholderTextColor={colors.lightGrey}
-                value={user.telegram}
-                onChangeText={value => changeUserField('telegram', value.replace(' ', ''))}
-                placeholder={'Telegram'}
-                style={[{ flex: 1, paddingLeft: 10, fontSize: 14 }]} />
-            </View>
-            {errors.social && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimumOneSocialNetwork}</Text>}
-            <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.description}</Text>
-            <View row flex centered style={styles.inputDescriptionContainer}>
-              <TextInput
-                maxLength={500}
-                multiline
-                placeholderTextColor={colors.lightGrey}
-                value={user.description}
-                onChangeText={value => changeUserField('description', value)}
-                placeholder={translations.description}
-                style={[{ flex: 1, fontSize: 14, minHeight: 100, textAlignVertical: 'top' }]} />
-            </View>
-            {/* <TextInput
+            <View style={{ paddingHorizontal: 16 }}>
+              <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.first_name}</Text>
+              <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.first_name ? 1 : 0 }}>
+                <TextInput
+                  placeholderTextColor={colors.lightGrey}
+                  value={user.first_name}
+                  onChangeText={value => changeUserField('first_name', value)}
+                  placeholder={translations.first_name}
+                  style={[{ flex: 1, fontSize: 14 }]} />
+              </View>
+              {errors.first_name && <Text mTop={4} size={12} color={colors.errorColor}>{translations.fieldIsRequired}</Text>}
+              <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.last_name}</Text>
+              <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.last_name ? 1 : 0 }}>
+                <TextInput
+                  placeholderTextColor={colors.lightGrey}
+                  value={user.last_name}
+                  onChangeText={value => changeUserField('last_name', value)}
+                  placeholder={translations.last_name}
+                  style={[{ flex: 1, fontSize: 14 }]} />
+              </View>
+              {errors.last_name && <Text mTop={4} size={12} color={colors.errorColor}>{translations.fieldIsRequired}</Text>}
+              <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.login}</Text>
+              <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.username ? 1 : 0 }}>
+                <Icon size={22} color={'grey'} name="at" />
+                <TextInput
+                  placeholderTextColor={colors.lightGrey}
+                  value={user.username}
+                  onChangeText={value => changeUserField('username', value.replace(' ', ''))}
+                  placeholder={translations.login}
+                  style={[{ flex: 1, paddingLeft: 10, fontSize: 14 }]} />
+              </View>
+              {errors.username && !errors.login && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimum_six_characters}</Text>}
+              {errors.login && <Text mTop={4} size={12} color={colors.errorColor}>{translations.thisLoginAlreadyTaken}</Text>}
+              <Text mTop={8} size={16} mBottom={8} color={'grey'}>Instagram</Text>
+              <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.social ? 1 : 0 }}>
+                <Icon size={22} color={'grey'} name="at" />
+                <TextInput
+                  placeholderTextColor={colors.lightGrey}
+                  value={user.instagram}
+                  onChangeText={value => changeUserField('instagram', value.replace(' ', ''))}
+                  placeholder={'Instagram'}
+                  style={[{ flex: 1, paddingLeft: 10, fontSize: 14 }]} />
+              </View>
+              <Text mTop={8} size={16} mBottom={8} color={'grey'}>Telegram</Text>
+              <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.social ? 1 : 0 }}>
+                <Icon size={22} color={'grey'} name="at" />
+                <TextInput
+                  placeholderTextColor={colors.lightGrey}
+                  value={user.telegram}
+                  onChangeText={value => changeUserField('telegram', value.replace(' ', ''))}
+                  placeholder={'Telegram'}
+                  style={[{ flex: 1, paddingLeft: 10, fontSize: 14 }]} />
+              </View>
+              {errors.social && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimumOneSocialNetwork}</Text>}
+              <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.description}</Text>
+              <View row flex centered style={styles.inputDescriptionContainer}>
+                <TextInput
+                  maxLength={500}
+                  multiline
+                  placeholderTextColor={colors.lightGrey}
+                  value={user.description}
+                  onChangeText={value => changeUserField('description', value)}
+                  placeholder={translations.description}
+                  style={[{ flex: 1, fontSize: 14, minHeight: 100, textAlignVertical: 'top' }]} />
+              </View>
+              {/* <TextInput
               label={'Instagram'}
               value={user.first_name}
               containerStyle={styles.input}
@@ -388,7 +389,7 @@ const EditProfile = props => {
               labelStyle={{ color: 'grey' }}
               onChangeText={value => changeUserField('last_name', value)}
             /> */}
-            {/* <Text mLeft={8} size={16} color={'grey'} mTop={8}>
+              {/* <Text mLeft={8} size={16} color={'grey'} mTop={8}>
               Пол
             </Text>
             <View
@@ -404,7 +405,7 @@ const EditProfile = props => {
               {genderButton('Женщина', 2)}
               {genderButton('Другое', 3)}
             </View> */}
-            {/* <Text mLeft={8} size={16} color={'grey'} mTop={8}>
+              {/* <Text mLeft={8} size={16} color={'grey'} mTop={8}>
               Симейное положение
             </Text>
             <DropDownPicker
@@ -438,7 +439,7 @@ const EditProfile = props => {
               dropDownDirection="BOTTOM"
               bottomOffset={200}
             /> */}
-            {/* <TextInput
+              {/* <TextInput
               label={translations.description}
               placeholder={translations.description}
               value={user.description}
@@ -449,10 +450,11 @@ const EditProfile = props => {
               multiline
               onChangeText={value => changeUserField('description', value)}
             /> */}
-          </View>
-        </Animated.ScrollView>
-      </Fragment>
-    </KeyboardAvoidingView>
+            </View>
+          </Animated.ScrollView>
+        </Fragment>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 

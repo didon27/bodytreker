@@ -35,6 +35,7 @@ export const ua = {
   myLocation: 'Моє розташування',
   enterCityName: 'Введіть названу міста',
   ukraine: 'Україна',
+  newPost: 'Нова публікація',
   friends: 'Друзі',
   oldPassword: 'Старий пароль',
   enter_your_email:

@@ -23,7 +23,7 @@ const Information = (props) => {
                     <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ position: 'absolute', left: 0 }}>
                         <Icon name="angle-left" size={30} color={'#585858'} />
                     </TouchableOpacity>
-                    <Text medium size={18}>{translations.information}</Text>
+                    <Text bold size={18}>{translations.information}</Text>
                 </View>
             </CustomSafeAreaView>
             <WebView

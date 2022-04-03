@@ -30,11 +30,11 @@ function Header({
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [index, setIndex] = useState(0);
-  const {token} = useSelector(state => state.auth);
+  const { token } = useSelector(state => state.auth);
   const insets = useSafeAreaInsets();
   const [deleteImageVisible, setDeleteImageVisible] = useState(false);
   const dispatch = useDispatch();
-  
+
   const renderFooter = () => {
     if (myAccount) {
       return (
@@ -98,7 +98,7 @@ function Header({
         />
       </Modal>
       <LinearGradient
-        colors={['#0057b8', '#ffd700']}
+        colors={['#4285f4', '#4285f4']}
         style={
           !user.images.length && { height: 160, backgroundColor: colors.mainBlue }
         }>
@@ -106,7 +106,7 @@ function Header({
           sliderBoxHeight={360}
           circleLoop
           onCurrentImagePressed={(index) => { setIndex(index); setModalVisible(true) }}
-          imageLoadingColor={colors.mainBlue}
+          imageLoadingColor={colors.white}
           inactiveSlideScale={1}
           activeOpacity={1}
           paginationBoxVerticalPadding={0}

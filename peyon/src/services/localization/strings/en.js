@@ -5,6 +5,7 @@ export const en = {
   forgotPassword: 'Forgot password?',
   continue: 'Continue',
   newActivities: 'New activities',
+  newPost: 'New post',
   last_name: 'Last Name',
   first_name: 'First Name',
   title: 'Title',

@@ -68,7 +68,7 @@ const ChangePassword = props => {
                     <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ position: 'absolute', left: 0 }}>
                         <Icon name="angle-left" size={30} color={'#585858'} />
                     </TouchableOpacity>
-                    <Text medium size={18}>{translations.change_password}</Text>
+                    <Text bold size={18}>{translations.change_password}</Text>
                 </View>
             </CustomSafeAreaView>
             <View mTop={24} style={{ paddingHorizontal: 16, justifyContent: 'space-between', flex: 1, paddingBottom: 20 }}>

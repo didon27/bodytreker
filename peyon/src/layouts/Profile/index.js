@@ -203,7 +203,7 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
                 </AnimatedTouchableOpacity>
               </View>) : null}
           </View>
-          {user.description ? (
+          {user.description && user.description !== 'null' ? (
             <View mBottom={22} mTop={16}>
               <Text size={18} medium>
                 {translations.aboutMe}
