@@ -19,6 +19,16 @@ export const ua = {
   filters: 'Фільтри',
   addSocialNetworks: `Додайте соціальні мережі, в яких з вами можна зв'язатися`,
   noResults: 'На жаль, нічого за запитом не знайдено. Cпробуйте ще раз трохи пізніше!',
+  noResultsFriends: 'Дописи друзів за якими ви стежите',
+  noResultsFollowings: 'Дописи за якими ви стежите',
+  noResultsActual: 'Актуальні дописи усіх користувачів',
+
+  noResultsActivities: 'Ваші публікації',
+  noResultsFollowingsTitle: 'Люди за якими ви стежите',
+  noResultsFollowingsSubtitle: 'Коли ви почнете стежите за людьми , вони відображатимуться тут',
+  noResultsFollowersTitle: 'Читачі',
+  noResultsFollowersSubtitle: 'Тут відображатимуться люди , які стежать за вами',
+
   search: 'Пошук',
   settings: 'Налаштування',
   change_password: 'Змінити пароль',
