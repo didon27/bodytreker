@@ -332,7 +332,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
     }
 
     return (
-        <KeyboardAvoidingView behavior={ 'height'} style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === 'android' && 40}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === 'android' && 40}>
             <ScrollView bounces={false} style={{ backgroundColor: colors.white }}>
                 <Modal isVisible={updateModalVisible}>
                     <View style={{ backgroundColor: colors.white, padding: 16, borderRadius: 10, alignItems: 'center' }}>

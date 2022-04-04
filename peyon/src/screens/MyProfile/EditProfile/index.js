@@ -242,7 +242,7 @@ const EditProfile = props => {
   });
 
   return (
-    <KeyboardAvoidingView keyboardVerticalOffset={Platform.OS === 'android' && -40} behavior={Platform.OS === 'android' ? 'padding' : 'height'} style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+    <KeyboardAvoidingView keyboardVerticalOffset={Platform.OS === 'android' && -40} behavior={ 'padding' } style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
       <ScrollView
         style={{ backgroundColor: colors.white }}
         bounces={false}
