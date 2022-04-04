@@ -21,6 +21,21 @@ export const ru = {
   updateSuccessfully: 'Обновление прошло успешно!',
   noMembers: 'Пока нет участников, стань первым',
   noResults: 'К сожалению, ничего по запросу не найдено. Попробуйте еще раз чуть позже!',
+
+  noResultsFriends: 'Посты друзей за которыми вы следите',
+  noResultsFollowings: 'Публикации за которыми вы следите',
+  noResultsActual: 'Актуальные публикации всех пользователей',
+
+  noResultsActivities: 'Ваши публикации',
+  noResultsFollowingsTitle: 'Люди за которыми вы следите',
+  noResultsFollowingsSubtitle: 'Когда вы начнете следить за людьми, они будут отображаться здесь',
+  noResultsFollowersTitle: 'Читатели',
+  noResultsFollowersSubtitle: 'Здесь будут отображаться люди, которые следят за вами',
+
+
+
+  noResults: 'К сожалению, ничего по запросу не найдено. Попробуйте еще раз чуть позже!',
+
   mustHaveAtLeastOneCategory: 'Должна быть хотя бы одна категория!',
   search: 'Поиск',
   minimumOneSocialNetwork: 'Добавьте хотя бы одну соцсеть!',
@@ -77,7 +92,7 @@ export const ru = {
   edit_profile: 'Редактировать профиль',
   following: 'Вы подписаны',
   followers: 'Подписчики',
-  followings: 'Подписики',
+  followings: 'Подписки',
   publications: 'Публикации',
   save: 'Сохранить',
   age: 'Возраст',

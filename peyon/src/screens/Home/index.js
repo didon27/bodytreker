@@ -8,6 +8,8 @@ import React, {
 import { StatusBar, TextInput, TouchableOpacity, Animated, TouchableWithoutFeedback, LogBox, FlatList, ActivityIndicator, PermissionsAndroid } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 import { Shadow } from 'react-native-shadow-2';
 import { activitiesActions } from 'store/activities';
 import {
@@ -296,6 +298,8 @@ const Home = props => {
     return (
       <FlatList
         ListEmptyComponent={() => (
+                tab === 'actual' ? (
+
           <View
             style={{
               width: '100%',
@@ -303,11 +307,42 @@ const Home = props => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Icon name='search-outline' size={80} color={'grey'} />
+              
+            <Entypo name='documents' size={80} color={'grey'} />
             <View mTop={24}>
-              {loading ? <ActivityIndicator style={{ marginTop: 24 }} size={'large'} color={colors.mainBlue} /> : <Text size={16} color={'grey'} center>{translations.noResults}</Text>}
+            <Text size={16} color={'grey'} center>{translations.noResultsActual}</Text>
             </View>
           </View>
+                ) :  tab === 'followings' ? (
+           <View
+            style={{
+              width: '100%',
+              height: DEVICE_HEIGHT * 0.7,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              
+            <Entypo name='documents' size={80} color={'grey'} />
+            <View mTop={24}>
+               <Text size={16} color={'grey'} center>{translations.noResultsFollowings}</Text>
+            </View>
+          </View>
+                ) : (
+                           
+                  <View
+            style={{
+              width: '100%',
+              height: DEVICE_HEIGHT * 0.7,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              
+            <Entypo name='documents' size={80} color={'grey'} />
+            <View mTop={24}>
+              <Text size={16} color={'grey'} center>{translations.noResultsFriends}</Text>
+            </View>
+          </View>
+                )
         )}
         decelerationRate="fast"
         windowSize={10}
