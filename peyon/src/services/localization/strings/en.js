@@ -27,6 +27,7 @@ export const en = {
   noResultsFollowings: 'Posts you follow',
   noResultsActual: 'Actual publications of all users',
 
+  noResultsActivities: 'Your publications',
   noResultsFollowingsTitle: 'The people you follow',
   noResultsFollowingsSubtitle: 'When you start following people they will show up here',
   noResultsFollowersTitle: 'Followers',

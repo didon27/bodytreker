@@ -23,7 +23,7 @@ export const ua = {
   noResultsFollowings: 'Дописи за якими ви стежите',
   noResultsActual: 'Актуальні дописи усіх користувачів',
 
-
+  noResultsActivities: 'Ваші публікації',
   noResultsFollowingsTitle: 'Люди за якими ви стежите',
   noResultsFollowingsSubtitle: 'Коли ви почнете стежите за людьми , вони відображатимуться тут',
   noResultsFollowersTitle: 'Читачі',

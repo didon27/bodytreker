@@ -9,6 +9,8 @@ import React, {
 import { StatusBar, TouchableOpacity, TextInput, Animated, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
@@ -187,9 +189,9 @@ const Activities = props => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Icon name='search-outline' size={80} color={'grey'} />
+            <Entypo name='documents'  size={80} color={'grey'} />
             <View mTop={24}>
-              {loading ? <ActivityIndicator style={{ marginTop: 24 }} size={'large'} color={colors.mainBlue} /> : <Text size={16} color={'grey'} center>{translations.noResults}</Text>}
+             <Text size={16} color={'grey'} center>{translations.noResultsActivities}</Text>
             </View>
           </View>
         )}

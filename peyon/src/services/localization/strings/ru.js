@@ -26,6 +26,7 @@ export const ru = {
   noResultsFollowings: 'Публикации за которыми вы следите',
   noResultsActual: 'Актуальные публикации всех пользователей',
 
+  noResultsActivities: 'Ваши публикации',
   noResultsFollowingsTitle: 'Люди за которыми вы следите',
   noResultsFollowingsSubtitle: 'Когда вы начнете следить за людьми, они будут отображаться здесь',
   noResultsFollowersTitle: 'Читатели',
