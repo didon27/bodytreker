@@ -15,6 +15,8 @@ import { storage } from 'services/storage';
 import { authActions } from 'store/auth';
 
 import styles from './styles';
+import { mamaAxios } from 'services/api';
+import { API_URL } from 'constants';
 
 const Settings = props => {
   const { appLanguage, translations, setAppLanguage } =
@@ -29,6 +31,7 @@ const Settings = props => {
     await storage.delete('UserToken');
 
     dispatch(authActions.removeTokenSuccess());
+    mamaAxios.get(API_URL + '/user/logout');
   };
 
   const ListButton = props => {
