@@ -378,7 +378,6 @@ const Home = props => {
         ),
       );
     } else if (tab === 'friends') {
-      console.log(pageFriends);
       setPageFriends(pageFriends + 1);
       dispatch(
         activitiesActions.getFriendsActivities(

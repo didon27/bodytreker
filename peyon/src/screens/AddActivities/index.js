@@ -533,8 +533,6 @@ const AddActivities = () => {
   };
   const [activity, setActivity] = useState(initialActivity)
 
-  console.log(activity.lat)
-
   return (
     <ActivityOperation
       url={'/activities/create-new-activities'}

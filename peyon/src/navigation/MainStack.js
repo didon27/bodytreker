@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
 const getTabBarVisibility = (route, stack, routeProps) => {
   const routeName = getFocusedRouteNameFromRoute(route);
 
-  // console.log(routeName);
   const hideOnScreens = ['AddActivities'];
 
   // if (stack === 'AddActivities') {

@@ -48,7 +48,6 @@ const ChangePassword = props => {
 
         mamaAxios.post(API_URL + '/user/reset-password', { password, old_password }).
             then((response) => {
-                console.log(response.data);
                 setPassword('');
                 setConfirmationPassword('');
                 setOldPassword('');

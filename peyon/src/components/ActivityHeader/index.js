@@ -142,7 +142,7 @@ function ActivityHeader({ activity, showUser, navigation, userId, translations, 
                                 </Text>
                                 {activity.createdAt &&
                                     <Text size={14} medium color={'grey'} mLeft={10} >
-                                        {moment(activity.createdAt).startOf('hour').fromNow()}
+                                        {moment(activity.createdAt).fromNow()}
                                     </Text>
                                 }
                             </View>

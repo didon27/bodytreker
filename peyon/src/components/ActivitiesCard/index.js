@@ -98,7 +98,7 @@ function ActivitiesCard({
               {user.verified_account && <Icon name="md-checkmark-circle" size={16} color={colors.mainBlue} />}
             </View>
           </View>
-          <Text color={'grey'}>{moment(createdAt).startOf('hour').fromNow()}</Text>
+          <Text color={'grey'}>{moment(createdAt).fromNow()}</Text>
         </View>
         <Text size={16} mTop={8} numberOfLines={3} >
           {title}
