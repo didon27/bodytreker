@@ -10,6 +10,8 @@ import { StatusBar, TouchableOpacity, TextInput, Animated, ActivityIndicator } f
 import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 import { View, Text, CustomSafeAreaView, CheckBox, UserBlock } from 'components';
@@ -43,7 +45,6 @@ const FollowersAndFollowings = props => {
   const dispatch = useDispatch();
 
   const snapPoints = useMemo(() => ['25%', '40%'], []);
-
   const returnData = () => {
     let data = { user_id };
 
@@ -117,6 +118,7 @@ const FollowersAndFollowings = props => {
   });
 
   const buttonControl = (id, subscribe) => {
+
     if (subscribe) {
       dispatch(
         userActions.unsubscribeUser(
@@ -181,6 +183,8 @@ const FollowersAndFollowings = props => {
           { useNativeDriver: false },
         )}
         ListEmptyComponent={() => (
+         type === 'followings' ? 
+
           <View
             style={{
               width: '100%',
@@ -188,10 +192,27 @@ const FollowersAndFollowings = props => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Icon name='search-outline' size={80} color={'grey'} />
-            <View mTop={24}>
-              {loading ? <ActivityIndicator style={{ marginTop: 24 }} size={'large'} color={colors.mainBlue} /> : <Text size={16} color={'grey'} center>{translations.noResults}</Text>}
-            </View>
+            <AntDesign name='adduser' size={80} color={'grey'} />
+              <View mTop={24}>
+               <Text size={19}  center>{translations.noResultsFollowingsTitle}</Text>
+                <Text size={16} mTop={10} color={'grey'} center>{translations.noResultsFollowingsSubtitle}</Text>
+
+              </View>
+          </View>
+            :  
+          <View
+            style={{
+              width: '100%',
+              height: DEVICE_HEIGHT * 0.7,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+             <AntDesign name='adduser' size={80} color={'grey'} />
+              <View mTop={24}>
+               <Text size={19}  center>{translations.noResultsFollowersTitle}</Text>
+               <Text size={16} mTop={10} color={'grey'} center>{translations.noResultsFollowersSubtitle}</Text>
+
+              </View>
           </View>
         )}
         decelerationRate="fast"
