@@ -4,7 +4,7 @@ import {API_URL} from 'constants';
 
 export const mamaAxios = axios.create({
   baseURL: API_URL,
-  timeout: 10000
+  timeout: 16000
 });
 
 export const request = {

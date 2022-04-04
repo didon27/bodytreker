@@ -92,8 +92,6 @@ const SearchPlaces = ({ selectPlace, visible, setVisible, translations, appLangu
                             <Icon name="location-outline" size={18} color={'grey'} />
                         </TouchableOpacity>
                     )}
-                    refreshing={true}
-                    refreshControl={() => <ActivityIndicator size={"small"}/>}
                     data={places}
                     renderItem={renderItemPlace}
                     keyExtractor={keyExtractorPlaces}

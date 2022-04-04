@@ -16,7 +16,6 @@ const Avatar = ({ user, style, edit, letterStyle }) => {
       : '';
   };
 
-
   if (user.avatar) {
     return (
       <FastImage

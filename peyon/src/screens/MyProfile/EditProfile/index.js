@@ -242,7 +242,7 @@ const EditProfile = props => {
   });
 
   return (
-    <KeyboardAvoidingView keyboardVerticalOffset={Platform.OS === 'android' && -40} behavior={ 'padding' } style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+    <KeyboardAvoidingView keyboardVerticalOffset={Platform.OS === 'android' && -40} behavior={Platform.OS === 'ios' ? 'padding' : 'height' } style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
       <ScrollView
         style={{ backgroundColor: colors.white }}
         bounces={false}
@@ -286,9 +286,7 @@ const EditProfile = props => {
               user={{
                 first_name: user.first_name,
                 avatar: currentPhoto
-                  ? Platform.OS === 'ios'
-                    ? currentPhoto.path
-                    : currentPhoto
+                  ? currentPhoto.path
                   : user.avatar
                     ? API + '/images/' + user.avatar
                     : null,
