@@ -1,6 +1,6 @@
-import {userConstants} from './constants';
+import { userConstants } from './constants';
 
-import {authConstants} from '../auth';
+import { authConstants } from '../auth';
 
 const initialState = {
   createUserLoading: false,
@@ -12,61 +12,65 @@ const initialState = {
   isCodeValid: false,
   codeError: null,
   user: {},
+  userLocation: { lat: null, lng: null }
 };
 
 export const userReducer = (state = initialState, action) => {
-  const {error, payload} = action;
+  const { error, payload } = action;
 
   switch (action.type) {
     case userConstants.FETCH_USER_REQUEST:
-      return {...state, loading: true, error: null};
+      return { ...state, loading: true, error: null };
     case userConstants.FETCH_USER_SUCCESS:
-      return {...state, loading: false, user: payload};
+      return { ...state, loading: false, user: payload };
     case userConstants.FETCH_USER_FAILURE:
-      return {...state, loading: false, error};
+      return { ...state, loading: false, error };
 
     case userConstants.CREATE_USER_REQUEST:
-      return {...state, createUserLoading: true, createUserError: null};
+      return { ...state, createUserLoading: true, createUserError: null };
     case userConstants.CREATE_USER_SUCCESS:
-      return {...state, createUserLoading: false};
+      return { ...state, createUserLoading: false };
     case userConstants.CREATE_USER_FAILURE:
-      return {...state, createUserLoading: false, createUserError: error};
+      return { ...state, createUserLoading: false, createUserError: error };
+
+    case userConstants.UPDATE_USER_LOCATION:
+      return { ...state,  userLocation: payload };
 
     case userConstants.UPDATE_USER_REQUEST:
-      return {...state, updateUserLoading: true, updateUserError: null};
+      return { ...state, updateUserLoading: true, updateUserError: null };
     case userConstants.UPDATE_USER_SUCCESS:
       return {
         ...state,
         updateUserLoading: false,
-        user: {...state.user, ...payload},
+        user: { ...state.user, ...payload },
       };
     case userConstants.UPDATE_USER_FAILURE:
-      return {...state, updateUserLoading: false, updateUserError: error};
+      return { ...state, updateUserLoading: false, updateUserError: error };
 
     case userConstants.SUBSCRIBE_USER_REQUEST:
-      return {...state, subscribeUserLoading: true, error: null};
+      return { ...state, subscribeUserLoading: true, error: null };
     case userConstants.SUBSCRIBE_USER_SUCCESS:
       return {
         ...state,
         subscribeUserLoading: false,
-        user: {...state.user, followings: state.user.followings + 1},
+        user: { ...state.user, followings: state.user.followings + 1 },
       };
     case userConstants.SUBSCRIBE_USER_FAILURE:
-      return {...state, subscribeUserLoading: false, error: error};
+      return { ...state, subscribeUserLoading: false, error: error };
 
     case userConstants.UNSUBSCRIBE_USER_REQUEST:
-      return {...state, subscribeUserLoading: true, error: null};
+      return { ...state, subscribeUserLoading: true, error: null };
     case userConstants.UNSUBSCRIBE_USER_SUCCESS:
       return {
         ...state,
         subscribeUserLoading: false,
-        user: {...state.user, followings: state.user.followings - 1},
+        user: { ...state.user, followings: state.user.followings - 1 },
       };
     case userConstants.UNSUBSCRIBE_USER_FAILURE:
-      return {...state, subscribeUserLoading: false, error: error};
+      return { ...state, subscribeUserLoading: false, error: error };
 
     case userConstants.UPDATE_USER:
-      return {...state, updateUserLoading: false, user: payload};
+      return { ...state, updateUserLoading: false, user: payload };
 
     case userConstants.CHECK_VERIFICATION_CODE_REQUEST:
       return {
@@ -91,7 +95,7 @@ export const userReducer = (state = initialState, action) => {
       };
 
     case authConstants.CREATE_AUTH_SUCCESS:
-      return {...state, loading: false};
+      return { ...state, loading: false };
 
     case authConstants.REMOVE_TOKEN_SUCCESS:
       return initialState;

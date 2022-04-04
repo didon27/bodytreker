@@ -27,7 +27,7 @@ function ActivityHeader({ activity, showUser, navigation, userId, translations, 
     const [deleteImageVisible, setDeleteImageVisible] = useState(false);
 
     const deleteImageActivity = () => {
-        const id = activity.activities_images[index].id;
+        const id = activity.activities_images[index]?.id || 0;
         let length = activity.activities_images.length;
 
         if (!activity.activities_images[index]?.edit) {
@@ -47,7 +47,7 @@ function ActivityHeader({ activity, showUser, navigation, userId, translations, 
                 })
                 .catch(error => console.log(error))
         } else {
-            const id = activity.activities_images[index].id;
+            const id = activity.activities_images[index]?.id || 0;
             changeData(activity.activities_images.filter((el) => el.id !== id))
             if (length === 1) {
                 setModalVisible(false);
@@ -72,7 +72,7 @@ function ActivityHeader({ activity, showUser, navigation, userId, translations, 
         )
     }
 
-    console.log()
+
     return (
         <Fragment>
             <Modal animationOut={'fadeOut'} isVisible={modalVisible} style={{ margin: 0 }}>
@@ -100,7 +100,7 @@ function ActivityHeader({ activity, showUser, navigation, userId, translations, 
                 />
             </Modal>
             <LinearGradient
-                colors={['#0057b8', '#ffd700']}
+                   colors={['#4285f4', '#4285f4']}
                 style={
                     !activity.activities_images.length && {
                         height: 160,
@@ -111,7 +111,7 @@ function ActivityHeader({ activity, showUser, navigation, userId, translations, 
                     sliderBoxHeight={360}
                     circleLoop
                     activeOpacity={1}
-                    imageLoadingColor={colors.mainBlue}
+                    imageLoadingColor={colors.white}
                     inactiveSlideScale={1}
                     onCurrentImagePressed={(index) => { setIndex(index); setModalVisible(true) }}
                     paginationBoxVerticalPadding={0}
@@ -162,7 +162,7 @@ function ActivityHeader({ activity, showUser, navigation, userId, translations, 
             </View> */}
                         </View>
                     </TouchableOpacity>
-                </View> : <View style={styles.headerContainer} />
+                </View> : <View style={styles.headerContainer} ><Text bold size={18}>{translations.newPost}</Text></View>
             }
         </Fragment>
     );

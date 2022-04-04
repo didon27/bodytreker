@@ -76,7 +76,7 @@ const SocialNetwork = props => {
                             value={instagram}
                             placeholderTextColor={'#adadad'}
                             placeholder={'Instagram'}
-                            onChangeText={setInstagram}
+                            onChangeText={(text)  => setInstagram(text.toLocaleLowerCase())}
                         />
                     </View>
                     <View row centered style={styles.textInputContainer}>
@@ -86,7 +86,7 @@ const SocialNetwork = props => {
                             value={telegram}
                             placeholderTextColor={'#adadad'}
                             placeholder={'Telegram'}
-                            onChangeText={setTelegram}
+                            onChangeText={(text)  => setTelegram(text.toLocaleLowerCase())}
                         />
                     </View>
                     <Button

@@ -31,12 +31,13 @@ import { userActions } from 'store/user';
 
 const Home = props => {
   const { appLanguage, translations } = useContext(LocalizationContext);
-  const { user } = useSelector(state => state.user);
+  const { user, userLocation} = useSelector(state => state.user);
   const [filters, setFilters] = useState({});
   const user_id = user.id;
   const [partner, setPartner] = useState(null);
   const [pageActivities, setPageActivities] = useState(0);
   const [pageSubscriptions, setPageSubscriptions] = useState(0);
+  const [pageFriends, setPageFriends] = useState(0);
   const [tab, setTab] = useState('actual');
   const [search, setSearch] = useState('');
   const [hideSearch, setHideSearch] = useState(true);
@@ -45,7 +46,7 @@ const Home = props => {
 
   const tabs = [
     { title: translations.actual, key: 'actual' },
-    { title: 'Друзі', key: 'friends' },
+    { title: translations.friends, key: 'friends' },
     { title: translations.followings, key: 'followings' },
   ];
 
@@ -63,7 +64,6 @@ const Home = props => {
   const dispatch = useDispatch();
 
   let data = tab === 'actual' ? activities.activities : tab === 'followings' ? subscriptionActivities.activities : friendsActivities.activities;
-
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -84,14 +84,11 @@ const Home = props => {
             console.log('Permission Denied');
           }
         } catch (err) {
-          console.warn(err);
+          console.warn('err', err);
         }
       }
     };
     requestLocationPermission();
-    return () => {
-      Geolocation.clearWatch(watchID);
-    };
   }, []);
 
   const getOneTimeLocation = () => {
@@ -106,7 +103,7 @@ const Home = props => {
         const currentLatitude =
           JSON.stringify(position.coords.latitude);
 
-          dispatch(userActions.updateUserSuccess({...user, lat: currentLatitude, lng: currentLongitude }));
+        dispatch(userActions.updateUserLocation({ lat: currentLatitude, lng: currentLongitude }))
         //Setting Longitude state
       },
       (error) => {
@@ -169,6 +166,47 @@ const Home = props => {
     // setRefresh(false);
   }, [search, appLanguage, partner, filters]);
 
+
+
+
+  useEffect(() => {
+    let data = returnData();
+
+    if (tab === 'friends') {
+      setPageFriends(0)
+      console.log('friends', pageFriends)
+      dispatch(
+        activitiesActions.getFriendsActivities(
+          {
+            ...data,
+            subscriptions: false,
+            friends: true
+          },
+          true,
+        ),
+      );
+    } else if (tab === 'actual') {
+      setPageActivities(0);
+      console.log('actual', pageActivities)
+      dispatch(
+        activitiesActions.getActivities({ ...data, subscriptions: false, friends: false }, true),
+      );
+    } else if (tab === 'followings') {
+      setPageSubscriptions(0)
+      console.log('followings', pageSubscriptions)
+      dispatch(
+        activitiesActions.getSubscriptionsActivities(
+          {
+            ...data,
+            subscriptions: true,
+            friends: false
+          },
+          true,
+        ),
+      );
+    }
+  }, [tab])
+
   const handleRefreshListActivities = () => {
     setPageActivities(0);
     dispatch(
@@ -198,7 +236,7 @@ const Home = props => {
   };
 
   const handleRefreshListActivitiesFriends = () => {
-    setPageSubscriptions(0);
+    setPageFriends(0);
     dispatch(
       activitiesActions.getFriendsActivities(
         {
@@ -315,7 +353,7 @@ const Home = props => {
           )}
         </View>
       ),
-    [activities, subscriptionActivities, tab],
+    [activities, subscriptionActivities, friendsActivities, tab],
   );
 
   const loadMoreData = () => {
@@ -335,6 +373,19 @@ const Home = props => {
             ...returnData(),
             subscriptions: true,
             page: pageSubscriptions + 1,
+          },
+          false,
+        ),
+      );
+    } else if (tab === 'friends') {
+      console.log(pageFriends);
+      setPageFriends(pageFriends + 1);
+      dispatch(
+        activitiesActions.getFriendsActivities(
+          {
+            ...returnData(),
+            subscriptions: false,
+            page: pageFriends + 1,
           },
           false,
         ),
@@ -396,7 +447,7 @@ const Home = props => {
               <View style={{ position: 'absolute', top: 30, zIndex: 9999 }}>
                 <Shadow viewStyle={{ backgroundColor: 'white', zIndex: 9999, borderRadius: 14 }} distance={18} startColor={'#00000012'} finalColor={'transparent'}>
                   {tabs.map((el, index) => (
-                    <TouchableOpacity key={el.key} style={{ borderColor: colors.lightGrey, borderBottomWidth: index === tabs.length - 1 ? 0 : 1, height: 40, flexDirection: 'row', alignItems: 'center', paddingLeft: 8, paddingRight: 22 }} onPress={() => { console.log('rea'); setTab(el.key); setOpenMenu(!openMenu); }}>
+                    <TouchableOpacity key={el.key} style={{ borderColor: colors.lightGrey, borderBottomWidth: index === tabs.length - 1 ? 0 : 1, height: 40, flexDirection: 'row', alignItems: 'center', paddingLeft: 8, paddingRight: 22 }} onPress={() => { setTab(el.key); setOpenMenu(!openMenu); }}>
                       {tab === el.key && <Icon size={18} name={'checkmark-sharp'} />}
                       <Text size={16} mLeft={tab === el.key ? 4 : 22}>{el.title}</Text>
                     </TouchableOpacity>

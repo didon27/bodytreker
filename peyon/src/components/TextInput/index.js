@@ -1,24 +1,24 @@
-import React, {useState} from 'react';
-import {TextInput, View, TouchableOpacity} from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
 
-import {Text} from 'components';
-import {colors} from 'colors';
+import { Text } from 'components';
+import { colors } from 'colors';
 
-import {styles} from './styles';
+import { styles } from './styles';
 
 const CustomTextInput = props => {
   const [hidePassword, setHidePassword] = useState(true);
-  const {error, disabled, label, labelStyle} = props;
+  const { error, disabled, label, labelStyle } = props;
   return (
     <View
       style={[
         styles.container,
-        disabled && {backgroundColor: colors.lightGrey},
-        label && {height: 60},
+        disabled && { backgroundColor: colors.lightGrey },
+        label && { height: 60 },
         props.containerStyle,
-        error && {borderColor: colors.pink, borderWidth: 2},
+        error && { borderColor: colors.pink, borderWidth: 2 },
       ]}>
       {props.label && (
         <Text size={16} mLeft={8} style={labelStyle}>
@@ -27,6 +27,7 @@ const CustomTextInput = props => {
       )}
       <View style={styles.textBoxBtnHolder}>
         <TextInput
+          autoCapitalize='none'
           editable={!disabled}
           placeholder={props.placeholder}
           placeholderTextColor={props.placeholderTextColor}
@@ -37,8 +38,8 @@ const CustomTextInput = props => {
           style={[
             styles.textBox,
             props.textInputStyle,
-            !props.isPassword && {paddingRight: 0},
-            disabled && {color: 'grey'},
+            !props.isPassword && { paddingRight: 0 },
+            disabled && { color: 'grey' },
           ]}
           onChangeText={text => props.onChangeText(text)}
           {...props}

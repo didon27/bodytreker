@@ -35,6 +35,11 @@ export const ua = {
   myLocation: 'Моє розташування',
   enterCityName: 'Введіть названу міста',
   ukraine: 'Україна',
+  newPost: 'Нова публікація',
+  privacyPolicy: 'Політика Конфіденційності',
+  pleaseReadThe: 'Будь ласка, прочитайте ',
+  beforeRegistration: 'перед реєстрацією',
+  friends: 'Друзі',
   oldPassword: 'Старий пароль',
   enter_your_email:
     'Введіть вашу електронну пошту, на який має прийти лист із кодом підтвердження',

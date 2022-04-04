@@ -22,7 +22,8 @@ const Start = props => {
       />
       <View style={styles.textBlock}>
         <Text style={styles.title}>Peyon</Text>
-        <Text style={styles.subtitle}>{translations.tagline}</Text>
+        {/* <Text style={styles.subtitle}>{translations.tagline}</Text> */}
+       <Text style={styles.subtitle}>Вітаємо , ми з України !</Text>
       </View>
       <View style={styles.bottomBlock}>
         <TouchableOpacity

@@ -1,10 +1,11 @@
-import {takeLatest, call, put} from 'redux-saga/effects';
+import { takeLatest, call, put } from 'redux-saga/effects';
 
-import {api, mamaAxios} from 'services/api';
-import {userConstants, userActions} from './';
-import {authActions} from '../auth';
-import {navigate} from '../../navigation';
-import {storage} from 'services/storage';
+import { api, mamaAxios } from 'services/api';
+import { userConstants, userActions } from './';
+import { authActions } from '../auth';
+import { navigate } from '../../navigation';
+import { storage } from 'services/storage';
+import { keys } from 'enums';
 
 function* fetch(data) {
   try {
@@ -14,12 +15,16 @@ function* fetch(data) {
     yield put(userActions.fetchSuccess(response.data));
     yield put(authActions.setTokenSuccess(data.payload));
   } catch (e) {
-    yield put(userActions.fetchFailure(e.response.data.error));
+    if (!e?.response?.data) {
+      storage.delete(keys.JWT_TOKEN);
+      yield put(authActions.removeTokenSuccess());
+    }
+    yield put(userActions.fetchFailure(e.response?.data.error));
   }
 }
 
 function* create(data) {
-  const {route} = data;
+  const { route } = data;
   try {
     const response = yield call(api.user.create, data.payload);
     const userToken = `Bearer ${response.data.access_token}`;
@@ -38,7 +43,7 @@ function* create(data) {
 }
 
 function* updateUser(data) {
-  const {route} = data;
+  const { route } = data;
   try {
     const response = yield call(api.user.updateUser, data.payload);
     yield put(userActions.updateUserSuccess(response.data));
@@ -51,7 +56,7 @@ function* updateUser(data) {
 }
 
 function* subscribeUser(data) {
-  const {payload, refreshUser} = data;
+  const { payload, refreshUser } = data;
   try {
     const response = yield call(api.user.subscribeUser, payload);
     yield put(userActions.subscribeUserSuccess(response.data));
@@ -64,7 +69,7 @@ function* subscribeUser(data) {
 }
 
 function* unsubscribeUser(data) {
-  const {payload, refreshUser} = data;
+  const { payload, refreshUser } = data;
   try {
     const response = yield call(api.user.unsubscribeUser, payload);
     yield put(userActions.unsubscribeUserSuccess(response.data));

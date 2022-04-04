@@ -1,25 +1,26 @@
 import React from 'react';
-import {TouchableOpacity} from 'react-native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { TouchableOpacity } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import SignIn from '../screens/Auth/SignIn';
 import SignUp from '../screens/Auth/SignUp/Main';
 
-import {colors} from 'colors';
+import { colors } from 'colors';
 import Start from '../screens/Auth/Start';
-import {routeNames} from 'enums';
+import { routeNames } from 'enums';
 import RegisterEmail from 'screens/Auth/SignUp/RegisterEmail';
 import ContinueRegister from 'screens/Auth/SignUp/ContinueRegister';
 import ForgotPassword from 'screens/Auth/ResetPassword/ForgotPassword';
 import VerificationPasswordCode from 'screens/Auth/ResetPassword/VerificationPasswordCode';
 import PasswordRecovery from 'screens/Auth/ResetPassword/PasswordRecovery';
 import SocialNetwork from 'screens/Auth/SignUp/SocialNetwork';
+import PrivacyPolicy from 'screens/Auth/PrivacyPolicy';
 
 const AuthStack = createStackNavigator();
 
 export default props => {
-  const {user} = props;
+  const { user } = props;
 
   return (
     <AuthStack.Navigator
@@ -41,6 +42,10 @@ export default props => {
       <AuthStack.Screen
         name={routeNames.continueRegister}
         component={ContinueRegister}
+      />
+      <AuthStack.Screen
+        name={routeNames.privacyPolicy}
+        component={PrivacyPolicy}
       />
       <AuthStack.Screen
         name={routeNames.forgotPassword}

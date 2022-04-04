@@ -3,7 +3,8 @@ import axios from 'axios';
 import {API_URL} from 'constants';
 
 export const mamaAxios = axios.create({
-  baseURL: API_URL
+  baseURL: API_URL,
+  timeout: 10000
 });
 
 export const request = {

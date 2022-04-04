@@ -1,17 +1,17 @@
-import {userConstants} from './constants';
+import { userConstants } from './constants';
 
 export const userActions = {
-  fetch: payload => ({type: userConstants.FETCH_USER_REQUEST, payload}),
-  fetchSuccess: payload => ({type: userConstants.FETCH_USER_SUCCESS, payload}),
-  fetchFailure: error => ({type: userConstants.FETCH_USER_FAILURE, error}),
+  fetch: payload => ({ type: userConstants.FETCH_USER_REQUEST, payload }),
+  fetchSuccess: payload => ({ type: userConstants.FETCH_USER_SUCCESS, payload }),
+  fetchFailure: error => ({ type: userConstants.FETCH_USER_FAILURE, error }),
 
   create: (payload, route) => ({
     type: userConstants.CREATE_USER_REQUEST,
     payload,
     route,
   }),
-  createSuccess: () => ({type: userConstants.CREATE_USER_SUCCESS}),
-  createFailure: error => ({type: userConstants.CREATE_USER_FAILURE, error}),
+  createSuccess: () => ({ type: userConstants.CREATE_USER_SUCCESS }),
+  createFailure: error => ({ type: userConstants.CREATE_USER_FAILURE, error }),
 
   updateUser: (payload, route) => ({
     type: userConstants.UPDATE_USER_REQUEST,
@@ -27,7 +27,11 @@ export const userActions = {
     error,
   }),
 
-  // updateUser: payload => ({type: userConstants.UPDATE_USER, payload}),
+  updateUserLocation: payload => ({
+    type: userConstants.UPDATE_USER_LOCATION,
+    payload,
+  }),
+
 
   subscribeUser: (payload, refreshUser) => ({
     type: userConstants.SUBSCRIBE_USER_REQUEST,

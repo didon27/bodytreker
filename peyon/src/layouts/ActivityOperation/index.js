@@ -122,7 +122,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         }
         data.append('description', description);
         data.append('user_id', user.id);
-
+        data.append('username', user.username);
         if (lat && lng) {
             data.append('lat', lat);
             data.append('lng', lng);
@@ -154,7 +154,6 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         StatusBar.setHidden(true);
     }, []);
 
-    console.log('MODAL', updateModalVisible);
     useEffect(() => {
         let data = {};
 
@@ -169,7 +168,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         if (activity?.activities_categories) {
             setCurrentCategories(activity.activities_categories.map(el => el.id));
         }
-    }, [activity]);
+    }, [activity?.activities_categories]);
 
     let inputRageHeader = activity?.activities_images.length
         ? [0, 100, 220, 340]
@@ -262,12 +261,15 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
                 const result = await ImagePicker.openPicker({
                     mediaType: 'photo',
                     includeBase64: false,
-                    compressImageQuality: 0.5,
+                    maxWidth: 500,
+                    maxHeight: 500,
+                    quality: 0.1,
+                    compressImageQuality: 1,
                     maxFiles: 4,
                     multiple: true,
                 });
 
-                changeField('activities_images', [...activity.activities_images, ...result.map((image, index) => ({ url: Platform.OS === 'ios' ? image.sourceURL : image.path, edit: true, id: `${moment()}${index}` }))])
+                changeField('activities_images', [...activity.activities_images, ...result.map((image, index) => ({ url: image.path, edit: true, id: `${moment()}${index}` }))])
                 break;
             }
             case RESULTS.BLOCKED:
@@ -329,9 +331,8 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         setLocationHideModal(false)
     }
 
-
     return (
-        <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }} >
+        <KeyboardAvoidingView behavior={ 'height'} style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === 'android' && 40}>
             <ScrollView bounces={false} style={{ backgroundColor: colors.white }}>
                 <Modal isVisible={updateModalVisible}>
                     <View style={{ backgroundColor: colors.white, padding: 16, borderRadius: 10, alignItems: 'center' }}>

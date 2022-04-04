@@ -26,7 +26,7 @@ const Settings = props => {
   const bottomSheetRef = useRef();
 
   const logout = async () => {
-    await storage.delete(keys.JWT_TOKEN);
+    await storage.delete('UserToken');
 
     dispatch(authActions.removeTokenSuccess());
   };
@@ -146,7 +146,7 @@ const Settings = props => {
         iconName="lock"
       />
       <ListButton
-        onPress={() => bottomSheetRef.current.present()}
+        onPress={() => props.navigation.navigate(routeNames.information)}
         text={translations.information}
         iconName="info"
       />

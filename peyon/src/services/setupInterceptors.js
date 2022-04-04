@@ -19,7 +19,7 @@ const setup = store => {
     },
     async err => {
       const originalConfig = err.config;
-      console.log(err.response.status);
+
       if (
         originalConfig.url !== '/auth/signin' &&
         err.response.status === 401
