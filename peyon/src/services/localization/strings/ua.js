@@ -22,7 +22,7 @@ export const ua = {
   noResultsFriends: 'Дописи друзів за якими ви стежите',
   noResultsFollowings: 'Дописи за якими ви стежите',
   noResultsActual: 'Актуальні дописи усіх користувачів',
-
+  phone: 'Телефон',
   noResultsActivities: 'Ваші публікації',
   noResultsFollowingsTitle: 'Люди за якими ви стежите',
   noResultsFollowingsSubtitle: 'Коли ви почнете стежите за людьми , вони відображатимуться тут',

@@ -136,6 +136,7 @@ const EditProfile = props => {
     data.append('instagram', user.instagram);
     data.append('status', user.status);
     data.append('last_name', user.last_name);
+    data.append('phone', user.phone);
     data.append('first_name', user.first_name);
     data.append('username', user.username);
     data.append('gender', user.gender);
@@ -351,6 +352,16 @@ const EditProfile = props => {
               style={[{ flex: 1, paddingLeft: 10, fontSize: 14 }]} />
           </View>
           {errors.social && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimumOneSocialNetwork}</Text>}
+          <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.phone}</Text>
+          <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.phone ? 1 : 0 }}>
+            <Text size={16} color={'grey'} mRight={10}>+</Text>
+            <TextInput
+              placeholderTextColor={colors.lightGrey}
+              value={user.phone}
+              onChangeText={value => changeUserField('phone', value.replace(/\s+/g, ''))}
+              placeholder={translations.phone}
+              style={[{ flex: 1, fontSize: 14 }]} />
+          </View>
           <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.description}</Text>
           <View row flex centered style={styles.inputDescriptionContainer} mBottom={40} >
             <TextInput

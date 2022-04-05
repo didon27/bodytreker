@@ -113,7 +113,7 @@ const Home = props => {
       },
       {
         enableHighAccuracy: false,
-        timeout: 30000,
+        timeout: 40000,
         maximumAge: 1000
       },
     );

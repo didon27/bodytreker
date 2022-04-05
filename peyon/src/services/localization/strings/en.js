@@ -22,7 +22,7 @@ export const en = {
   aboutMe: 'About me',
   addSocialNetworks: 'Add social networks where you can be contacted',
   noResults: 'Sorry, no results were found for your search. Please try again later!',
-
+  phone: 'Phone',
   noResultsFriends: 'Posts of friends you follow',
   noResultsFollowings: 'Posts you follow',
   noResultsActual: 'Actual publications of all users',
