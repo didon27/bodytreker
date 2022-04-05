@@ -41,6 +41,7 @@ import { routeNames } from 'enums';
 
 import DropDownPicker from 'react-native-dropdown-picker';
 import { mamaAxios } from 'services/api';
+import TextInputMask from 'react-native-text-input-mask';
 
 const EditProfile = props => {
   const { translations } = useContext(LocalizationContext);
@@ -354,13 +355,20 @@ const EditProfile = props => {
           {errors.social && <Text mTop={4} size={12} color={colors.errorColor}>{translations.minimumOneSocialNetwork}</Text>}
           <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.phone}</Text>
           <View row flex centered style={{ ...styles.inputContainer, borderWidth: errors.phone ? 1 : 0 }}>
-            <Text size={16} color={'grey'} mRight={10}>+</Text>
-            <TextInput
+            <TextInputMask
+                mask={"+380 [00] [000] [00] [00]"}
+                value={user.phone}
+                placeholderTextColor='grey'
+                placeholder='+38 (0__) ___ __  __'
+                keyboardType='number-pad'
+                onChangeText={value => changeUserField('phone', value.replace(/\s+/g, ''))}
+            />
+            {/* <TextInput
               placeholderTextColor={colors.lightGrey}
               value={user.phone}
               onChangeText={value => changeUserField('phone', value.replace(/\s+/g, ''))}
               placeholder={translations.phone}
-              style={[{ flex: 1, fontSize: 14 }]} />
+              style={[{ flex: 1, fontSize: 14 }]} /> */}
           </View>
           <Text mTop={8} size={16} mBottom={8} color={'grey'}>{translations.description}</Text>
           <View row flex centered style={styles.inputDescriptionContainer} mBottom={40} >

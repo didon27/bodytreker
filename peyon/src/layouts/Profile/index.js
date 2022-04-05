@@ -70,7 +70,6 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
   const tel = `http://t.me/${user.telegram}`;
   const inst = `https://www.instagram.com/${user.instagram}`;
 
-
   const openTelegram = () => {
     Linking.openURL(tel).catch(err => console.error('An error occurred', err))
   };
@@ -123,20 +122,20 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
               />
             </AnimatedTouchableOpacity>
           ) : null
-          //  (
-          //   <AnimatedTouchableOpacity
-          //     onPress={() => navigation.navigate(routeNames.settings, { user })}
-          //     style={{
-          //       ...styles.secondHeaderBtn,
-          //       backgroundColor: headerButtonBackgroundColor,
-          //     }}>
-          //     <AnimatedIonicons
-          //       name={'ios-chatbubbles'}
-          //       size={24}
-          //       style={{ color: headerButtonColor }}
-          //     />
-          //   </AnimatedTouchableOpacity>
-          // )
+            //  (
+            //   <AnimatedTouchableOpacity
+            //     onPress={() => navigation.navigate(routeNames.settings, { user })}
+            //     style={{
+            //       ...styles.secondHeaderBtn,
+            //       backgroundColor: headerButtonBackgroundColor,
+            //     }}>
+            //     <AnimatedIonicons
+            //       name={'ios-chatbubbles'}
+            //       size={24}
+            //       style={{ color: headerButtonColor }}
+            //     />
+            //   </AnimatedTouchableOpacity>
+            // )
           }
         </View>
         <Animated.View
@@ -166,7 +165,25 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
           navigation={navigation}
           user={user}
         />
-        <View style={{ padding: 20 }}>
+
+        <View style={{ paddingHorizontal: 20 }}>
+          {user.phone && user.description !== 'null' ? (
+            <View mBottom={16} mTop={16}>
+              <Text size={18} medium>
+                {translations.phone}
+              </Text>
+              <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}} onPress={() => Linking.openURL(`tel:${user.phone}`)}>
+                <Icon name="phone" size={22} color={colors.mainBlue} />
+                <Text
+                  size={16}
+                  mLeft={8}
+                  style={{ fontWeight: '500' }}
+                  color={colors.mainBlue}>
+                  {user.phone}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
           <Text size={18} medium>
             {translations.socialNetwork}
           </Text>

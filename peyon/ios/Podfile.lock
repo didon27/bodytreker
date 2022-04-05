@@ -167,6 +167,7 @@ PODS:
   - GoogleUtilities/UserDefaults (7.7.0):
     - GoogleUtilities/Logger
   - hermes-engine (0.9.0)
+  - InputMask (6.1.0)
   - libevent (2.1.12)
   - libwebp (1.2.1):
     - libwebp/demux (= 1.2.1)
@@ -425,6 +426,10 @@ PODS:
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
+  - react-native-text-input-mask (3.1.4):
+    - InputMask (~> 6.1.0)
+    - React-Core
+    - React-RCTText
   - react-native-webview (11.18.1):
     - React-Core
   - React-perflogger (0.67.4)
@@ -629,6 +634,7 @@ DEPENDENCIES:
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
+  - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -680,6 +686,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - hermes-engine
+    - InputMask
     - libevent
     - libwebp
     - nanopb
@@ -755,6 +762,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
+  react-native-text-input-mask:
+    :path: "../node_modules/react-native-text-input-mask"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -838,6 +847,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   hermes-engine: bf7577d12ac6ccf53ab8b5af3c6ccf0dd8458c5c
+  InputMask: 71d291dc54d2deaeac6512afb6ec2304228c0bb7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
@@ -869,6 +879,7 @@ SPEC CHECKSUMS:
   react-native-restart: 6cc683e208c080581c147d0875609e64572a9443
   react-native-safe-area-context: 5b8a418400eb3d8364aa87300e865c0262cc17b9
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
+  react-native-text-input-mask: c49cb363db8c158f2e06e61f6732ab13b056eea6
   react-native-webview: ba5a82f852bdd2564241a921c31dffdd696f88be
   React-perflogger: 0afaf2f01a47fd0fc368a93bfbb5bd3b26db6e7f
   React-RCTActionSheet: 59f35c4029e0b532fc42114241a06e170b7431a2
@@ -901,6 +912,6 @@ SPEC CHECKSUMS:
   Yoga: d6b6a80659aa3e91aaba01d0012e7edcbedcbecd
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: c77764d725e17846a559fcd2c367df157e088f81
+PODFILE CHECKSUM: 6f576e05a6aa599d6f2f718f7a0756083b307032
 
 COCOAPODS: 1.11.2

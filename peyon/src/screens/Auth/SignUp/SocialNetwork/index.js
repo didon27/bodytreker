@@ -12,6 +12,7 @@ import { colors } from 'colors';
 import styles from './styles';
 import { storage } from 'services/storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import TextInputMask from 'react-native-text-input-mask';
 
 const SocialNetwork = props => {
     const { translations } = useContext(LocalizationContext);
@@ -26,6 +27,7 @@ const SocialNetwork = props => {
     const { loading } = useSelector(state => state.auth);
     const [telegram, setTelegram] = useState('');
     const [instagram, setInstagram] = useState('');
+    const [phone, setPhone] = useState('');
     const [error, setError] = useState('');
     const dispatch = useDispatch();
 
@@ -41,6 +43,7 @@ const SocialNetwork = props => {
                 email,
                 telegram,
                 instagram,
+                phone,
                 username,
                 password,
                 first_name,
@@ -76,7 +79,7 @@ const SocialNetwork = props => {
                             value={instagram}
                             placeholderTextColor={'#adadad'}
                             placeholder={'Instagram'}
-                            onChangeText={(text)  => setInstagram(text.toLocaleLowerCase())}
+                            onChangeText={(text) => setInstagram(text.toLocaleLowerCase())}
                         />
                     </View>
                     <View row centered style={styles.textInputContainer}>
@@ -86,7 +89,18 @@ const SocialNetwork = props => {
                             value={telegram}
                             placeholderTextColor={'#adadad'}
                             placeholder={'Telegram'}
-                            onChangeText={(text)  => setTelegram(text.toLocaleLowerCase())}
+                            onChangeText={(text) => setTelegram(text.toLocaleLowerCase())}
+                        />
+                    </View>
+                    <View row centered style={styles.textInputContainer}>
+                        <TextInputMask
+                            mask={"+380 [00] [000] [00] [00]"}
+                            value={phone}
+                            style={{fontSize: 16}}
+                            placeholderTextColor='grey'
+                            placeholder='+38 (0__) ___ __  __'
+                            keyboardType='number-pad'
+                            onChangeText={value => setPhone(value.replace(/\s+/g, ''))}
                         />
                     </View>
                     <Button

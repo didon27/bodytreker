@@ -361,6 +361,17 @@ const ActivityDetails = ({ navigation, route }) => {
                 style={{ height: 40, marginTop: 16, backgroundColor: 'grey' }}
               />
             )}
+          <View row mTop={16} mBottom={16} centered jCenter>
+          <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`https://www.instagram.com/${activity?.user?.instagram}`)}>
+              <Icon name="instagram" size={30} color={colors.mainBlue} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`http://t.me/${activity?.user?.telegram}`)}>
+              <Icon name="telegram" size={30} color={colors.mainBlue} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`tel:${activity?.user?.phone}`)}>
+              <Icon name="phone" size={30} color={colors.mainBlue} />
+            </TouchableOpacity>
+          </View>
           {/* <Text mTop={16} color={colors.grey} center>
             Перед завершения действия вы cможете оценить взаимодествие с
             пользователем
