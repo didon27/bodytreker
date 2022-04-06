@@ -303,6 +303,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
             .then((response) => {
                 updateList();
                 setDeleteActivityModal(false);
+                console.log('delete')
                 navigation.navigate(routeNames.activities, {
                     user_id: user.id,
                     username: user.username,

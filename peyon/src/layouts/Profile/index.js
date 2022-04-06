@@ -210,7 +210,7 @@ const Profile = ({ user, fetchData, navigation, headerButtonControl, myAccount }
         />
 
         <View style={{ paddingHorizontal: 20 }}>
-          {user.phone && user.description !== 'null' ? (
+          {user.phone ? (
             <View mTop={16}>
               <Text size={18} medium>
                 {translations.phone}

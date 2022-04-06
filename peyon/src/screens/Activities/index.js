@@ -290,6 +290,7 @@ import { mamaAxios } from 'services/api';
 
 import styles from './styles';
 import { FiltersActivities, SearchActivities } from 'layouts';
+import { userActions } from 'store/user';
 
 const Activities = props => {
   const scrollYActivities = useRef(new Animated.Value(0)).current;
@@ -304,11 +305,11 @@ const Activities = props => {
   const [search, setSearch] = useState('');
   const [hideSearch, setHideSearch] = useState(true);
   const { user } = useSelector(state => state.user);
-
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [subscribeLoading, setSubscribeLoading] = useState(false);
   const [activities, setActivities] = useState([]);
-
+  const {token} = useSelector(state => state.auth);
   const snapPoints = useMemo(() => ['25%', '40%'], []);
 
   const returnData = () => {
@@ -416,6 +417,7 @@ const Activities = props => {
         navigation={props.navigation}
         item={item}
         key={index}
+        updateList={() => {dispatch(userActions.fetch(token)); fetchData(returnData(), true)}}
         subscribeControl={subscribeControl}
         loading={subscribeLoading}
         user_id={user.id}
