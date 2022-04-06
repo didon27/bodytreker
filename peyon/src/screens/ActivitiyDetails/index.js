@@ -65,7 +65,7 @@ const ActivityDetails = ({ navigation, route }) => {
   const getMyLocation = (lat, lng) => {
     axios({
       method: 'get',
-      url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_KEY}&result_type=locality`,
+      url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_KEY}`,
       headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
     }).then(response => {
       setCurrentPlace({ description: response.data.results[0].formatted_address })
@@ -362,15 +362,18 @@ const ActivityDetails = ({ navigation, route }) => {
               />
             )}
           <View row mTop={16} mBottom={16} centered jCenter>
-          <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`https://www.instagram.com/${activity?.user?.instagram}`)}>
-              <Icon name="instagram" size={30} color={colors.mainBlue} />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`http://t.me/${activity?.user?.telegram}`)}>
-              <Icon name="telegram" size={30} color={colors.mainBlue} />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`tel:${activity?.user?.phone}`)}>
-              <Icon name="phone" size={30} color={colors.mainBlue} />
-            </TouchableOpacity>
+            {activity?.user?.instagram ?
+              <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`https://www.instagram.com/${activity?.user?.instagram}`)}>
+                <Icon name="instagram" size={30} color={colors.mainBlue} />
+              </TouchableOpacity> : null}
+            {activity?.user?.telegram ?
+              <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`http://t.me/${activity?.user?.telegram}`)}>
+                <Icon name="telegram" size={30} color={colors.mainBlue} />
+              </TouchableOpacity> : null}
+            {activity?.user?.phone ?
+              <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => Linking.openURL(`tel:${activity?.user?.phone}`)}>
+                <Icon name="phone" size={30} color={colors.mainBlue} />
+              </TouchableOpacity> : null}
           </View>
           {/* <Text mTop={16} color={colors.grey} center>
             Перед завершения действия вы cможете оценить взаимодествие с

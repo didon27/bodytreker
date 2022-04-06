@@ -30,7 +30,7 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
     const [location, setLocation] = useState(null);
     const [locationHideModal, setLocationHideModal] = useState(false);
     const [usesFilters, setUsesFilters] = useState(0);
-    const {userLocation} = useSelector(state => state.user)
+    const { userLocation } = useSelector(state => state.user)
     const [searchCtegory, setSearchCategory] = useState('');
     const [categoriesModalVisible, setCategoriesModalVisible] = useState(false);
     const [currentCategory, setCurrentCategory] = useState(null);
@@ -43,7 +43,7 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
     const getMyLocation = () => {
         axios({
             method: 'get',
-            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${GOOGLE_KEY}&result_type=locality`,
+            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${GOOGLE_KEY}`,
             headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
         }).then(response => {
             setLocation({ lat: userLocation.lat, lng: userLocation.lng });
@@ -56,7 +56,7 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
         if (searchPlace) {
             axios({
                 method: 'get',
-                url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${translations.ukraine},${searchPlace}&types=(cities)&key=${GOOGLE_KEY}`,
+                url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${translations.ukraine},${searchPlace}&key=${GOOGLE_KEY}`,
                 headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
             })
                 .then((response) => { setPlaces(response.data.predictions) })
@@ -240,7 +240,7 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
                             </TouchableOpacity>
                             :
                             <TouchableOpacity onPress={() => setCategoriesModalVisible(true)} style={{ marginTop: 12, borderWidth: 1, borderColor: colors.lightGrey, borderRadius: 14, height: 40, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 16 }}>
-                                <Text color={currentPlace?.description ? 'black' : 'grey'}>{currentPlace?.description ? currentPlace?.description : translations.search}</Text>
+                                <Text color={currentPlace?.description ? 'black' : 'grey'}>{translations.search}</Text>
                                 <Icon name="search-outline" size={20} color={'grey'} />
                             </TouchableOpacity>}
                     </View>
@@ -259,10 +259,13 @@ const FiltersActivities = ({ translations, appLanguage, filterModalVisible, setF
                     </CustomSafeAreaView>
                     <FlatList
                         ListHeaderComponent={() => (
-                            <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 16, borderBottomWidth: 1, paddingVertical: 16, borderColor: colors.lightGrey }} onPress={getMyLocation}>
-                                <Text color={'grey'}>{translations.myLocation}</Text>
-                                <Icon name="location-outline" size={18} color={'grey'} />
-                            </TouchableOpacity>
+                            userLocation.lat && userLocation.lng ?
+                                <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 16, borderBottomWidth: 1, paddingVertical: 16, borderColor: colors.lightGrey }} onPress={getMyLocation}>
+                                    <Text color={'grey'}>{translations.myLocation}</Text>
+                                    <Icon name="location-outline" size={18} color={'grey'} />
+                                </TouchableOpacity> : <View style={{width: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 24}}>
+                                    <Text size={16} color="grey">{translations.search}</Text>
+                                </View>
                         )}
                         data={places}
                         renderItem={renderItemPlace}

@@ -19,6 +19,7 @@ target 'peyon' do
   pod 'react-native-location', :path => '../node_modules/react-native-location'
 
 
+
   target 'peyonTests' do
     inherit! :complete
     # Pods for testing

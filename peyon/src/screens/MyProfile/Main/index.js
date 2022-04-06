@@ -1,21 +1,23 @@
-import React, {useContext, useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, { useContext, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-import {activitiesActions} from 'store/activities';
+import { activitiesActions } from 'store/activities';
 
-import {LocalizationContext} from 'services';
+import { LocalizationContext } from 'services';
 
-import {Profile} from 'layouts';
+import { Profile } from 'layouts';
 import { routeNames } from 'enums';
+import { userActions } from 'store/user';
 
 const MyProfile = props => {
-  const {user} = useSelector(state => state.user);
+  const { user } = useSelector(state => state.user);
   const dispatch = useDispatch();
-  const {appLanguage} = useContext(LocalizationContext);
-  const {myActivities} = useSelector(state => state.activities);
-
+  const { appLanguage } = useContext(LocalizationContext);
+  const { myActivities } = useSelector(state => state.activities);
+  const { token } = useSelector(state => state.auth);
+  
   useEffect(() => {
-    dispatch(activitiesActions.getMyActivities({user_id: user.id}, true));
+    dispatch(activitiesActions.getMyActivities({ user_id: user.id }, true));
   }, [appLanguage]);
 
   const headerButtonControl = () => {
@@ -24,6 +26,7 @@ const MyProfile = props => {
 
   return (
     <Profile
+      fetchData={() => dispatch(userActions.fetch(token))}
       myAccount
       user={user}
       headerButtonControl={headerButtonControl}

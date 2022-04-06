@@ -315,7 +315,7 @@ const ActivityOperation = ({ url, updateList, popUpText, navigation, initialActi
         if (lat, lng) {
             axios({
                 method: 'get',
-                url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_KEY}&result_type=locality`,
+                url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_KEY}`,
                 headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
             }).then(response => {
                 setCurrentPlace({ place: response.data.results[0].formatted_address, lat, lng })

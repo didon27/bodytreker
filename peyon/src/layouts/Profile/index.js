@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Animated, Linking, StatusBar, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Animated, Linking, StatusBar, TouchableOpacity } from 'react-native';
 import StarRating from 'react-native-star-rating';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,7 +16,7 @@ import { routeNames } from 'enums';
 
 import styles from './styles';
 
-const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
+const Profile = ({ user, fetchData, navigation, headerButtonControl, myAccount }) => {
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
@@ -77,8 +77,50 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
     Linking.openURL(inst).catch(err => console.error('An error occurred', err))
   };
 
+  let touchY;
+
+  const [loading, setLoading] = useState(false);
+
+  const refreshData = () => {
+    Promise.all([fetchData()])
+      .then(() => {
+        setTimeout(() => {
+          setLoading(false)
+        }, 200);
+      })
+      .catch(() => {
+        setTimeout(() => {
+          setLoading(false)
+        }, 200);
+      })
+  }
+
+
   return (
-    <View flex style={{ backgroundColor: colors.white }}>
+    <View
+      flex
+      style={{ backgroundColor: colors.white }}
+      // onTouchStart={e => touchY = e.nativeEvent.pageY}
+      // onTouchEnd={e => {
+      //   if (touchY - e.nativeEvent.pageY < 20) {
+      //     setLoading(true);
+      //     refreshData()
+      //   }
+      // }
+      // }
+      // onTouchMove={(e) => {
+      //   console.log(touchY, e.nativeEvent.pageY)
+      //   if (touchY - e.nativeEvent.pageY < 20) {
+      //     setLoading(true);
+      //     refreshData()
+      //   }
+      // }}
+    >
+      {loading && (
+        <View style={{ position: 'absolute', width: '100%', zIndex: 99999, paddingTop: insets.bottom ? insets.bottom + 16 : 16, alignItems: 'center', justifyConetent: 'center' }}>
+          <ActivityIndicator color={'white'} size="small" style={{ backgroundColor: colors.mainBlue, padding: 6, borderRadius: 50, alignItems: 'center', justifyContent: 'center' }} />
+        </View>
+      )}
       <Animated.View
         style={{
           ...styles.headerContainer,
@@ -149,14 +191,15 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         bounces={false}
-        onScroll={Animated.event(
-          [
-            {
-              nativeEvent: { contentOffset: { y: scrollY } },
-            },
-          ],
-          { useNativeDriver: false },
-        )}>
+        onScroll={
+          Animated.event(
+            [
+              {
+                nativeEvent: { contentOffset: { y: scrollY } },
+              },
+            ],
+            { useNativeDriver: false },
+          )}>
         <Header
           translations={translations}
           myActivities={myActivities}
@@ -168,11 +211,11 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
 
         <View style={{ paddingHorizontal: 20 }}>
           {user.phone && user.description !== 'null' ? (
-            <View mBottom={16} mTop={16}>
+            <View mTop={16}>
               <Text size={18} medium>
                 {translations.phone}
               </Text>
-              <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}} onPress={() => Linking.openURL(`tel:${user.phone}`)}>
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }} onPress={() => Linking.openURL(`tel:${user.phone}`)}>
                 <Icon name="phone" size={22} color={colors.mainBlue} />
                 <Text
                   size={16}
@@ -184,7 +227,7 @@ const Profile = ({ user, navigation, headerButtonControl, myAccount }) => {
               </TouchableOpacity>
             </View>
           ) : null}
-          <Text size={18} medium>
+          <Text size={18} medium mTop={16}>
             {translations.socialNetwork}
           </Text>
           <View >

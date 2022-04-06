@@ -30,7 +30,7 @@ const SearchPlaces = ({ selectPlace, visible, setVisible, translations, appLangu
     const getMyLocation = () => {
         axios({
             method: 'get',
-            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${GOOGLE_KEY}&result_type=locality`,
+            url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${GOOGLE_KEY}`,
             headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
         }).then(response => {
             selectPlace({ place: response.data.results[0].formatted_address, location: { lat: userLocation.lat, lng: userLocation.lng } })
@@ -41,7 +41,7 @@ const SearchPlaces = ({ selectPlace, visible, setVisible, translations, appLangu
         if (searchPlace) {
             axios({
                 method: 'get',
-                url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${translations.ukraine},${searchPlace}&types=(cities)&key=${GOOGLE_KEY}`,
+                url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${translations.ukraine},${searchPlace}&key=${GOOGLE_KEY}`,
                 headers: { 'Accept-Language': appLanguage === 'ua' ? 'uk' : appLanguage }
             })
                 .then((response) => { setPlaces(response.data.predictions) })
