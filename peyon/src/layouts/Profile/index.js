@@ -16,7 +16,7 @@ import { routeNames } from 'enums';
 
 import styles from './styles';
 
-const Profile = ({ user, fetchData, navigation, headerButtonControl, myAccount }) => {
+const Profile = ({ user, fetchData, navigation, headerButtonControl, myAccount, showBack }) => {
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
@@ -100,21 +100,21 @@ const Profile = ({ user, fetchData, navigation, headerButtonControl, myAccount }
     <View
       flex
       style={{ backgroundColor: colors.white }}
-      // onTouchStart={e => touchY = e.nativeEvent.pageY}
-      // onTouchEnd={e => {
-      //   if (touchY - e.nativeEvent.pageY < 20) {
-      //     setLoading(true);
-      //     refreshData()
-      //   }
-      // }
-      // }
-      // onTouchMove={(e) => {
-      //   console.log(touchY, e.nativeEvent.pageY)
-      //   if (touchY - e.nativeEvent.pageY < 20) {
-      //     setLoading(true);
-      //     refreshData()
-      //   }
-      // }}
+    // onTouchStart={e => touchY = e.nativeEvent.pageY}
+    // onTouchEnd={e => {
+    //   if (touchY - e.nativeEvent.pageY < 20) {
+    //     setLoading(true);
+    //     refreshData()
+    //   }
+    // }
+    // }
+    // onTouchMove={(e) => {
+    //   console.log(touchY, e.nativeEvent.pageY)
+    //   if (touchY - e.nativeEvent.pageY < 20) {
+    //     setLoading(true);
+    //     refreshData()
+    //   }
+    // }}
     >
       {loading && (
         <View style={{ position: 'absolute', width: '100%', zIndex: 99999, paddingTop: insets.bottom ? insets.bottom + 16 : 16, alignItems: 'center', justifyConetent: 'center' }}>
@@ -128,7 +128,7 @@ const Profile = ({ user, fetchData, navigation, headerButtonControl, myAccount }
           paddingTop: insets.top,
         }}>
         <View style={styles.header}>
-          {!myAccount && (
+          {showBack  && (
             <AnimatedTouchableOpacity
               onPress={() => navigation.goBack()}
               style={{

@@ -1,0 +1,11 @@
+/* 
+  Infoplist.strings
+  peyon
+
+  Created by Vadim Bozhovskyi on 9.04.2022.
+  
+*/
+
+NSLocationWhenInUseUsageDescription = "Allowing Peyon access to your location will help us better select publications for you.";
+NSPhotoLibraryUsageDescription = "Allow Peyon access to your gallery to choose photos.";
+NSPhotoLibraryAddUsageDescription= "Allow Peyon access to your gallery to choose photos.";

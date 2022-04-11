@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<string>en, ru, ua</string>
 	<key>CFBundleDisplayName</key>
 	<string>Peyon</string>
 	<key>CFBundleExecutable</key>
@@ -38,11 +38,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Allow access to your camera to take photos.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Allow Peyon access to your location to choose photos</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Allow TasteBuds access to your gallery to choose photos.</string>
+	<string>Allow Peyon access to your gallery to choose photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow TasteBuds access to your gallery to choose photos.</string>
+	<string>Allow Peyon access to your gallery to choose photos.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
@@ -73,6 +73,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

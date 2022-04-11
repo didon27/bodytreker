@@ -67,6 +67,7 @@ const UserProfile = props => {
     <Profile
       fetchData={fetchData}
       myAccount={myAccount}
+      showBack
       user={user}
       headerButtonLoading={subscribeUserLoading}
       headerButtonControl={headerButtonControl}

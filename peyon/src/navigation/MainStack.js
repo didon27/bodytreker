@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AddActivities from 'screens/AddActivities';
 import HomeStack from './HomeStack';
 import ProfileStack from './ProfileStack';
+import ChatsStack from './ChatsStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
 const getTabBarVisibility = (route, stack, routeProps) => {
   const routeName = getFocusedRouteNameFromRoute(route);
 
-  const hideOnScreens = ['AddActivities'];
+  const hideOnScreens = ['AddActivities', 'Chat'];
 
   // if (stack === 'AddActivities') {
   //   return {display: 'none'};
@@ -69,7 +70,7 @@ function AppNavigation(props) {
             source = 'person';
           }
 
-          if (route.name === 'Message') {
+          if (route.name === 'Chats') {
             source = 'chatbubbles-sharp';
           }
 
@@ -123,13 +124,13 @@ function AppNavigation(props) {
           tabBarStyle: getTabBarVisibility(route, 'AddActivities'),
         })}
       />
-      {/* <Tab.Screen
-        name="Message"
-        component={ProfileStack}
+      <Tab.Screen
+        name="Chats"
+        component={ChatsStack}
         options={({route}) => ({
           tabBarStyle: getTabBarVisibility(route),
         })}
-      /> */}
+      />
       <Tab.Screen
         name="Profile"
         component={ProfileStack}

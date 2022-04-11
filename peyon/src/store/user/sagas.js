@@ -23,6 +23,16 @@ function* fetch(data) {
   }
 }
 
+function* getChatList(data) {
+  try {
+    const response = yield call(api.chat.getChatList);
+    console.log(response.data)
+    yield put(userActions.getChatListSuccess(response.data));
+  } catch (e) {
+    yield put(userActions.getChatListailure(e.response?.data));
+  }
+}
+
 function* create(data) {
   const { route } = data;
   try {
@@ -101,5 +111,9 @@ export function* userSaga() {
   yield takeLatest(
     userConstants.CHECK_VERIFICATION_CODE_REQUEST,
     checkVerificationCode,
+  );
+  yield takeLatest(
+    userConstants.GET_CHAT_LIST_REQUEST,
+    getChatList,
   );
 }

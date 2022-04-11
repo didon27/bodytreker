@@ -87,10 +87,13 @@ const SearchPlaces = ({ selectPlace, visible, setVisible, translations, appLangu
                 </CustomSafeAreaView>
                 <FlatList
                     ListHeaderComponent={() => (
+                        userLocation.lat && userLocation.lng ?
                         <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 16, borderBottomWidth: 1, paddingVertical: 16, borderColor: colors.lightGrey }} onPress={getMyLocation}>
                             <Text color={'grey'}>{translations.myLocation}</Text>
                             <Icon name="location-outline" size={18} color={'grey'} />
-                        </TouchableOpacity>
+                        </TouchableOpacity> : <View style={{width: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 24}}>
+                            <Text size={16} color="grey">{translations.search}</Text>
+                        </View>
                     )}
                     data={places}
                     renderItem={renderItemPlace}

@@ -67,6 +67,8 @@ export const en = {
   minimumOneSocialNetwork: 'Add at least one social network!',
   fieldIsRequired: 'The field is required!',
   socialNetwork: 'My social network',
+  chats: 'Chats',
+  messages: 'Messages',
   fields_to_complete_registration:
     'Fill in all fields to continue registration',
   confirmation_code: 'Confirmation code',

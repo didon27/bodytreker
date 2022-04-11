@@ -15,6 +15,7 @@
 		854D1F496956152DC6D72D24 /* libPods-peyon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 28524E173E890AA56CC21632 /* libPods-peyon.a */; };
 		BDCFFDD02F551A870DE82D62 /* libPods-peyon-peyonTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2A2FDB127E57E97EEA8A1D7 /* libPods-peyon-peyonTests.a */; };
 		DD4F95CC27F091E200048D23 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD4F95CB27F091E200048D23 /* GoogleService-Info.plist */; };
+		DD8BCFB2280207EE000044B9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DD8BCFB4280207EE000044B9 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,9 @@
 		DCBE7400281A43DDA608B2A0 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		DD4504B627E7B93B00C54409 /* peyon.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = peyon.entitlements; path = peyon/peyon.entitlements; sourceTree = "<group>"; };
 		DD4F95CB27F091E200048D23 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		DD8BCFB3280207EE000044B9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DD8BCFB52802088D000044B9 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DD8BCFB628020892000044B9 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E2A2FDB127E57E97EEA8A1D7 /* libPods-peyon-peyonTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-peyon-peyonTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F58DD72FBE93C3F42F95FE2E /* Pods-peyon-peyonTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-peyon-peyonTests.release.xcconfig"; path = "Target Support Files/Pods-peyon-peyonTests/Pods-peyon-peyonTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -147,6 +151,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				DD8BCFB4280207EE000044B9 /* InfoPlist.strings */,
 			);
 			name = peyon;
 			sourceTree = "<group>";
@@ -264,6 +269,8 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
+				uk,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -289,6 +296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				DD8BCFB2280207EE000044B9 /* InfoPlist.strings in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				DD4F95CC27F091E200048D23 /* GoogleService-Info.plist in Resources */,
 			);
@@ -485,6 +493,20 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		DD8BCFB4280207EE000044B9 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DD8BCFB3280207EE000044B9 /* en */,
+				DD8BCFB52802088D000044B9 /* ru */,
+				DD8BCFB628020892000044B9 /* uk */,
+			);
+			name = InfoPlist.strings;
+			path = ..;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -544,7 +566,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = peyon/peyon.entitlements;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = SNFBCHWQ4R;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = peyon/Info.plist;
@@ -552,7 +574,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -562,6 +584,7 @@
 				PRODUCT_NAME = peyon;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -573,14 +596,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = peyon/peyon.entitlements;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = SNFBCHWQ4R;
 				INFOPLIST_FILE = peyon/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -589,6 +612,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.peyon.app;
 				PRODUCT_NAME = peyon;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

@@ -5,6 +5,10 @@ export const userActions = {
   fetchSuccess: payload => ({ type: userConstants.FETCH_USER_SUCCESS, payload }),
   fetchFailure: error => ({ type: userConstants.FETCH_USER_FAILURE, error }),
 
+  getChatList: payload => ({ type: userConstants.GET_CHAT_LIST_REQUEST, payload }),
+  getChatListSuccess: payload => ({ type: userConstants.GET_CHAT_LIST_SUCCESS, payload }),
+  getChatListailure: error => ({ type: userConstants.GET_CHAT_LIST_FAILURE, error }),
+
   create: (payload, route) => ({
     type: userConstants.CREATE_USER_REQUEST,
     payload,

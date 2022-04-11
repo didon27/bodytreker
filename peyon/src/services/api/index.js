@@ -1,6 +1,6 @@
-import {request, mamaAxios} from './request';
+import { request, mamaAxios } from './request';
 
-export {mamaAxios};
+export { mamaAxios };
 
 export const api = {
   auth: {
@@ -23,6 +23,9 @@ export const api = {
     updateUser: params => request.post('/user/update-user', params),
     subscribeUser: params => request.post('/user/subscribe-user', params),
     unsubscribeUser: params => request.post('/user/unsubscribe-user', params),
+  },
+  chat: {
+    getChatList: params => request.post('/chat/get-chat-list', params),
   },
   activities: {
     getActivitiesCategories: params =>

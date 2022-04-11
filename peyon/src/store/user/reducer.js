@@ -12,6 +12,8 @@ const initialState = {
   isCodeValid: false,
   codeError: null,
   user: {},
+  chatList: [],
+  chatListLoading: false,
   userLocation: { lat: null, lng: null }
 };
 
@@ -26,6 +28,13 @@ export const userReducer = (state = initialState, action) => {
     case userConstants.FETCH_USER_FAILURE:
       return { ...state, loading: false, error };
 
+    case userConstants.GET_CHAT_LIST_REQUEST:
+      return { ...state, chatListLoading: true, error: null };
+    case userConstants.GET_CHAT_LIST_SUCCESS:
+      return { ...state, chatListLoading: false, chatList: payload };
+    case userConstants.GET_CHAT_LIST_FAILURE:
+      return { ...state, chatListLoading: false, error };
+
     case userConstants.CREATE_USER_REQUEST:
       return { ...state, createUserLoading: true, createUserError: null };
     case userConstants.CREATE_USER_SUCCESS:
@@ -34,7 +43,7 @@ export const userReducer = (state = initialState, action) => {
       return { ...state, createUserLoading: false, createUserError: error };
 
     case userConstants.UPDATE_USER_LOCATION:
-      return { ...state,  userLocation: payload };
+      return { ...state, userLocation: payload };
 
     case userConstants.UPDATE_USER_REQUEST:
       return { ...state, updateUserLoading: true, updateUserError: null };

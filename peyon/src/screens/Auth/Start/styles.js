@@ -31,6 +31,7 @@ export default StyleSheet.create({
     backgroundColor: '#202124',
     height: 200,
     width: '100%',
+    alignItems: 'center',
     zIndex: 9999,
     paddingTop: 20,
     paddingBottom: 40,
