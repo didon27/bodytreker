@@ -24,9 +24,9 @@ const Chats = ({ navigation }) => {
                 <View mLeft={10} flex>
                     <View row centered sBetween>
                         <Text size={16} medium>{item?.user?.first_name}</Text>
-                        {/* <Text color={colors.grey} size={12}>{moment(item?.updatedAt).format('HH:MM')}</Text> */}
+                        <Text color={colors.grey} size={12}>{moment(item.message.createdAt).format('HH:MM')}</Text>
                     </View>
-                    <Text mTop={2} color={colors.grey}>fsdfsf</Text>
+                    <Text mTop={2} color={colors.grey}>{item.message.message}</Text>
                 </View>
             </TouchableOpacity>
         )

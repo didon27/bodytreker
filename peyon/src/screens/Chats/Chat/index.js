@@ -155,7 +155,7 @@ const Chat = ({ navigation, route }) => {
                 placeholder={translations.messages + "..."}
                 onSend={messages => onSend(messages)}
                 user={{
-                    id: user.id,
+                    _id: user.id,
                 }}
             // renderMessage={renderMessage}
             />
