@@ -21,7 +21,7 @@ const Chat = ({ navigation, route }) => {
     const { translations } = useContext(LocalizationContext)
     const [messages, setMessages] = useState([]);
     const { user } = useSelector(state => state.user);
-    const { room, username } = route.params;
+    const { room, username, id } = route.params;
     const socket = io(
         `https://peyon.com.ua`,
         {
@@ -83,11 +83,14 @@ const Chat = ({ navigation, route }) => {
         })
     }, [room])
 
+    console.log('fsdfsd', id);
+
     const onSend = useCallback(async (messages = []) => {
         // console.log(messages);
         let messageContent = {
             room: room,
             user_id: user.id,
+            to_user_id: id,
             content: {
                 author: user.username,
                 message: messages[0].text,

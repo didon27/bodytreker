@@ -19,7 +19,7 @@ const Chats = ({ navigation }) => {
 
     const renderItem = ({ item, index }) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate(routeNames.chat, { room: item.room_id, username: item.user.username, avatar: item.user.avatar })} style={{ borderBottomWidth: 1, paddingVertical: 16, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', borderBottomColor: colors.lightGrey }}>
+            <TouchableOpacity onPress={() => navigation.navigate(routeNames.chat, { room: item.room_id, username: item.user.username, avatar: item.user.avatar, id: item.user.id })} style={{ borderBottomWidth: 1, paddingVertical: 16, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', borderBottomColor: colors.lightGrey }}>
                 <Avatar user={item?.user} style={{ width: 50, height: 50 }} />
                 <View mLeft={10} flex>
                     <View row centered sBetween>
