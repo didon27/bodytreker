@@ -140,7 +140,33 @@ function Header({
               @{user.username.toLocaleLowerCase()}
             </Text>
           </View>
+          {/* <SubscribeButton
+            loading={headerButtonLoading}
+            onPress={headerButtonControl}
+            subscribe={user.subscribe}
+            text={
+              myAccount
+                ? translations.edit
+                : user.subscribe
+                  ? translations.following
+                  : translations.follow
+            }
+          /> */}
+        </View>
+        <View row style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+          {!myAccount &&
+            <TouchableOpacity
+              onPress={() => navigation.navigate(routeNames.chat, { room: user?.chat_room?.room_id, user_to: user, fetchUser: fetchData })}
+              style={{ borderWidth: 1, borderColor: colors.lightGrey, borderRadius: 8, alignItems: 'center', justifyContent: "center", flex: 1, marginRight: 10 }} >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: '600',
+                }}>{translations.messages}</Text>
+            </TouchableOpacity>
+          }
           <SubscribeButton
+            style={{ flex: 1 }}
             loading={headerButtonLoading}
             onPress={headerButtonControl}
             subscribe={user.subscribe}
@@ -153,7 +179,6 @@ function Header({
             }
           />
         </View>
-
         <View row centered sBetween style={styles.counterBlock}>
           <TouchableOpacity
             style={{ alignItems: 'center' }}

@@ -12,6 +12,7 @@ import UserProfile from 'screens/UserProfile';
 import ActivityEdit from 'screens/ActivityEdit';
 import ChangePassword from 'screens/MyProfile/ChangePassword';
 import Information from 'screens/MyProfile/Information';
+import Chat from 'screens/Chats/Chat';
 
 const ProfileStack = createStackNavigator();
 
@@ -30,6 +31,7 @@ export default props => {
         name={routeNames.activityEdit}
         component={ActivityEdit}
       />
+      <ProfileStack.Screen name={routeNames.chat} component={Chat} />
       <ProfileStack.Screen
         name={routeNames.userProfile}
         component={UserProfile}

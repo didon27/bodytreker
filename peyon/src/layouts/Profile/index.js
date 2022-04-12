@@ -204,6 +204,7 @@ const Profile = ({ user, fetchData, navigation, headerButtonControl, myAccount, 
           translations={translations}
           myActivities={myActivities}
           myAccount={myAccount}
+          fetchData={fetchData}
           headerButtonControl={headerButtonControl}
           navigation={navigation}
           user={user}

@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { routeNames } from 'enums';
 import Chats from 'screens/Chats/Main';
 import Chat from 'screens/Chats/Chat';
+import UserProfile from 'screens/UserProfile';
 
 const ChatsStack = createStackNavigator();
 
@@ -19,6 +20,7 @@ export default props => {
       })}>
       <ChatsStack.Screen name={routeNames.chats} component={Chats} />
       <ChatsStack.Screen name={routeNames.chat} component={Chat} />
+      <ChatsStack.Screen name={routeNames.userProfile} component={UserProfile} />
     </ChatsStack.Navigator>
   );
 };

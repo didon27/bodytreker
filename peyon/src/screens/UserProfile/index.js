@@ -8,10 +8,11 @@ import { userActions } from 'store/user';
 import { mamaAxios } from 'services/api';
 
 const UserProfile = props => {
+  console.log(props.route)
   const { params } = props.route;
   const [user, setUser] = useState({
     ...params.user,
-    images: [{ filename: params.user.avatar }],
+    images: [{ filename: params.user?.avatar }],
   });
   const dispatch = useDispatch();
   const { myActivities } = useSelector(state => state.activities);

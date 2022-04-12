@@ -68,7 +68,7 @@ export const en = {
   fieldIsRequired: 'The field is required!',
   socialNetwork: 'My social network',
   chats: 'Chats',
-  messages: 'Messages',
+  messages: 'Message',
   fields_to_complete_registration:
     'Fill in all fields to continue registration',
   confirmation_code: 'Confirmation code',

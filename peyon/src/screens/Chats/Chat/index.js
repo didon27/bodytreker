@@ -15,19 +15,27 @@ import { useSelector } from 'react-redux'
 import { colors } from 'colors'
 import { mamaAxios } from 'services/api'
 import { API_URL } from 'constants'
+import { routeNames } from 'enums'
+import moment from 'moment'
 
 
 const Chat = ({ navigation, route }) => {
     const { translations } = useContext(LocalizationContext)
     const [messages, setMessages] = useState([]);
     const { user } = useSelector(state => state.user);
-    const { room, username, id } = route.params;
+    const { user_to, fetchUser } = route.params;
+    const [room, setRoom] = useState(route.params.room);
+
     const socket = io(
         `https://peyon.com.ua`,
         {
             transports: ['websocket'], // you need to explicitly tell it to use websockets
         },
     );
+
+    useEffect(() => {
+        setRoom(route.params.room)
+    }, [route.params.room])
 
     // console.log(messages)
 
@@ -63,44 +71,66 @@ const Chat = ({ navigation, route }) => {
     }, [])
 
     useEffect(() => {
-        mamaAxios.post(API_URL + '/chat/get-chat-messages', { room_id: room }).then((response) => {
+        if (room) {
+            mamaAxios.post(API_URL + '/chat/get-chat-messages', { room_id: room }).then((response) => {
 
 
-            setMessages(
-                response.data.map((el) => (
-                    {
-                        _id: el.id,
-                        text: el.message,
-                        createdAt: el.createdAt,
-                        user: {
-                            _id: el.user.id,
-                            name: `${el.user.first_name}`,
-                            avatar: API + '/images/' + el.user.avatar,
-                        },
-                    }
-                ))
-            );
-        })
+                setMessages(
+                    response.data.map((el) => (
+                        {
+                            _id: el.id,
+                            text: el.message,
+                            createdAt: el.createdAt,
+                            user: {
+                                _id: el.user.id,
+                                name: `${el.user.first_name}`,
+                                avatar: API + '/images/' + el.user.avatar,
+                            },
+                        }
+                    ))
+                );
+            })
+        }
     }, [room])
-
-    console.log('fsdfsd', id);
 
     const onSend = useCallback(async (messages = []) => {
         // console.log(messages);
-        let messageContent = {
-            room: room,
-            user_id: user.id,
-            to_user_id: id,
-            content: {
-                author: user.username,
-                message: messages[0].text,
-            },
-        };
+        if (!room) {
+            let new_room = `room_${user.id}${moment().valueOf()}`
+            mamaAxios.post(API_URL + '/chat/create-chat-room', { "data": [{ "user_id": user.id, "room_id": new_room }, { "user_id": user_to.id, "room_id": new_room }] })
+                .then(async (response) => {
+                    setRoom(new_room);
+                    fetchUser && fetchUser();
+                    let messageContent = {
+                        room: new_room,
+                        user_id: user.id,
+                        to_user_id: user_to.id,
+                        content: {
+                            author: user_to.username,
+                            message: messages[0].text,
+                        },
+                    };
 
-        await socket.emit("send_message", messageContent);
+                    await socket.emit("send_message", messageContent);
 
-        setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
-    }, [])
+                    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+                })
+        } else {
+            let messageContent = {
+                room: room,
+                user_id: user.id,
+                to_user_id: user_to.id,
+                content: {
+                    author: user_to.username,
+                    message: messages[0].text,
+                },
+            };
+
+            await socket.emit("send_message", messageContent);
+
+            setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+        }
+    }, [room])
 
     const renderMessage = (props) => {
         const {
@@ -121,19 +151,6 @@ const Chat = ({ navigation, route }) => {
         return <SlackMessage  {...props} messageTextStyle={messageTextStyle} />
     }
 
-    // const renderInputToolbar = () => {
-    //     return (
-    //         <View style={{ paddingHorizontal: 16, flex: 1, paddingTop: 16, justifyContent: 'center', borderTopWidth: 1, borderTopColor: colors.lightGrey }}>
-    //             <TextInput
-    //                 placeholder={translations.messages + "..."}
-    //                 multiline
-    //                 style={{ borderWidth: 1, fontSize: 16, borderRadius: 8, paddingHorizontal: 8, minHeight: 40 }}
-    //                 placeholderTextColor={'grey'}
-    //             />
-    //         </View>
-    //     )
-    // }
-
     return (
         <View flex style={{ backgroundColor: 'white' }}>
             <CustomSafeAreaView style={{ paddingHorizontal: 16, borderBottomWidth: 1, paddingBottom: 16, borderBottomColor: colors.lightGrey }}>
@@ -141,16 +158,16 @@ const Chat = ({ navigation, route }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 0 }}>
                         <Icon name="angle-left" size={30} color={'#585858'} />
                     </TouchableOpacity>
-                    <Text bold size={18}>{username}</Text>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', right: 0 }}>
+                    <Text bold size={18}>{user_to.username}</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate(routeNames.userProfile, { user: user_to })} style={{ position: 'absolute', right: 0 }}>
                         <Avatar
-                            user={user}
+                            user={user_to}
                             letterStyle={{ fontSize: 36 }}
-                            style={{ width: 36, height: 36, borderRadius: 20}}
+                            style={{ width: 36, height: 36, borderRadius: 20 }}
                         />
                     </TouchableOpacity>
                 </View>
-            </CustomSafeAreaView>
+            </CustomSafeAreaView >
             <GiftedChat
                 renderAvatar={null}
                 // renderBubble={(props) => <SlackBubble {...props} />}
@@ -162,7 +179,7 @@ const Chat = ({ navigation, route }) => {
                 }}
             // renderMessage={renderMessage}
             />
-        </View>
+        </View >
     )
 }
 
