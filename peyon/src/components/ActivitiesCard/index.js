@@ -4,6 +4,9 @@ import StarRating from 'react-native-star-rating';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import 'moment/min/locales'
+import 'dayjs/locale/en';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/uk';
 
 import { colors } from 'colors';
 import {

@@ -1,16 +1,17 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { Image, Platform, TextInput, TouchableOpacity } from 'react-native'
 import PropTypes from 'prop-types'
-import { GiftedChat } from 'react-native-gifted-chat'
+import { GiftedChat, InputToolbar, Send } from 'react-native-gifted-chat'
 import emojiUtils from 'emoji-utils'
 
 import SlackMessage from './SlackMessage'
 import { Avatar, CustomSafeAreaView, Text, View } from 'components'
 import Icon from 'react-native-vector-icons/FontAwesome';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 import { LocalizationContext } from 'services'
 import { io } from "socket.io-client";
 import { API } from 'constants'
-import SlackBubble from './SlackBubble'
+
 import { useSelector } from 'react-redux'
 import { colors } from 'colors'
 import { mamaAxios } from 'services/api'
@@ -25,7 +26,7 @@ const Chat = ({ navigation, route }) => {
     const { user } = useSelector(state => state.user);
     const { user_to, fetchUser } = route.params;
     const [room, setRoom] = useState(route.params.room);
-
+    const { appLanguage } = useContext(LocalizationContext)
     const socket = io(
         `https://peyon.com.ua`,
         {
@@ -151,9 +152,35 @@ const Chat = ({ navigation, route }) => {
         return <SlackMessage  {...props} messageTextStyle={messageTextStyle} />
     }
 
+    const renderSend = (props) => (
+        <Send
+            {...props}
+            disabled={!props.text}
+            containerStyle={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 2,
+            }}
+        >
+            <IconIonicons name="arrow-up-circle" size={40} color={colors.mainBlue} />
+        </Send>
+    );
+
+     const renderInputToolbar = (props) => (
+        <InputToolbar
+          {...props}
+          containerStyle={{
+            // paddingTop: 6,
+            backgroundColor: '#f8f7f7',
+          }}
+          primaryStyle={{ alignItems: 'center' }}
+        />
+      );
+
+
     return (
-        <View flex style={{ backgroundColor: 'white' }}>
-            <CustomSafeAreaView style={{ paddingHorizontal: 16, borderBottomWidth: 1, paddingBottom: 16, borderBottomColor: colors.lightGrey }}>
+        <View flex style={{ backgroundColor: '#f8f7f7' }}>
+            <CustomSafeAreaView style={{ paddingHorizontal: 16, borderBottomWidth: 1, paddingBottom: 16, borderBottomColor: colors.lightGrey, backgroundColor: 'white' }}>
                 <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 0 }}>
                         <Icon name="angle-left" size={30} color={'#585858'} />
@@ -170,7 +197,13 @@ const Chat = ({ navigation, route }) => {
             </CustomSafeAreaView >
             <GiftedChat
                 renderAvatar={null}
-                // renderBubble={(props) => <SlackBubble {...props} />}
+                renderInputToolbar={renderInputToolbar}
+                scrollToBottom
+                infiniteScroll
+                renderSend={renderSend}
+                scrollToBottomComponent={() => <Icon name="angle-down" size={26} color={'grey'} />}
+                locale={appLanguage !== 'ua' ? appLanguage : 'uk'}
+                textInputStyle={{backgroundColor: 'white', borderWidth: 1, borderColor: colors.lightGrey, borderRadius: 14, paddingHorizontal: 16, paddingTop: 8, marginHorizontal: 8}}
                 messages={messages}
                 placeholder={translations.messages + "..."}
                 onSend={messages => onSend(messages)}
