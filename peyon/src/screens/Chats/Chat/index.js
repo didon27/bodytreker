@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { Image, Platform, TextInput, TouchableOpacity } from 'react-native'
+import { Image, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
 import PropTypes from 'prop-types'
 import { GiftedChat, InputToolbar, Send } from 'react-native-gifted-chat'
 import emojiUtils from 'emoji-utils'
@@ -18,7 +18,8 @@ import { mamaAxios } from 'services/api'
 import { API_URL } from 'constants'
 import { routeNames } from 'enums'
 import moment from 'moment'
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { TypingAnimation } from "react-native-typing-animation";
 
 const Chat = ({ navigation, route }) => {
     const { translations } = useContext(LocalizationContext)
@@ -27,6 +28,9 @@ const Chat = ({ navigation, route }) => {
     const { user_to, fetchUser } = route.params;
     const [room, setRoom] = useState(route.params.room);
     const { appLanguage } = useContext(LocalizationContext)
+    const [typing, setTyping] = useState(null);
+    const [online, setOnlineStatus] = useState(false);
+    const insets = useSafeAreaInsets();
     const socket = io(
         `https://peyon.com.ua`,
         {
@@ -38,9 +42,21 @@ const Chat = ({ navigation, route }) => {
         setRoom(route.params.room)
     }, [route.params.room])
 
-    // console.log(messages)
+    useEffect(() => {
+        setTimeout(() => {
+            setTyping(false);
+        }, 6000);
+    }, [typing])
 
     useEffect(() => {
+        socket.on("typing", (data) => {
+            if (data.user_id !== user.id && data?.isTyping) {
+                if (!typing) {
+                    setTyping(true);
+                }
+            }
+        })
+
         socket.on("receive_message", (data) => {
             console.log('fsdfsd', data)
             setMessages(previousMessages => GiftedChat.append(previousMessages, {
@@ -57,11 +73,18 @@ const Chat = ({ navigation, route }) => {
     }, [socket]);
 
     useEffect(() => {
+        socket.emit("join_room", { room, user_id: user.id });
+        socket.on('connect', (data) => {
+            console.log('connected --------------- socket ---------------', data);
+        });
 
-        socket.emit("join_room", room);
+        socket.on('offline', (data) => {
+            setOnlineStatus(false);
+        });
 
-        socket.on('connect', () => {
-            console.log('connected --------------- socket ---------------');
+        socket.on('online', (data) => {
+            console.log(data)
+            setOnlineStatus(true);
         });
 
         socket.on('connect_error', err => {
@@ -166,16 +189,16 @@ const Chat = ({ navigation, route }) => {
         </Send>
     );
 
-     const renderInputToolbar = (props) => (
+    const renderInputToolbar = (props) => (
         <InputToolbar
-          {...props}
-          containerStyle={{
-            // paddingTop: 6,
-            backgroundColor: '#f8f7f7',
-          }}
-          primaryStyle={{ alignItems: 'center' }}
+            {...props}
+            containerStyle={{
+                // paddingTop: 6,
+                backgroundColor: '#f8f7f7',
+            }}
+            primaryStyle={{ alignItems: 'center' }}
         />
-      );
+    );
 
 
     return (
@@ -185,12 +208,15 @@ const Chat = ({ navigation, route }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 0 }}>
                         <Icon name="angle-left" size={30} color={'#585858'} />
                     </TouchableOpacity>
-                    <Text bold size={18}>{user_to.username}</Text>
+                    <View centered>
+                        <Text bold size={18}>{user_to.username}</Text>
+                        <Text color={online ? colors.mainGreen : 'grey'} size={12}>{online ? 'Online' : 'Offline'}</Text>
+                    </View>
                     <TouchableOpacity onPress={() => navigation.navigate(routeNames.userProfile, { user: user_to })} style={{ position: 'absolute', right: 0 }}>
                         <Avatar
                             user={user_to}
                             letterStyle={{ fontSize: 36 }}
-                            style={{ width: 36, height: 36, borderRadius: 20 }}
+                            style={{ width: 40, height: 40, borderRadius: 20 }}
                         />
                     </TouchableOpacity>
                 </View>
@@ -200,13 +226,44 @@ const Chat = ({ navigation, route }) => {
                 renderInputToolbar={renderInputToolbar}
                 scrollToBottom
                 infiniteScroll
+                renderFooter={() => typing && <View style={{
+                    backgroundColor: '#f0f0f0',
+                    marginLeft: 8,
+                    marginBottom: 16,
+                    borderRadius: 15,
+                    borderBottomLeftRadius: 0,
+                    width: 60,
+                    padding: 16,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <View style={{ backgroundColor: 'red' }}>
+                        <TypingAnimation
+                            dotColor="grey"
+                            dotMargin={8}
+                            dotAmplitude={3}
+                            dotSpeed={0.15}
+                            dotRadius={3}
+                            dotX={-3}
+                            dotY={-3}
+                        />
+                    </View>
+                </View>}
                 renderSend={renderSend}
+                bottomOffset={Platform.OS === "ios" && insets.bottom}
                 scrollToBottomComponent={() => <Icon name="angle-down" size={26} color={'grey'} />}
                 locale={appLanguage !== 'ua' ? appLanguage : 'uk'}
-                textInputStyle={{backgroundColor: 'white', borderWidth: 1, borderColor: colors.lightGrey, borderRadius: 14, paddingHorizontal: 16, paddingTop: 8, marginHorizontal: 8}}
+                textInputStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: colors.lightGrey, borderRadius: 14, paddingHorizontal: 16, paddingTop: 8, marginLeft: 10, marginRight: 10 }}
                 messages={messages}
                 placeholder={translations.messages + "..."}
                 onSend={messages => onSend(messages)}
+                onInputTextChanged={(text) => {
+                    socket.emit("typing", {
+                        isTyping: text.length,
+                        user_id: user.id,
+                        room: room
+                    });
+                }}
                 user={{
                     _id: user.id,
                 }}
@@ -217,3 +274,5 @@ const Chat = ({ navigation, route }) => {
 }
 
 export default Chat;
+
+
